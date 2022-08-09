@@ -1,6 +1,5 @@
 include("nucleotidefuncts.jl")
 
-
 muteff3 = permutedims(hcat([
                 [string(x[1],x[2],i) for i in nucsv[nucsv.!=x[3]] ]
                 for x in gencode[:,1]
