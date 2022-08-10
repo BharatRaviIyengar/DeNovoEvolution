@@ -1,16 +1,7 @@
 cd(Base.source_dir())
 include("nucleotidefuncts.jl")
 
-function frameXcodons(codon,frame)
-        if(frame ∉ [1,2])
-                error("Frame should be 1, or 2")
-        end
-
-        z = 3-frame
-        u = codon[1:z].*vec(join.(product(repeated(nucs,frame)...)))
-        d = vec(join.(product(repeated(nucs,z)...))).*codon[1:frame]
-        return vcat(d,u)
-end
+allcodons = kmers(3)
 
 muteff3 = permutedims(hcat([
                 [string(x[1],x[2],i) for i in nucsv[nucsv.!=x[3]] ]
