@@ -1,7 +1,7 @@
 using Base.Iterators
 using DelimitedFiles
 
-gencode = readdlm("/home/bravi/Documents/EBB/std_genetic_code.txt", '\t', AbstractString, '\n')
+gencode = readdlm(joinpath(Base.source_dir(),"../std_genetic_code.txt"), '\t', AbstractString, '\n')
 
 nucs = "ATGC"
 nucv = ['A','T','G','C']
@@ -9,6 +9,17 @@ nucnames = Dict('A'=>1,'T'=>2,'G'=>3,'C'=>4)
 
 function kmers(k)
     return vec(join.(product(repeated(nucs,k)...)))
+end
+
+function frameXcodons(codon,frame)
+    if(frame ∉ [1,2])
+        error("Frame should be 1, or 2")
+    end
+
+    z = 3-frame
+    d = codon[1+frame:3].*vec(join.(product(repeated(nucs,frame)...)))
+    u = vec(join.(product(repeated(nucs,z)...))).*codon[1:frame]
+    return vcat(u,d)
 end
 
 nsub = zeros(4,4)
@@ -37,7 +48,7 @@ function µG(mutrate,nsub)
 end
 
 function transnucs(codon)
-        return gencode[gencode[:,1].==codon,3]
+    return gencode[gencode[:,1].==codon,:][3]
 end
 
 function degen(consensus,position,subs)
