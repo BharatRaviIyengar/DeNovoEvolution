@@ -6,11 +6,54 @@ gencode = readdlm(joinpath(Base.source_dir(),"../std_genetic_code.txt"), '\t', A
 nucs = "ATGC"
 nucv = ['A','T','G','C']
 nucnames = Dict('A'=>1,'T'=>2,'G'=>3,'C'=>4)
+ncomp = Dict('A'=>'T', 'G'=>'C', 'T'=>'A', 'C'=> 'G')
 
+"""
+# Generate all nucleotide sequences with length `k`
+"""
 function kmers(k)
     return vec(join.(product(repeated(nucs,k)...)))
 end
 
+
+"""
+`frameXcodons(codon,n)`
+
+Find all possibe codons in an alternate reading frame
+...
+
+# Arguments
+ - `codon::String`
+ - `n::Int ∈ [1,2]`: reading frame (same sense)
+# Output
+ `x::Vector{String}`: list of 20 codons
+
+# Example
+```julia> frameXcodons("ATG",1)
+
+20-element Vector{String}:
+"AAA"
+"TAA"
+"GAA"
+"CAA"
+"ATA"
+"TTA"
+"GTA"
+"CTA"
+"AGA"
+"TGA"
+"GGA"
+"CGA"
+"ACA"
+"TCA"
+"GCA"
+"CCA"
+"TGA"
+"TGT"
+"TGG"
+"TGC"
+ ```
+"""
 function frameXcodons(codon,frame)
     if(frame ∉ [1,2])
         error("Frame should be 1, or 2")
@@ -21,6 +64,17 @@ function frameXcodons(codon,frame)
     u = vec(join.(product(repeated(nucs,z)...))).*codon[1:frame]
     return vcat(u,d)
 end
+
+"""
+`comp(s)`
+...
+Find the complement of a nucleotide sequence, `s`
+"""
+function comp(s)
+    join([ncomp[c] for c in s])
+end
+
+
 
 nsub = zeros(4,4)
 
@@ -47,6 +101,12 @@ function µG(mutrate,nsub)
     return 2*mutrate*sum(nsub[3,:])
 end
 
+
+"""
+`transnucs(codon)`
+...
+Find the amino acid encoded by a codon
+"""
 function transnucs(codon)
     return gencode[gencode[:,1].==codon,:][3]
 end
@@ -56,6 +116,11 @@ function degen(consensus,position,subs)
     suffix = consensus[position+1:end]
     variants = prefix .* collect(subs) .* suffix
     return(variants)
+end
+
+function singlemutant(s)
+    z = vcat([degen("ATG",x,nucs) for x in 1:3]...)
+    return z[z.!=s]
 end
 
 function mprob(s1,s2)
