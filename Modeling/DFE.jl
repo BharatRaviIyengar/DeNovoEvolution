@@ -6,10 +6,15 @@ aasubmat = blosum[1][1:20,1:20]
 aanames = Dict([(blosum[2][i],i) for i in 1:20])
 
 allcodons = kmers(3)
-nostopcodons = allcodons[allcodons .∉ Ref(["TAA","TAG","TGA"])]
 
-f1cdn = permutedims(hcat(frameXcodons.(allcodons,1)...))
-f2cdn = permutedims(hcat(frameXcodons.(allcodons,2)...))
+function nostop(codonset)
+        codonset[codonset .∉ Ref(["TAA","TAG","TGA"])]
+end
+
+nostopcodons = nostop(allcodons)
+
+f1cdn = permutedims(hcat(frameXcodons.(nostopcodons,1)...))
+f2cdn = permutedims(hcat(frameXcodons.(nostopcodons,2)...))
 
 r1cdn = reverse.(comp.(f1cdn))
 r2cdn = reverse.(comp.(f2cdn))
@@ -21,7 +26,12 @@ function dfecdn(codon1, codon2)
         return [-fe mp]
 end
 
-dfedistv = vcat(reduce(vcat,[[dfecdn(y,x) for x in singlemutant(y)] for y in nostopcodons])...)
+function dfedistgen(codonset)
+        
+end
+
+dfedistv = vcat(reduce(vcat,[[dfecdn(y,x) for x in nostop(singlemutant(y))] for y in nostopcodons])...)
 
 dfedistu = reduce(vcat,[[i sum(dfedistv[dfedistv[:,1] .== i,2])] for i in unique(dfedistv[:,1])])
+
 dfedistu = dfedistu./sum(dfedistu, dims = 1)

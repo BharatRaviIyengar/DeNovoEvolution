@@ -119,7 +119,7 @@ function degen(consensus,position,subs)
 end
 
 function singlemutant(s)
-    z = vcat([degen("ATG",x,nucs) for x in 1:3]...)
+    z = vcat([degen(s,x,nucs) for x in 1:3]...)
     return z[z.!=s]
 end
 
