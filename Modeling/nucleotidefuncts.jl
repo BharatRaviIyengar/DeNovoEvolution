@@ -24,15 +24,16 @@ Find all possibe codons in an alternate reading frame
 
 # Arguments
  - `codon::String`
- - `n::Int ∈ [1,2]`: reading frame (same sense)
+ - `n::Int ∈ [-2,-1,1,2]`: reading frame (same sense)
 # Output
  `x::Vector{String}`: list of 20 codons
 
-# Example
-```julia> frameXcodons("ATG",1)
+# Examples
+`julia> frameXcodons("ATG",1)`
 
-20-element Vector{String}:
-"AAA"
+`20-element Vector{String}:`
+
+```"AAA"
 "TAA"
 "GAA"
 "CAA"
@@ -54,15 +55,20 @@ Find all possibe codons in an alternate reading frame
 "TGC"
  ```
 """
-function frameXcodons(codon,frame)
-    if(frame ∉ [1,2])
-        error("Frame should be 1, or 2")
+function frameXcodons(codon::String,frame::Int)
+    if(frame ∉ [-2,-1,1,2])
+        error("Frame should be ±1, or ±2")
     end
-
-    z = 3-frame
-    d = codon[1+frame:3].*vec(join.(product(repeated(nucs,frame)...)))
-    u = vec(join.(product(repeated(nucs,z)...))).*codon[1:frame]
-    return vcat(u,d)
+    frabs = abs(frame)
+    z = 3-frabs
+    down = codon[1+frabs:3].*vec(join.(product(repeated(nucs,frabs)...)))
+    up = vec(join.(product(repeated(nucs,z)...))).*codon[1:frabs]
+    both = vcat(up,down)
+    if(frame>0)
+        return both
+    else
+        return reverse.(comp.(both))
+    end
 end
 
 """
@@ -70,7 +76,7 @@ end
 ...
 Find the complement of a nucleotide sequence, `s`
 """
-function comp(s)
+function comp(s::String)
     join([ncomp[c] for c in s])
 end
 
