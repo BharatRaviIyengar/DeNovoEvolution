@@ -24,13 +24,13 @@ function transvals(gccontent)
 
     tatavars = unique(reduce(vcat,
         reduce(vcat, [
-            [degen(s,1,nucs) for s in tataboxes],
-            [degen(s,2,"TA") for s in tataboxes],
-            [degen(s,3,"TAC") for s in tataboxes],
-            [degen(s,4,"AT") for s in tataboxes],
-            [degen(s,6,nucs) for s in tataboxes],
-            [degen(s,7,nucs) for s in tataboxes],
-            [degen(s,8,nucs) for s in tataboxes],
+[degen(s,1,nucs) for s in tataboxes],
+[degen(s,2,"TA") for s in tataboxes],
+[degen(s,3,"TAC") for s in tataboxes],
+[degen(s,4,"AT") for s in tataboxes],
+[degen(s,6,nucs) for s in tataboxes],
+[degen(s,7,nucs) for s in tataboxes],
+[degen(s,8,nucs) for s in tataboxes],
         ])
     ))
 
@@ -77,10 +77,10 @@ function transvals(gccontent)
     tfpboth = 1 - tfptata - tfpinr
 
     transloss = ( tfpinr*inrloss2*notatastay +
-                  tfptata*tataloss2*noinrstay +
-                  tfpboth*tataloss2*inrloss2 +
-                  polyaloss2
-                )
+      tfptata*tataloss2*noinrstay +
+      tfpboth*tataloss2*inrloss2 +
+      polyaloss2
+    )
 
     return [transprob; transgain; transloss]
 end
@@ -117,9 +117,9 @@ function orfvals(gccontent,ATGvalues,stopvalues,k)
     (stopprob, stopgain, stoploss1, stoploss2, stopstay, nostopstay) = stopvalues
     orfprob = ATGprob*stopprob*(1 - stopprob)^(k-2)
     orfgain = nostopstay^(k-2)*(
-                        stopstay*ATGgain + ATGstay*stopgain +
-                        (k-2)*(stopstay*ATGstay*stoploss1/nostopstay)
-                        )
+stopstay*ATGgain + ATGstay*stopgain +
+(k-2)*(stopstay*ATGstay*stoploss1/nostopstay)
+)
     orfloss = stoploss2 + ATGloss2 + (k-2)*stopgain/(1-stopprob)
 
     return [orfprob, orfgain, orfloss]
@@ -148,32 +148,32 @@ stopvalues = stopvals(gccontent)
 orfvalues = hcat([orfvals(gccontent,ATGvalues,stopvalues,k) for k in ncodons]...)
 
 pP = plot(ncodons,transprob./orfvalues[1],
-            yaxis=:log,
-            title = "Stationary probability",
-            xlabel = "ORF length",
-            ylabel = L"P_\textrm{RNA}/P_\textrm{ORF}",
-            xrotation = 45,
-            );
+    yaxis=:log,
+    title = "Stationary probability",
+    xlabel = "ORF length",
+    ylabel = L"P_\textrm{RNA}/P_\textrm{ORF}",
+    xrotation = 45,
+);
 
 pG = plot(ncodons,[transgain./orfvalues[2],
-            yaxis=:log,
-            title = "Gain probability",
-            xlabel = "ORF length",
-            ylabel = L"P_\textrm{RNA}/P_\textrm{ORF}",
-            xrotation = 45
-            );
+    yaxis=:log,
+    title = "Gain probability",
+    xlabel = "ORF length",
+    ylabel = L"P_\textrm{RNA}/P_\textrm{ORF}",
+    xrotation = 45
+);
 
 pL = plot(ncodons,[transloss./orfvalues[3] for k in ncodons],
-            title = "Loss probability",
-            xlabel = "ORF length",
-            ylabel = L"P_\textrm{RNA}/P_\textrm{ORF}",
-            xrotation = 45
-            );
+    title = "Loss probability",
+    xlabel = "ORF length",
+    ylabel = L"P_\textrm{RNA}/P_\textrm{ORF}",
+    xrotation = 45
+);
 pComb = plot!(pP,pG,pL,
-                size = (width = cm2pt(30), height = cm2pt(11)),
-                left_margin = 3.5mm,
-                bottom_margin = 7mm,
-                layout = @layout [a b c]
-                );
+    size = (width = cm2pt(30), height = cm2pt(11)),
+    left_margin = 3.5mm,
+    bottom_margin = 7mm,
+    layout = @layout [a b c]
+    );
 
 savefig(pComb, figdir*"TvsO.pdf")
