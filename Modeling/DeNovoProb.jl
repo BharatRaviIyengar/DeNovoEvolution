@@ -155,7 +155,7 @@ pP = plot(ncodons,transprob./orfvalues[1],
     xrotation = 45,
 );
 
-pG = plot(ncodons,[transgain./orfvalues[2],
+pG = plot(ncodons,transgain./orfvalues[2],
     yaxis=:log,
     title = "Gain probability",
     xlabel = "ORF length",
@@ -163,7 +163,7 @@ pG = plot(ncodons,[transgain./orfvalues[2],
     xrotation = 45
 );
 
-pL = plot(ncodons,[transloss./orfvalues[3] for k in ncodons],
+pL = plot(ncodons,transloss./orfvalues[3],
     title = "Loss probability",
     xlabel = "ORF length",
     ylabel = L"P_\textrm{RNA}/P_\textrm{ORF}",
