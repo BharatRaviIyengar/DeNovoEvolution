@@ -52,7 +52,7 @@ r2cdn = reverse.(comp.(f2cdn))
 
 gccontent = 0.42
 
-dfedist0 = combinedfe(dfedistgen(nostopcodons,nostopcodons))
+dfedist0 = combinedfe(dfedistgen(nostopcodons,allcodons))
 
 frames = [-2,-1,1,2]
 
