@@ -35,7 +35,8 @@ end
 
 function dfeframeX(cdn,frm)
         fset0 = frameXcodons(cdn,frm)
-        cset1 = singlemutant(cdn)
+        # cset1 = singlemutant(cdn)
+        cset1 = nostopcodons[nostopcodons .!= cdn]
         fset1 = hcat([frameXcodons(x,frm) for x in cset1]...)
         dfe1 = combinedfe(vcat(vcat([[dfecdn(fset0[y],x) for x in fset1[y,:]] for y in 1:20]...)...))
         return dfe1
