@@ -19,7 +19,7 @@ end
 """
 `frameXcodons(codon,n)`
 
-Find all possibe codons in an alternate reading frame
+Find all possibe codons in an alternate reading frame that overlap with a given codon
 ...
 
 # Arguments
