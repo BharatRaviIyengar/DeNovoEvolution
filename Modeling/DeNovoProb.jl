@@ -7,7 +7,7 @@ using LaTeXStrings
 include("nucleotidefuncts.jl")
 
 cm2pt = (cm) -> 28.3465*cm
-figdir = "~/Documents/DeNovo/StochasticModel/Figures/"
+figdir = joinpath(Base.source_dir(),"../Manuscripts/Figures/")
 
 default(linecolor = :black, linewidth = 2, tickfont = font(10,"Helvetica"), 
 guidefont = font(13,"Helvetica"),framestyle = :box, legend = false)
@@ -179,21 +179,22 @@ plot_rnafist_orffirst = plot(ncodons[1:50],log.(orffirst./rnafirst)[1:50],
 );
 savefig(plot_rnafist_orffirst, figdir*"first_ORF_RNA.pdf")
 
-plot_rnafist_orffirst = plot(ncodons[1:50],log.(orffirst2./rnafirst2)[1:50],
+plot_rnafist_orffirst2 = plot(ncodons[1:50],log.(orffirst2./rnafirst2)[1:50],
     xlabel = "ORF length (codons)",
     ylabel = "P_{ORF-first}\nP_RNA-first",
     size = (width = cm2pt(12), height = cm2pt(11)),
     xticks = [35:7:80;]
 );
-savefig(plot_rnafist_orffirst, figdir*"first_ORF_RNA.pdf")
+savefig(plot_rnafist_orffirst2, figdir*"first_ORF_RNA2.pdf")
 
 tl = log10.(rnaloss./orfgain)
 ol = log10.(orfloss/rnagain)
 
-plot_Loss = plot(ncodons,orfloss.rnaloss,
+plot_Loss = plot(ncodons[1:85],log.(orfloss./rnaloss)[1:85],
     xlabel = "ORF length (codons)",
     ylabel = "P_RNA-loss\nP_ORF-loss",
-    size = (width = cm2pt(12), height = cm2pt(11))
+    size = (width = cm2pt(12), height = cm2pt(11)),
+    xticks = [33:11:110;]
 );
 
 savefig(plot_Loss, figdir*"pLoss.pdf")
