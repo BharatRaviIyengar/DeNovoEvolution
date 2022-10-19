@@ -7,15 +7,15 @@ using LaTeXStrings
 include("nucleotidefuncts.jl")
 
 cm2pt = (cm) -> 28.3465*cm
-figdir = "~/Documents/EBB/StochasticModel/Figures/"
+figdir = "~/Documents/DeNovo/StochasticModel/Figures/"
 
-default(linecolor = :black, linewidth = 2, tickfont = font(10), guidefontsize = 12,
-        framestyle = :box, legend = false)
+default(linecolor = :black, linewidth = 2, tickfont = font(10,"Helvetica"), 
+guidefont = font(13,"Helvetica"),framestyle = :box, legend = false)
 
 
 gccontent = 0.42
 
-function transvals(gccontent)
+function rnavals(gccontent)
     ## TATA box
     # Consensus sequence = TATAWAWR
     # is TSS - 25 - 8nt (transcript must be +33nt longer)
@@ -69,20 +69,20 @@ function transvals(gccontent)
     ## Transcription
     # (Initiator or TATA) and polyA
 
-    transprob = (tataprob + inrprob)*polyaprob
-    transgain = (tatagain + inrgain)*polyastay + (tatastay + inrstay)*polyagain
+    rnaprob = (tataprob + inrprob)*polyaprob
+    rnagain = (tatagain + inrgain)*polyastay + (tatastay + inrstay)*polyagain
     tfpinr = inrprob*(1-tataprob)/(tataprob + inrprob - inrprob*tataprob)
     tfptata = tataprob*(1-inrprob)/(tataprob + inrprob - inrprob*tataprob)
     tfpboth = inrprob*tataprob/(tataprob + inrprob - inrprob*tataprob)
     tfpboth = 1 - tfptata - tfpinr
 
-    transloss = ( tfpinr*inrloss2*notatastay +
+    rnaloss = ( tfpinr*inrloss2*notatastay +
       tfptata*tataloss2*noinrstay +
       tfpboth*tataloss2*inrloss2 +
       polyaloss2
     )
-    transstay = (inrstay + tatastay)*polyastay
-    return [transprob; transgain; transloss; transstay]
+    rnastay = (inrstay + tatastay)*polyastay
+    return [rnaprob; rnagain; rnaloss; rnastay]
 end
 
 function ATGvals(gccontent)
@@ -140,60 +140,48 @@ end
 # minRNAlen = (k) -> 3*k + 4
 
 
-ncodons = [40:300;]
+ncodons = [30:300;]
 
 ATGvalues = ATGvals(gccontent)
 stopvalues = stopvals(gccontent)
 
+
+(rnaprob, rnagain, rnaloss, rnastay) = rnavals(gccontent)
 (orfprob, orfgain, orfloss, orfstay) = [zeros(size(ncodons)) for i = 1:4 ]
 
 for k in 1:length(ncodons)
     (orfprob[k], orfgain[k], orfloss[k], orfstay[k]) = orfvals(gccontent,ATGvalues,stopvalues,ncodons[k])
 end
 
-genegain = (transgain + transstay) .* orfgain + orfstay .* transgain
-geneloss = orfloss + transloss
+genegain = ((rnagain + rnastay) .* orfgain + orfstay .* rnagain)
+genegain2 = genegain./(1-rnaprob .- orfprob)
+geneloss = orfloss .+ rnaloss
 
-rnafirst = transstay .* orfgain
-orffirst = orfstay .* transgain
+rnafirst = rnastay .* orfgain
+orffirst = orfstay .* rnagain
 
-plot_genegain_geneloss = plot(ncodons,log.(genegain)./log.(geneloss),
+plot_genegain_geneloss = plot(ncodons,log.(genegain2)./log.(geneloss),
     xlabel = "ORF length (codons)",
-    ylabel = "Gene losses per gene gain",
-    size = (width = cm2pt(30), height = cm2pt(11)),
-)
-savefig(pComb, figdir*"TvsO.pdf")
+    ylabel = "# Gene Losses \n per Gene Gain",
+    size = (width = cm2pt(12), height = cm2pt(11)),
+);
+savefig(plot_genegain_geneloss, figdir*"geneGainLoss.pdf")
 
-tl = log10.(transloss./orfgain)
-ol = log10.(orfloss/transgain)
+plot_rnafist_orffirst = plot(ncodons[1:50],log.(orffirst./rnafirst)[1:50],
+    xlabel = "ORF length (codons)",
+    ylabel = "P_{ORF-first}\nP_RNA-first",
+    size = (width = cm2pt(12), height = cm2pt(11)),
+    xticks = [35:7:80;]
+);
+savefig(plot_rnafist_orffirst, figdir*"first_ORF_RNA.pdf")
 
-# pP = plot(ncodons,transprob./orfprob,
-#     yaxis=:log,
-#     title = "Stationary probability",
-#     xlabel = "ORF length",
-#     ylabel = L"P_\textrm{RNA}/P_\textrm{ORF}",
-#     xrotation = 45,
-# );
+tl = log10.(rnaloss./orfgain)
+ol = log10.(orfloss/rnagain)
 
-# pG = plot(ncodons,transgain./orfgain,
-#     yaxis=:log,
-#     title = "Gain probability",
-#     xlabel = "ORF length",
-#     ylabel = L"P_\textrm{RNA}/P_\textrm{ORF}",
-#     xrotation = 45
-# );
+plot_Loss = plot(ncodons,rnaloss./orfloss,
+    xlabel = "ORF length (codons)",
+    ylabel = "P_RNA-loss\nP_ORF-loss",
+    size = (width = cm2pt(12), height = cm2pt(11))
+);
 
-# pL = plot(ncodons,transloss./orfloss,
-#     title = "Loss probability",
-#     xlabel = "ORF length",
-#     ylabel = L"P_\textrm{RNA}/P_\textrm{ORF}",
-#     xrotation = 45
-# );
-# pComb = plot!(pP,pG,pL,
-#     size = (width = cm2pt(30), height = cm2pt(11)),
-#     left_margin = 3.5mm,
-#     bottom_margin = 7mm,
-#     layout = @layout [a b c]
-#     );
-
-# savefig(pComb, figdir*"TvsO.pdf")
+savefig(plot_Loss, figdir*"pLoss.pdf")

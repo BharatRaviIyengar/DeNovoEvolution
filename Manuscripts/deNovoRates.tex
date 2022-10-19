@@ -1,0 +1,95 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,graphicx,setspace,palatino}
+\usepackage[hidelinks]{hyperref}
+
+
+\begin{document}
+
+\onehalfspacing
+
+\section{Introduction}
+
+\section{Results}
+
+In this work, we developed mathematical models to estimate the rates and probabilities of \textit{de novo} gene emergence, as well as gene loss. A \textit{de novo} gene emerges from a non-genic DNA, when the latter mutates to gain sequence features necessary for transcription and translation. Both transcription and translation are complex processes involving many biomolecular complexes that work in concert. Here, we focus on the minimal requirements for these processes to occur. Specifically for transcription, we require a gene to have one of the two core promoter motifs, the TATA-box or the Initiator element (Inr), and a polyadenylation (poly-A) signal sequence. For translation, we only require the gene to have an open reading frame (ORF). Using simple probability models, we calculate the likelihood of finding these features in a DNA sequence by random chance, and the rate at which these features are gained and lost via mutagenesis. Using a similar approach, we estimate some fundamental biochemical properties of proteins that arise from random DNA sequences. Our models thus define a null hypothesis under which DNA sequences evolve neutrally through mutation pressure alone. A significant deviation from this null hypothesis may be interpreted as evidence in support of natural selection. 
+
+\subsection{How many times can a gene be lost?}
+
+If a gene is found in one species but not in sister taxa, then the most common assumption is that this gene emerged only in one specific species. We asked what is the chance that the gene was present in a common ancestor, but was lost in all lineages except one. To this end we calculated the probability of gene emergence and gene loss (Materials and Methods). Specifically, the probability of gene gain can be defined as the sum of three probabilities. First is the probability that an ORF already exists, and a mutation causes transcription to emerge ($P_\textit{RNA-gain}$) but doesn't disrupt the ORF ($P_\textit{ORF-stay}$). Second is the probability that the DNA is transcribed, and an ORF emerges due to mutations ($P_\textit{ORF-gain}$) while transcription stays intact ($P_\textit{RNA-stay}$). Third is the probability that neither of the two features already exist and both emerge at the same time due to mutations (this probability is very small, and negligible). The following equation describes the probability of gene gain\footnote{\autoref{genegaineq} describes total gene gain probability. Gene gain probability conditioned on the gene being absent would be $P_\textit{gene-gain}/(1-P_\textit{ORF} - P_\textit{RNA})$. Using this value does not change the results significantly.}:
+
+\begin{equation}
+P_\textit{gene-gain} = P_\textit{ORF-stay}\times P_\textit{RNA-gain} + P_\textit{RNA-stay}\times P_\textit{ORF-gain} + P_\textit{RNA-gain}\times P_\textit{ORF-gain}
+\label{genegaineq}
+\end{equation}
+
+Likewise, the probability of gene loss, given the gene (transcription and ORF) is already present, is the sum of the probabilities that transcription ($P_\textit{RNA-loss}$) or the ORF is lost due to mutations ($P_\textit{ORF-loss}$) due to mutations. Specifically:
+
+\begin{equation}
+P_\textit{gene-loss} = P_\textit{RNA-loss} + P_\textit{ORF-loss}
+\label{genelosseq}
+\end{equation}
+
+The probability that a gene is lost $n$ times independently, is $(P_\textit{gene-loss})^{n}$. To find out how many independent gene loss events are as likely as a single gene gain event, we calculate the ratio of logarithms of gene gain and gene loss: $\log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$. For example, the ratio value of 2 would indicate that two independent gene loss events are as likely as a single gene gain event. We calculated this ratio for genes with different ORF lengths, because ORF gain and loss probabilities depend on the length of the ORF. We found that for all ORF lengths, the gene can be lost at least two times independently, in the time required to gain it (\autoref{gainlossprob}). 
+
+\begin{figure}[!t]
+\centering
+\includegraphics[scale=0.6]{../Figures/geneGainLoss.pdf}
+\caption{Genes are more likely to be independently lost twice, than being born once. The vertical axis shows the number of independent gene loss events than can happen relative to one gene gain event i.e. $\log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$. The horizontal axis shows the number of codons in the ORF.}
+\label{gainlossprob}
+
+\vspace{1em}
+\hrule
+\end{figure}
+
+We performed the same analysis to just the ORF (and not the whole genes). That is, we calculated the ratio of logarithms of ORF gain and ORF loss. We found that for ORFs longer than 143 codons, the likelihood of two independent ORF loss events is more than or equal to a single ORF gain event. 
+
+Overall, our analysis suggests that \textit{de novo} gene expressed in only one species may not necessarily mean that it emerged for the first time in this species. 
+
+\subsection{Does \textit{de novo} gene emergence have a preferred trajectory?}
+
+\begin{figure}[!b]
+\hrule
+\vspace{1ex}
+\centering
+\includegraphics[scale=0.6]{../Figures/first_ORF_RNA.pdf}
+\caption{Shorter \textit{de novo} genes ($\leq$42 codons) preferentially emerge ORF-first whereas longer \textit{de novo} genes emerge RNA-first. The vertical axis shows the log transformed ratio of the probabilites of ORF-first ($P_\textit{ORF-stay}\times P_\textit{RNA-gain}$) and RNA-first ($P_\textit{RNA-stay}\times P_\textit{ORF-gain}$), trajectories of \textit{de novo} emergence. A positive value denotes ORF-first hypothesis and a negative value supports RNA-first hypothesis. The horizontal axis shows the number of codons in the ORF.}
+\label{whoisfirst}
+\end{figure}
+
+For a \textit{de novo} gene to emerge from a non-genic DNA sequence, both transcription and ORF need to emerge. That is, probability of gene emergence is equal to the product of probabilities of transcription gain and ORF gain. Thus it may appear that the order of the occurrence of these two events does not matter. Gene gain is much more likely when one of the two features already exist (\autoref{genegaineq}) and hence there are two possible trajectories -- ORF emerges first (ORF-first) or transcription emerges first (RNA-first). To test the hypothesis that the order of feature gain events influences \textit{de novo} emergence, we first asked how much more likely it is to lose transcription before gaining an ORF. Specifically, we calculated the fold difference between the probability values of transcription loss and ORF gain. We found that transcription loss is $10^3$ to $10^{10}$ times higher than ORF gain, depending on the ORF length. This suggests that a mutation has a higher chance of disrupting an existing untranscribed ORF than cause a gain of transcription features. Next, we calculated the fold difference between transcription gain and ORF loss probability values, and found that ORF loss is $10^4$ to $10^5$ times more probable than transcription gain, suggesting that in a transcribed DNA region, a new mutation will more likely disrupt the transcription features than cause a gain of ORF. More generally features are more easily lost due to mutations than they are gained. However, this effect of mutations is not uniform for the two evolutionary trajectories and for different length of ORFs. For example, gain of an 40 codon long ORF in a transcribed region of DNA is $9.2\times10^3$ less likely than the transcription being lost. However, if the ORF already exists, then it is $2.7\times10^4$ times more likely to be lost before transcription emerges. This suggests that the two trajectories of \textit{de novo} emergence have different dynamics.
+
+To better understand whether \textit{de novo} gene emergence has a preferred trajectory, we calculated the fold difference between two probabilities. First is the probability that ORF exists and a mutation causes gain of transcription but no disruption of the ORF ($P_\textit{ORF-first} = P_\textit{ORF-stay}\times P_\textit{RNA-gain}$). This probability denotes the trajectory where ORF emerges first. The second probability denotes the trajectory where transcription emerges first, is the probability that DNA is already transcribed and a mutation causes gain of ORF but does not abolish transcription ($P_\textit{RNA-first} = P_\textit{RNA-stay}\times P_\textit{ORF-gain}$). Specifically, we calculated this ratio:
+
+$$\log\left(\frac{P_\textit{ORF-stay}\times P_\textit{RNA-gain}}{P_\textit{RNA-stay}\times P_\textit{ORF-gain}}\right)$$
+
+A positive value means that transcription gain for an untranscribed ORF (ORF-first) is more likely than ORF gain in a transcribed DNA (RNA-first). With the specific parameter values we used, it turns out that \textit{de novo} genes with up to 42 codons in their coding region, preferentially emerge ORF first. \textit{De novo} genes with longer coding region, emerge transcription first (\autoref{whoisfirst}).
+
+\subsection{Would extensive transcription loss suggest negative selection of toxic proteins?}
+
+\textit{De novo} genes that do not provide any fitness benefit to an organism are not fixed in populations via natural selection. These genes can be lost due to mutation pressure. Some newborn \textit{de novo} genes can also encode toxic proteins, that may aggregate or interfere with physiology in some other way. These genes would thus be eliminated from the population genomes via negative selection. As we discussed in previous sections, gene loss can occur due to loss of ORF, transcription, or both. To understand what is the most probable mechanism of gene loss, we compared the probabilities of ORF loss ($P_\textit{ORF-loss}$) and transcription loss ($P_\textit{RNA-loss}$). We found that ORF loss is more probable than transcription loss, for all ORF lengths we investigated ($\geq$30 codons).
+
+We remind the reader that an ORF is lost if the start codon is mutated, the stop codon is mutated an amino acid encoding codon (non-stop mutation), or if an amino acid encoding codon is mutated to a stop codon (premature stop/non-sense mutation). It is likely that a non-stop mutation or a non-sense mutation, can still result in translation of a protein (extended or truncated, respectively). Furthermore, non-stop mutations can also lead to cellular toxicity. Thus ORF loss does not ensure elimination of toxic proteins, which in turn suggests that transcription loss is the best way to inactivate the associated genes. Since 
+
+\begin{itemize}
+\item protein can be toxic
+\item orf loss can extend or truncate orf (this can still cause expression of some protein)
+\item transcription loss is the best way to shut down toxic protein synthesis
+\item distribution of expected vs observed promoter sequences
+\item extensive transcription loss can suggest protein toxicity
+\end{itemize}
+
+\subsection{Does mutation bias shape protein composition?}
+
+\begin{itemize}
+\item expected hydropathy index
+\item expected number of specific mutations
+\item higher than expected number of mutations would suggest positive selection
+\end{itemize}
+
+\section{Discussion} 
+
+
+
+
+\end{document}
