@@ -11,6 +11,9 @@ allcodons = kmers(3)
 
 aasubmat[1:20,1:20] = (aasubmat[1:20,1:20] + aasubmat[1:20,1:20]')./2
 
+aas = unique(gencode[:,3])
+aaprob = [sum(nucprob.(gencode[gencode[:,3] .== x,1],gccontent)) for x in aas]
+
 function nostop(codonset)
         codonset[codonset .∉ Ref(["TAA","TAG","TGA"])]
 end
