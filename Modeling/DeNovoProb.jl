@@ -81,8 +81,8 @@ function transvals(gccontent)
       tfpboth*tataloss2*inrloss2 +
       polyaloss2
     )
-
-    return [transprob; transgain; transloss]
+    transstay = (inrstay + tatastay)*polyastay
+    return [transprob; transgain; transloss; transstay]
 end
 
 function ATGvals(gccontent)
@@ -121,8 +121,8 @@ stopstay*ATGgain + ATGstay*stopgain +
 (k-2)*(stopstay*ATGstay*stoploss1/nostopstay)
 )
     orfloss = stoploss2 + ATGloss2 + (k-2)*stopgain/(1-stopprob)
-
-    return [orfprob, orfgain, orfloss]
+    orfstay = ATGstay*stopstay*(nostopstay)^(k-2)
+    return [orfprob; orfgain; orfloss; orfstay]
 end
 
 
@@ -132,12 +132,12 @@ end
 # Can produce a RNA of length y ≤ x – 2 – 6 (–32; TATA)
 # Can have ORF of length 3k ≤ x (IGORF) or 3k ≤ y (protein coding)
 
-z = 10000
-nmer = (z,x) -> z - x + 1
-yi = (x) -> x - 8
-yt = (x) -> x - 40
-nORF = (y,k) -> y - 4 - 3*k + 1
-minRNAlen = (k) -> 3*k + 4
+# z = 10000
+# nmer = (z,x) -> z - x + 1
+# yi = (x) -> x - 8
+# yt = (x) -> x - 40
+# nORF = (y,k) -> y - 4 - 3*k + 1
+# minRNAlen = (k) -> 3*k + 4
 
 
 ncodons = [40:300;]
@@ -145,35 +145,55 @@ ncodons = [40:300;]
 ATGvalues = ATGvals(gccontent)
 stopvalues = stopvals(gccontent)
 
-orfvalues = hcat([orfvals(gccontent,ATGvalues,stopvalues,k) for k in ncodons]...)
+(orfprob, orfgain, orfloss, orfstay) = [zeros(size(ncodons)) for i = 1:4 ]
 
-pP = plot(ncodons,transprob./orfvalues[1],
-    yaxis=:log,
-    title = "Stationary probability",
-    xlabel = "ORF length",
-    ylabel = L"P_\textrm{RNA}/P_\textrm{ORF}",
-    xrotation = 45,
-);
+for k in 1:length(ncodons)
+    (orfprob[k], orfgain[k], orfloss[k], orfstay[k]) = orfvals(gccontent,ATGvalues,stopvalues,ncodons[k])
+end
 
-pG = plot(ncodons,transgain./orfvalues[2],
-    yaxis=:log,
-    title = "Gain probability",
-    xlabel = "ORF length",
-    ylabel = L"P_\textrm{RNA}/P_\textrm{ORF}",
-    xrotation = 45
-);
+genegain = (transgain + transstay) .* orfgain + orfstay .* transgain
+geneloss = orfloss + transloss
 
-pL = plot(ncodons,transloss./orfvalues[3],
-    title = "Loss probability",
-    xlabel = "ORF length",
-    ylabel = L"P_\textrm{RNA}/P_\textrm{ORF}",
-    xrotation = 45
-);
-pComb = plot!(pP,pG,pL,
+rnafirst = transstay .* orfgain
+orffirst = orfstay .* transgain
+
+plot_genegain_geneloss = plot(ncodons,log.(genegain)./log.(geneloss),
+    xlabel = "ORF length (codons)",
+    ylabel = "Gene losses per gene gain",
     size = (width = cm2pt(30), height = cm2pt(11)),
-    left_margin = 3.5mm,
-    bottom_margin = 7mm,
-    layout = @layout [a b c]
-    );
-
+)
 savefig(pComb, figdir*"TvsO.pdf")
+
+tl = log10.(transloss./orfgain)
+ol = log10.(orfloss/transgain)
+
+# pP = plot(ncodons,transprob./orfprob,
+#     yaxis=:log,
+#     title = "Stationary probability",
+#     xlabel = "ORF length",
+#     ylabel = L"P_\textrm{RNA}/P_\textrm{ORF}",
+#     xrotation = 45,
+# );
+
+# pG = plot(ncodons,transgain./orfgain,
+#     yaxis=:log,
+#     title = "Gain probability",
+#     xlabel = "ORF length",
+#     ylabel = L"P_\textrm{RNA}/P_\textrm{ORF}",
+#     xrotation = 45
+# );
+
+# pL = plot(ncodons,transloss./orfloss,
+#     title = "Loss probability",
+#     xlabel = "ORF length",
+#     ylabel = L"P_\textrm{RNA}/P_\textrm{ORF}",
+#     xrotation = 45
+# );
+# pComb = plot!(pP,pG,pL,
+#     size = (width = cm2pt(30), height = cm2pt(11)),
+#     left_margin = 3.5mm,
+#     bottom_margin = 7mm,
+#     layout = @layout [a b c]
+#     );
+
+# savefig(pComb, figdir*"TvsO.pdf")
