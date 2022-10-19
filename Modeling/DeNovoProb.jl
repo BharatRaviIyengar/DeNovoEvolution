@@ -160,6 +160,10 @@ geneloss = orfloss .+ rnaloss
 rnafirst = rnastay .* orfgain
 orffirst = orfstay .* rnagain
 
+rnafirst2 = rnafirst.*rnagain
+orffirst2 = orffirst.*orfgain
+
+
 plot_genegain_geneloss = plot(ncodons,log.(genegain2)./log.(geneloss),
     xlabel = "ORF length (codons)",
     ylabel = "# Gene Losses \n per Gene Gain",
@@ -175,10 +179,18 @@ plot_rnafist_orffirst = plot(ncodons[1:50],log.(orffirst./rnafirst)[1:50],
 );
 savefig(plot_rnafist_orffirst, figdir*"first_ORF_RNA.pdf")
 
+plot_rnafist_orffirst = plot(ncodons[1:50],log.(orffirst2./rnafirst2)[1:50],
+    xlabel = "ORF length (codons)",
+    ylabel = "P_{ORF-first}\nP_RNA-first",
+    size = (width = cm2pt(12), height = cm2pt(11)),
+    xticks = [35:7:80;]
+);
+savefig(plot_rnafist_orffirst, figdir*"first_ORF_RNA.pdf")
+
 tl = log10.(rnaloss./orfgain)
 ol = log10.(orfloss/rnagain)
 
-plot_Loss = plot(ncodons,rnaloss./orfloss,
+plot_Loss = plot(ncodons,orfloss.rnaloss,
     xlabel = "ORF length (codons)",
     ylabel = "P_RNA-loss\nP_ORF-loss",
     size = (width = cm2pt(12), height = cm2pt(11))
