@@ -198,3 +198,28 @@ plot_Loss = plot(ncodons[1:85],log.(orfloss./rnaloss)[1:85],
 );
 
 savefig(plot_Loss, figdir*"pLoss.pdf")
+
+aaprob = [sum(nucprob.(gencode[gencode[:,3] .== x,1],gccontent)) for x in aas]
+
+aasubprob = zeros(20,20)
+
+for i = 1:20
+        for j = 1:20
+                if(i==j)
+                        continue
+                end
+                set1 = gencode[gencode[:,3] .== aas[i],1]
+                set2 = gencode[gencode[:,3] .== aas[j],1]
+                aasubprob[i,j] = featuregain(set1,set2,gccontent)
+        end
+end
+
+plot_aasubprob = heatmap(aas,aas,log10.(aasubprob./aaprob), 
+    xticks = (0.5:20, aas), 
+    yticks = (0.5:20,aas),
+    size = (width = cm2pt(15), height = cm2pt(14)),
+    colorbar_title = "Substitution Probability",
+    legend = :bottom
+);
+
+savefig(plot_aasubprob, figdir*"pAASub.pdf")

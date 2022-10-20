@@ -8,6 +8,8 @@ nucv = ['A','T','G','C']
 nucnames = Dict('A'=>1,'T'=>2,'G'=>3,'C'=>4)
 ncomp = Dict('A'=>'T', 'G'=>'C', 'T'=>'A', 'C'=> 'G')
 
+aas = ["A","C","D","E","F","G","H","I","K","L","M","N","P","Q","R","S","T","V","W","Y"]
+
 """
 # Generate all nucleotide sequences with length `k`
 """
