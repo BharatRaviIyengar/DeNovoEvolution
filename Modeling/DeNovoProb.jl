@@ -7,10 +7,10 @@ using LaTeXStrings
 include("nucleotidefuncts.jl")
 
 cm2pt = (cm) -> 28.3465*cm
-figdir = joinpath(Base.source_dir(),"../Manuscripts/Figures/")
+figdir = joinpath(Base.source_dir(),"../Manuscripts/Figures/");
 
 default(linecolor = :black, linewidth = 2, tickfont = font(10,"Helvetica"), 
-guidefont = font(13,"Helvetica"),framestyle = :box, legend = false)
+guidefont = font(13,"Helvetica"),framestyle = :box, legend = false);
 
 
 gccontent = 0.42
@@ -140,10 +140,10 @@ end
 # minRNAlen = (k) -> 3*k + 4
 
 
-ncodons = [30:300;]
+ncodons = [30:300;];
 
-ATGvalues = ATGvals(gccontent)
-stopvalues = stopvals(gccontent)
+ATGvalues = ATGvals(gccontent);
+stopvalues = stopvals(gccontent);
 
 
 (rnaprob, rnagain, rnaloss, rnastay) = rnavals(gccontent)
@@ -153,15 +153,18 @@ for k in 1:length(ncodons)
     (orfprob[k], orfgain[k], orfloss[k], orfstay[k]) = orfvals(gccontent,ATGvalues,stopvalues,ncodons[k])
 end
 
-genegain = ((rnagain + rnastay) .* orfgain + orfstay .* rnagain)
-genegain2 = genegain./(1-rnaprob .- orfprob)
-geneloss = orfloss .+ rnaloss
+genegain = ((rnagain + rnastay) .* orfgain + orfstay .* rnagain);
+genegain2 = genegain./(1-rnaprob .- orfprob);
+geneloss = orfloss .+ rnaloss;
 
-rnafirst = rnastay .* orfgain
-orffirst = orfstay .* rnagain
+rnafirst = rnastay .* orfgain;
+orffirst = orfstay .* rnagain;
 
-rnafirst2 = rnafirst.*rnagain
-orffirst2 = orffirst.*orfgain
+onlyrnagain = (1 .- orfprob .- orfgain).*rnagain;
+onlyorfgain = (1 -rnaprob - rnagain).*orfgain;
+
+rnafirst2 = onlyrnagain*(1 - rnaloss).*(orfgain./(1 .-orfprob));
+orffirst2 = onlyorfgain.*(1 .-orfloss).*(rnagain/(1-rnaprob));
 
 
 plot_genegain_geneloss = plot(ncodons,log.(genegain2)./log.(geneloss),
@@ -187,8 +190,8 @@ plot_rnafist_orffirst2 = plot(ncodons[1:50],log.(orffirst2./rnafirst2)[1:50],
 );
 savefig(plot_rnafist_orffirst2, figdir*"first_ORF_RNA2.pdf")
 
-tl = log10.(rnaloss./orfgain)
-ol = log10.(orfloss/rnagain)
+tl = log10.(rnaloss./orfgain);
+ol = log10.(orfloss/rnagain);
 
 plot_Loss = plot(ncodons[1:85],log.(orfloss./rnaloss)[1:85],
     xlabel = "ORF length (codons)",
@@ -199,18 +202,18 @@ plot_Loss = plot(ncodons[1:85],log.(orfloss./rnaloss)[1:85],
 
 savefig(plot_Loss, figdir*"pLoss.pdf")
 
-aaprob = [sum(nucprob.(gencode[gencode[:,3] .== x,1],gccontent)) for x in aas]
+aaprob = [sum(nucprob.(gencode[gencode[:,3] .== x,1],gccontent)) for x in aas];
 
-aasubprob = zeros(20,20)
+aasubprob = zeros(20,20);
 
 for i = 1:20
         for j = 1:20
                 if(i==j)
                         continue
                 end
-                set1 = gencode[gencode[:,3] .== aas[i],1]
-                set2 = gencode[gencode[:,3] .== aas[j],1]
-                aasubprob[i,j] = featuregain(set1,set2,gccontent)
+                set1 = gencode[gencode[:,3] .== aas[i],1];
+                set2 = gencode[gencode[:,3] .== aas[j],1];
+                aasubprob[i,j] = featuregain(set1,set2,gccontent);
         end
 end
 
