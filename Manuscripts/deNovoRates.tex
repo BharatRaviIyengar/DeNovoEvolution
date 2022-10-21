@@ -128,11 +128,23 @@ In sum, transcription loss cannot be reliably inferred as an evidence for negati
 
 \subsection{Does mutation bias shape protein composition?}
 
+In previous sections, we showed that mutation bias affects the rate of \textit{de novo} gene emergence and loss. We next turned our attention to whether this bias affects the composition (and thereby the chemistry) of \textit{de novo} proteins. To this end, we first asked if the expected frequency of different amino acids is uniform, and found that it is not uniform. Amino acids like leucine (L) and serine (S) have a higher expected frequency than other amino acids. On the other hand, amino acids like methionine (M) and tryptophan (W) are less probable (\autoref{aafreq}). This non-uniformity is to a great extent determined by number of degenerate codons for an amino acid. However, GC content also plays a role. For example, leucine, arginine and serine, all have six codons each. However, leucine is more probable than serine which in turn is more probable than arginine (\autoref{aafreq}). 
+
 \begin{itemize}
 \item expected hydropathy index = $-0.08628$
 \item acid to basic rate is $1.3074\times$ higher than \textit{vice versa}. Conditional prob = $1.80543$
 \item mutations do not preferentially create hydrophobic amino acid. Total prob ratio = 1.025, Conditional prob ratio = 0.971
 \end{itemize}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[scale=0.6]{Figures/pAAfreq.pdf}
+\caption{ORF loss is more probable than transcription loss, for \textit{de novo} genes containing more than 33 codons. The horizontal axis denotes the number of codons in the ORF. The vertical axis shows the log transformed ratio of ORF loss and RNA loss probabilities, such that a positive value means ORF-loss is more probable than RNA loss, and \textit{vice versa}.}
+\label{aafreq}
+
+\vspace{1ex}
+\hrule
+\end{figure}
 
 \section{Discussion} 
 

@@ -242,11 +242,13 @@ asymmetric_transitions = log2.(aasubprob./aasubprob');
 
 asymmetric_conditional = log2.(aasubprob_conditional./aasubprob_conditional');
 
-toHydrophobic = sum(aasubprob[:,hydrophobic]);
-frHydrophobic = sum(aasubprob[hydrophobic,:]);
+codonshydrophobic = gencode[(in).(gencode[:,3],Ref(aas[hydrophobic])),1]
 
-toHydrophobic_cond = sum(aasubprob_conditional[:,hydrophobic]);
-frHydrophobic_cond = sum(aasubprob_conditional[hydrophobic,:]);
+codonshydrophilic = kmers(3)[(!in).(kmers(3),Ref(codonshydrophobic))]
+
+toHydrophobic = featuregain(codonshydrophilic,codonshydrophobic, gccontent);
+
+frHydrophobic = featuregain(codonshydrophobic,codonshydrophilic, gccontent);
 
 plot_aasubprob = heatmap(aas,aas,log10.(aasubprob./aaprob), 
     xticks = (0.5:20, aas), 
