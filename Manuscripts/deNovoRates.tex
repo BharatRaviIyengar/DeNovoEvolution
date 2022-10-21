@@ -4,8 +4,11 @@
 \usepackage[hidelinks]{hyperref}
 
 \captionsetup[figure]{labelfont=bf,textfont={small,normalfont}}
-\captionsetup[subfigure]{labelsep=quad, labelfont={bf,small}, textfont=small, singlelinecheck=off, justification=raggedright, position=top}
-\renewcommand{\thesubfigure}{\Alph{subfigure}}
+%\captionsetup[subfigure]{labelsep=quad, labelfont={bf,small}, textfont=small, singlelinecheck=off, justification=raggedright, position=top}
+%\renewcommand{\thesubfigure}{\Alph{subfigure}}
+
+\renewcommand*{\thefootnote}{\fnsymbol{footnote}}
+\setcounter{footnote}{1}
 
 \begin{document}
 
@@ -41,7 +44,7 @@ The probability that a gene is lost $n$ times independently, is $(P_\textit{gene
 \caption{Genes are more likely to be independently lost twice, than being born once. The vertical axis shows the number of independent gene loss events than can happen relative to one gene gain event i.e. $\log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$. The horizontal axis shows the number of codons in the ORF.}
 \label{gainlossprob}
 
-\vspace{1em}
+\vspace{1ex}
 \hrule
 \end{figure}
 
@@ -55,17 +58,17 @@ Overall, our analysis suggests that \textit{de novo} gene expressed in only one 
 \hrule
 \vspace{1ex}
 \centering
-\begin{subfigure}{0.48\textwidth}
-\centering
-\caption{One-step}
+%\begin{subfigure}{0.48\textwidth}
+%\centering
+%\caption{One-step}
 \includegraphics[scale=0.6]{Figures/first_ORF_RNA.pdf}
-\end{subfigure}\hfill%
-\begin{subfigure}{0.48\textwidth}
-\centering
-\caption{Two-step}
-\includegraphics[scale=0.6]{Figures/first_ORF_RNA2.pdf}
-\end{subfigure}
-\caption{Shorter \textit{de novo} genes preferentially emerge ORF-first whereas longer \textit{de novo} genes emerge RNA-first. In both panels, the horizontal axis denote the number of codons in the ORF. The vertical axes show the log transformed ratio of the probabilites of ORF-first and RNA-first, trajectories of \textit{de novo} emergence. A positive value denotes ORF-first hypothesis and a negative value supports RNA-first hypothesis.  Panel \textbf{(A)} shows the log-ratio of one-step probabilities defined in Equations \ref{orffirsteq1} \& \ref{rnafirsteq1}, whereas panel \textbf{(B)} shows the log-ratio of two-step probabilities defined in Equations \ref{orffirsteq2} \& \ref{rnafirsteq2}.}
+%\end{subfigure}\hfill%
+%\begin{subfigure}{0.48\textwidth}
+%\centering
+%\caption{Two-step}
+%\includegraphics[scale=0.6]{Figures/first_ORF_RNA2.pdf}
+%\end{subfigure}
+\caption{\textit{De novo} genes with shorter ORFs ($<$ 42 codons) preferentially emerge from existing ORFs (ORF-first) whereas \textit{de novo} genes with longer ORFs preferentially emerge from existing RNAs (RNA-first). The horizontal axis denotes the number of codons in the ORF. The vertical axis shows the log transformed ratio of single-step probabilities of ORF-first and RNA-first trajectories of \textit{de novo} emergence (Equations \ref{orffirsteq1} \& \ref{rnafirsteq1}). A positive value suggests a ORF-first trajectory and a negative value supports RNA-first trajectory. Similar analysis with two-step probabilities shows a smaller difference between the likelihood of the two trajectories (Equations \ref{orffirsteq2} \& \ref{rnafirsteq2}).}
 \label{whoisfirst}
 \end{figure}
 
@@ -85,45 +88,50 @@ P_\textit{RNA-first} = P_\textit{RNA-stay}\times P_\textit{ORF-gain}
 \label{rnafirsteq1}
 \end{equation}
 
-We calculated the log-transformed ratio of $P_\textit{ORF-first}$ and $P_\textit{RNA-first}$, such that a positive value of the ratio would mean that transcription gain for an untranscribed ORF (ORF-first) is more likely than ORF gain in a transcribed DNA (RNA-first). In other words, ORF-first hypothesis is more feasible. Likewise, a negative value of the ratio would suggest that RNA-first hypothesis is more feasible. With the specific parameter values we used, it turns out that \textit{de novo} genes with up to 42 codons in their coding region, preferentially emerge ORF-first. \textit{De novo} genes with longer coding region, emerge transcription first (\autoref{whoisfirst}A).
+We calculated the log-transformed ratio of $P_\textit{ORF-first}$ and $P_\textit{RNA-first}$, such that a positive value of the ratio would mean that transcription gain for an untranscribed ORF (ORF-first) is more likely than ORF gain in an already transcribed DNA (RNA-first). In other words, ORF-first hypothesis is more feasible. Likewise, a negative value of the ratio would suggest that RNA-first hypothesis is more feasible. With the specific parameter values we used, it turns out that \textit{de novo} genes with up to 42 codons in their coding region, preferentially emerge ORF-first. \textit{De novo} genes with longer coding region, emerge transcription first (\autoref{whoisfirst}).
 
-A more stringent definition of ORF-first hypothesis would describe a two-step process. In the first step, an ORF emerges in a non-genic DNA, and in the second step transcription emerges, while ORF stays intact. RNA-first hypothesis can be defined in a similar manner; in the first step transcription emerges in a non-genic DNA, and in the second step an ORF emerges, while transcription remains intact. The probabilities of these two trajectories can be defined as follows:
+A more stringent definition of ORF-first hypothesis would describe a two-step process. In the first step, an ORF emerges in an untranscribed region of DNA, but transcription does not emerge. In the second step transcription emerges, while ORF stays intact (\autoref{orffirsteq2})\footnote{$P_\textit{ORF-gain}$ describes the total probability of ORF emerging from a DNA region that does not have already have an ORF. Conditional probability of ORF gain would be $P_\textit{ORF-gain}/(1-P_\textit{ORF})$. Conditional probability of transcription gain can be described similarly.} . Likewise, RNA-first hypothesis can be defined by a two-step probability. In the first step transcription emerges in a non-genic DNA (that does not have an ORF), and in the second step an ORF emerges, while transcription remains intact (\autoref{rnafirsteq2}).
+
+With this stringent definition, the difference between the probabilities of the two trajectories becomes very small ($< 3\times10^{-5}$). However, we still find that \textit{de novo} genes with shorter ORFs ($<$ 34 codons) have a slightly higher chance of emerging ORF first.
+
+Overall, our analysis suggests that \textit{de novo} genes with long ORFs are more likely arise from DNA regions that are already transcribed (for example, non-coding RNAs). 
 
 \begin{align}
-P_\textit{ORF-first}' & = P_\textit{ORF-gain} \times P_\textit{ORF-stay}\times P_\textit{RNA-gain} \label{orffirsteq2}\\[1em]
-P_\textit{RNA-first}' & = P_\textit{RNA-gain} \times P_\textit{RNA-stay}\times P_\textit{ORF-gain}
-\label{rnafirsteq2}
+P_\textit{ORF-first}' & = \underbrace{P_\textit{ORF-gain} \times (1-P_\textit{RNA} -P_\textit{RNA-gain})}_\textit{first step} \times \underbrace{P_\textit{ORF-stay}\times P_\textit{RNA-gain}/(1-P_\textit{RNA})}_\textit{second step} \label{orffirsteq2}\\[1em]
+P_\textit{RNA-first}' & = \underbrace{P_\textit{RNA-gain} \times (1-P_\textit{ORF} -P_\textit{ORF-gain})}_\textit{first step} \times \underbrace{P_\textit{RNA-stay}\times P_\textit{ORF-gain}/(1-P_\textit{ORF})}_\textit{second step}\label{rnafirsteq2}
 \end{align}
-
-We calculated the log-transformed ratio of the two step ORF-first and RNA-first probabilities, and found that \textit{de novo} genes with ORFs smaller than 57 codons preferentially emerge ORF-first (log ratio greater than 1, \autoref{whoisfirst}B). 
-
-Overall, our analysis suggests that \textit{de novo} genes with long ORFs would arise from DNA regions that are already transcribed (for example, non-coding RNAs). 
 
 \subsection{Would extensive transcription loss suggest negative selection of toxic proteins?}
 
-\textit{De novo} genes that do not provide any fitness benefit to an organism are not fixed in populations via natural selection. These genes can be lost due to mutation pressure. Some newborn \textit{de novo} genes can also encode toxic proteins, that may aggregate or interfere with physiology in some other way. These genes would thus be eliminated from the population genomes via negative selection. As we discussed in previous sections, gene loss can occur due to loss of ORF, transcription, or both. To understand what is the most probable mechanism of gene loss, we compared the probabilities of ORF loss ($P_\textit{ORF-loss}$) and transcription loss ($P_\textit{RNA-loss}$). We found that ORF loss is more probable than transcription loss, for all ORF longer than 33 codons. However, the difference between these probabilities is not very large.
 
-To apply this theory to genomics data we asked a more specific question. To explain this question we use a hypothetical observation where for a DNA locus, there is evidence for transcription in only one species, whereas ORF is retained in all species. Two evolutionary events could describe this observation. First, a \textit{de novo} gene existed in an ancestor and transcription was lost. Alternatively, an ORF existed first and transcription was subsequently gained. Event 1 can be described by the probability $P_\textit{ORF-stay}\times P_\textit{RNA-loss}$. Event 2 can be described by the probability $(1-P_\textit{RNA} - P_\textit{RNA-gain})\times P_\textit{ORF-gain}$
+\textit{De novo} genes that do not provide any fitness benefit to an organism are not fixed in populations via natural selection. These genes can be lost due to mutation pressure. Some newborn \textit{de novo} genes can also encode toxic proteins, that may aggregate or interfere with physiology in some other way. These genes would thus be eliminated from the population genomes via negative selection. We remind the reader that an ORF is lost if the start codon is mutated, the stop codon is mutated to an amino acid encoding codon (non-stop mutation), or if an amino acid encoding codon is mutated to a stop codon (premature stop/non-sense mutation). It is likely that a non-stop mutation or a non-sense mutation, can still result in translation of a protein (extended or truncated, respectively). Furthermore, non-stop mutations can also lead to cellular toxicity. Thus ORF loss does not ensure elimination of toxic proteins, which in turn suggests that transcription loss may be the better way to inactivate the associated genes.
 
+To understand which is the most probable mechanism of gene loss, we compared the probabilities of ORF loss ($P_\textit{ORF-loss}$) and transcription loss ($P_\textit{RNA-loss}$). We found that ORF loss is more probable than transcription loss, for all ORF longer than 33 codons (\autoref{lossprob}).
 
+We reframed our question to make it more relatable to commonly observed findings from genomics experiments. For example, a hypothetical experiment involves DNA sequencing of a genomic locus in different related species. This experiment shows that transcription features are present in only one species, whereas the ORF is present in all species. Two evolutionary events could describe this observation. First possibility is that a \textit{de novo} gene existed in an ancestor and transcription was lost in multiple species. For any one species, the probability of this evolutionary trajectory is: $P_\textit{ORF-stay}\times P_\textit{RNA} \times P_\textit{RNA-loss}$ \footnote{Note that $P_\textit{RNA-loss}$ is a conditional probability dependent on the presence of RNA.}
 
-We remind the reader that an ORF is lost if the start codon is mutated, the stop codon is mutated an amino acid encoding codon (non-stop mutation), or if an amino acid encoding codon is mutated to a stop codon (premature stop/non-sense mutation). It is likely that a non-stop mutation or a non-sense mutation, can still result in translation of a protein (extended or truncated, respectively). Furthermore, non-stop mutations can also lead to cellular toxicity. Thus ORF loss does not ensure elimination of toxic proteins, which in turn suggests that transcription loss is the best way to inactivate the associated genes. Since 
+\begin{figure}[!t]
+\centering
+\includegraphics[scale=0.6]{Figures/pLoss.pdf}
+\caption{ORF loss is more probable than transcription loss, for \textit{de novo} genes containing more than 33 codons. The horizontal axis denotes the number of codons in the ORF. The vertical axis shows the log transformed ratio of ORF loss and RNA loss probabilities, such that a positive value means ORF-loss is more probable than RNA loss, and \textit{vice versa}.}
+\label{lossprob}
 
-\begin{itemize}
-\item protein can be toxic
-\item orf loss can extend or truncate orf (this can still cause expression of some protein)
-\item transcription loss is the best way to shut down toxic protein synthesis
-\item distribution of expected vs observed promoter sequences
-\item extensive transcription loss can suggest protein toxicity
-\item if I compare P(nornagain)*P(orfloss) and P(rnaloss).P(orfstay) then differences are small. So such inferences cannot be made from species data.
-\end{itemize}
+\vspace{1ex}
+\hrule
+\end{figure}
+
+Alternatively, an ORF could have existed in all species and transcription was subsequently gained in one species. The probability that this event happens in any one species is: $P_\textit{ORF-stay}\times P_\textit{RNA-gain}$ (see \autoref{orffirsteq1}). 
+
+The ratio of the probabilities of the two evolutionary trajectories would simply be: $P_\textit{RNA} \times P_\textit{RNA-loss}/P_\textit{RNA-gain}$. We found the value of this ratio to be 0.914, suggesting that transcription loss in a \textit{de novo} gene would be more probable than transcription gain for an untranscribed ORF. However, this difference is small and hence the real evolutionary mechanism behind the observation from our hypothetical sequencing experiment, would be difficult to infer. 
+
+In sum, transcription loss cannot be reliably inferred as an evidence for negative selection of protein expression.
 
 \subsection{Does mutation bias shape protein composition?}
 
 \begin{itemize}
-\item expected hydropathy index
-\item expected number of specific mutations
-\item higher than expected number of mutations would suggest positive selection
+\item expected hydropathy index = $-0.08628$
+\item acid to basic rate is $1.3074\times$ higher than \textit{vice versa}. Conditional prob = $1.80543$
+\item mutations do not preferentially create hydrophobic amino acid. Total prob ratio = 1.025, Conditional prob ratio = 0.971
 \end{itemize}
 
 \section{Discussion} 

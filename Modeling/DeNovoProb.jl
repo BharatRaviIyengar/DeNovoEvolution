@@ -149,7 +149,7 @@ stopvalues = stopvals(gccontent);
 (rnaprob, rnagain, rnaloss, rnastay) = rnavals(gccontent)
 (orfprob, orfgain, orfloss, orfstay) = [zeros(size(ncodons)) for i = 1:4 ]
 
-for k in 1:length(ncodons)
+for k in eachindex(ncodons)
     (orfprob[k], orfgain[k], orfloss[k], orfstay[k]) = orfvals(gccontent,ATGvalues,stopvalues,ncodons[k])
 end
 
@@ -165,7 +165,6 @@ onlyorfgain = (1 -rnaprob - rnagain).*orfgain;
 
 rnafirst2 = onlyrnagain*(1 - rnaloss).*(orfgain./(1 .-orfprob));
 orffirst2 = onlyorfgain.*(1 .-orfloss).*(rnagain/(1-rnaprob));
-
 
 plot_genegain_geneloss = plot(ncodons,log.(genegain2)./log.(geneloss),
     xlabel = "ORF length (codons)",
@@ -202,7 +201,27 @@ plot_Loss = plot(ncodons[1:85],log.(orfloss./rnaloss)[1:85],
 
 savefig(plot_Loss, figdir*"pLoss.pdf")
 
+onlyrnaloss = orfstay .*(rnaprob*rnaloss)
+
 aaprob = [sum(nucprob.(gencode[gencode[:,3] .== x,1],gccontent)) for x in aas];
+aaprob2 = aaprob./sum(aaprob);
+exp_hydropathy = sum(hydropathy.*aaprob2)
+
+acidic = indexin(["D","E"],aas);
+basic = indexin(["K","R"],aas);
+hydrophobic = hydropathy .>0;
+
+pHydrophobic = sum(aaprob[hydrphobic])
+
+plot_aafreq = bar(aas,aaprob2,
+    xticks = (0.5:20, aas),
+    fill = :black,
+    xlabel = "Amino acid",
+    ylabel = "Expected frequency",
+    size = (width = cm2pt(15), height = cm2pt(11))
+);
+savefig(plot_aafreq, figdir*"pAAfreq.pdf")
+
 
 aasubprob = zeros(20,20);
 
@@ -217,6 +236,18 @@ for i = 1:20
         end
 end
 
+aasubprob_conditional = aasubprob./aaprob2
+
+asymmetric_transitions = log2.(aasubprob./aasubprob');
+
+asymmetric_conditional = log2.(aasubprob_conditional./aasubprob_conditional');
+
+toHydrophobic = sum(aasubprob[:,hydrophobic]);
+frHydrophobic = sum(aasubprob[hydrophobic,:]);
+
+toHydrophobic_cond = sum(aasubprob_conditional[:,hydrophobic]);
+frHydrophobic_cond = sum(aasubprob_conditional[hydrophobic,:]);
+
 plot_aasubprob = heatmap(aas,aas,log10.(aasubprob./aaprob), 
     xticks = (0.5:20, aas), 
     yticks = (0.5:20,aas),
@@ -226,3 +257,32 @@ plot_aasubprob = heatmap(aas,aas,log10.(aasubprob./aaprob),
 );
 
 savefig(plot_aasubprob, figdir*"pAASub.pdf")
+
+plot_aasymprob = heatmap(aas,aas,asymmetric_transitions, 
+    xticks = (0.5:20, aas), 
+    yticks = (0.5:20,aas),
+    size = (width = cm2pt(15), height = cm2pt(14)),
+    colorbar_title = "Substitution likelihood",
+    legend = :bottom,
+    yflip = true,
+    ylabel = "Original amino acid",
+    xlabel = "Substituted amino acid",
+    c = :bluesreds
+);
+
+savefig(plot_aasymprob, figdir*"pAAsubSym.pdf")
+
+plot_aasymprob2 = heatmap(aas,aas,asymmetric_conditional, 
+    xticks = (0.5:20, aas), 
+    yticks = (0.5:20,aas),
+    size = (width = cm2pt(15), height = cm2pt(14)),
+    colorbar_title = "Substitution likelihood",
+    legend = :bottom,
+    yflip = true,
+    ylabel = "Original amino acid",
+    xlabel = "Substituted amino acid",
+    c = :bluesreds
+);
+
+
+savefig(plot_aasymprob2, figdir*"pAAsubSymCond.pdf")
