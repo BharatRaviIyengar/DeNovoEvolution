@@ -272,9 +272,9 @@ plot_aasubprob = heatmap(aas[idx],aas[idx],log2.(aasubhighprob[idx,idx]),
 
 savefig(plot_aasubprob, figdir*"pAASub.pdf")
 
-plot_aasymprob = heatmap(aas[idx],aas[idx],asymmetric_transitions[idx,idx], 
-    xticks = (0.5:20, aas[idx]), 
-    yticks = (0.5:20,aas[idx]),
+plot_aasymprob = heatmap(aas,aas,asymmetric_transitions, 
+    xticks = (0.5:20, aas), 
+    yticks = (0.5:20,aas),
     size = (width = cm2pt(15), height = cm2pt(14)),
     colorbar_title = "Substitution likelihood",
     legend = :bottom,
