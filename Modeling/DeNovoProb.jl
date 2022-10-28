@@ -1,8 +1,7 @@
-using Base.Iterators
 using Combinatorics
 using Plots
 using Measures
-using LaTeXStrings
+using HypothesisTests
 
 include("nucleotidefuncts.jl")
 
@@ -211,7 +210,7 @@ acidic = indexin(["D","E"],aas);
 basic = indexin(["K","R"],aas);
 hydrophobic = hydropathy .>0;
 
-pHydrophobic = sum(aaprob[hydrphobic])
+pHydrophobic = sum(aaprob[hydrophobic]);
 
 plot_aafreq = bar(aas,aaprob2,
     xticks = (0.5:20, aas),
@@ -236,23 +235,36 @@ for i = 1:20
         end
 end
 
-aasubprob_conditional = aasubprob./aaprob2
+aasubhighprob = aasubprob.*(aasubprob .>mutrate^2)
 
-asymmetric_transitions = log2.(aasubprob./aasubprob');
+aasubprob_conditional = aasubhighprob./aaprob2;
 
+asymmetric_transitions = log2.(aasubhighprob./aasubhighprob');
 asymmetric_conditional = log2.(aasubprob_conditional./aasubprob_conditional');
 
-codonshydrophobic = gencode[(in).(gencode[:,3],Ref(aas[hydrophobic])),1]
+# c = kmeans(asymmetric_transitions,3);
+# idx = sortperm(assignments(c));
+hcl = hclust(aasubhighprob .+ aasubhighprob');
+idx = hcl.order;
 
-codonshydrophilic = kmers(3)[(!in).(kmers(3),Ref(codonshydrophobic))]
+gainAA = Vector{Float64}(vec(sum(aasubprob, dims=1)'));
+lossAA = Vector{Float64}(vec(sum(aasubprob, dims=2)./aaprob2));
+stayAA = [sum(featurestay(gencode[gencode[:,3] .== x,1],gccontent)) for x in aas];
+
+
+codonshydrophobic = gencode[(in).(gencode[:,3],Ref(aas[hydrophobic])),1];
+
+codonshydrophilic = kmers(3)[(!in).(kmers(3),Ref(codonshydrophobic))];
 
 toHydrophobic = featuregain(codonshydrophilic,codonshydrophobic, gccontent);
 
 frHydrophobic = featuregain(codonshydrophobic,codonshydrophilic, gccontent);
 
-plot_aasubprob = heatmap(aas,aas,log10.(aasubprob./aaprob), 
-    xticks = (0.5:20, aas), 
-    yticks = (0.5:20,aas),
+stayHydrophobic = featurestay(codonshydrophobic, gccontent);
+
+plot_aasubprob = heatmap(aas[idx],aas[idx],log2.(aasubhighprob[idx,idx]),
+    xticks = (0.5:20, aas[idx]), 
+    yticks = (0.5:20,aas[idx]),
     size = (width = cm2pt(15), height = cm2pt(14)),
     colorbar_title = "Substitution Probability",
     legend = :bottom
@@ -260,13 +272,12 @@ plot_aasubprob = heatmap(aas,aas,log10.(aasubprob./aaprob),
 
 savefig(plot_aasubprob, figdir*"pAASub.pdf")
 
-plot_aasymprob = heatmap(aas,aas,asymmetric_transitions, 
-    xticks = (0.5:20, aas), 
-    yticks = (0.5:20,aas),
+plot_aasymprob = heatmap(aas[idx],aas[idx],asymmetric_transitions[idx,idx], 
+    xticks = (0.5:20, aas[idx]), 
+    yticks = (0.5:20,aas[idx]),
     size = (width = cm2pt(15), height = cm2pt(14)),
     colorbar_title = "Substitution likelihood",
     legend = :bottom,
-    yflip = true,
     ylabel = "Original amino acid",
     xlabel = "Substituted amino acid",
     c = :bluesreds
@@ -280,11 +291,29 @@ plot_aasymprob2 = heatmap(aas,aas,asymmetric_conditional,
     size = (width = cm2pt(15), height = cm2pt(14)),
     colorbar_title = "Substitution likelihood",
     legend = :bottom,
-    yflip = true,
     ylabel = "Original amino acid",
     xlabel = "Substituted amino acid",
     c = :bluesreds
 );
-
-
 savefig(plot_aasymprob2, figdir*"pAAsubSymCond.pdf")
+
+plot_toaa = bar(aas,gainAA./sum(gainAA),
+    xticks = (0.5:20, aas),
+    fill = :black,
+    xlabel = "Amino acid",
+    ylabel = "Gain Probability",
+    size = (width = cm2pt(15), height = cm2pt(11))
+);
+
+savefig(plot_toaa, figdir*"pToAA.pdf")
+
+plot_fraa = bar(aas,lossAA./sum(lossAA),
+    xticks = (0.5:20, aas),
+    fill = :black,
+    xlabel = "Amino acid",
+    ylabel = "Loss Probability",
+    size = (width = cm2pt(15), height = cm2pt(11))
+);
+
+savefig(plot_fraa, figdir*"pFrAA.pdf")
+

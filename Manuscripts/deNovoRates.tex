@@ -4,8 +4,8 @@
 \usepackage[hidelinks]{hyperref}
 
 \captionsetup[figure]{labelfont=bf,textfont={small,normalfont}}
-%\captionsetup[subfigure]{labelsep=quad, labelfont={bf,small}, textfont=small, singlelinecheck=off, justification=raggedright, position=top}
-%\renewcommand{\thesubfigure}{\Alph{subfigure}}
+\captionsetup[subfigure]{labelsep=quad, labelfont={bf,small}, textfont=small, singlelinecheck=off, justification=raggedright, position=top}
+\renewcommand{\thesubfigure}{\Alph{subfigure}}
 
 \renewcommand*{\thefootnote}{\fnsymbol{footnote}}
 \setcounter{footnote}{1}
@@ -22,7 +22,7 @@ In this work, we developed mathematical models to estimate the rates and probabi
 
 \subsection{How many times can a gene be lost?}
 
-If a gene is found in one species but not in sister taxa, then the most common assumption is that this gene emerged only in one specific species. We asked what is the chance that the gene was present in a common ancestor, but was lost in all lineages except one. To this end we calculated the probability of gene emergence and gene loss (Materials and Methods). Specifically, the probability of gene gain can be defined as the sum of three probabilities. First is the probability that an ORF already exists, and a mutation causes transcription to emerge ($P_\textit{RNA-gain}$) but doesn't disrupt the ORF ($P_\textit{ORF-stay}$). Second is the probability that the DNA is transcribed, and an ORF emerges due to mutations ($P_\textit{ORF-gain}$) while transcription stays intact ($P_\textit{RNA-stay}$). Third is the probability that neither of the two features already exist and both emerge at the same time due to mutations (this probability is very small, and negligible). The following equation describes the probability of gene gain\footnote{\autoref{genegaineq} describes total gene gain probability. Gene gain probability conditioned on the gene being absent would be $P_\textit{gene-gain}/(1-P_\textit{ORF} - P_\textit{RNA})$. Using this value does not change the results significantly.}:
+If a gene is found in one species but not in sister taxa, then the most common assumption is that this gene emerged only in one specific species. We asked what is the chance that the gene was present in a common ancestor, but was lost in all lineages except one. To this end we calculated the probability of gene emergence and gene loss (Materials and Methods). Specifically, the probability of gene gain can be defined as the sum of three probabilities. First is the probability that an ORF already exists, and a mutation causes transcription to emerge ($P_\textit{RNA-gain}$) but doesn't disrupt the ORF ($P_\textit{ORF-stay}$). Second is the probability that the DNA is transcribed, and an ORF emerges due to mutations ($P_\textit{ORF-gain}$) while transcription stays intact ($P_\textit{RNA-stay}$). Third is the probability that neither of the two features already exist and both emerge at the same time due to mutations (this probability is very small, and negligible). The following equation describes the probability of gene gain:
 
 \begin{equation}
 P_\textit{gene-gain} = P_\textit{ORF-stay}\times P_\textit{RNA-gain} + P_\textit{RNA-stay}\times P_\textit{ORF-gain} + P_\textit{RNA-gain}\times P_\textit{ORF-gain}
@@ -41,7 +41,7 @@ The probability that a gene is lost $n$ times independently, is $(P_\textit{gene
 \begin{figure}[!t]
 \centering
 \includegraphics[scale=0.6]{Figures/geneGainLoss.pdf}
-\caption{Genes are more likely to be independently lost twice, than being born once. The vertical axis shows the number of independent gene loss events than can happen relative to one gene gain event i.e. $\log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$. The horizontal axis shows the number of codons in the ORF.}
+\caption{Genes are more likely to be independently lost twice, than being born once. The vertical axis shows the number of independent gene loss events (\autoref{genelosseq}) than can happen relative to one gene gain event (\autoref{genegaineq}) i.e. $\log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$. The horizontal axis shows the number of codons in the ORF. \autoref{genegaineq} describes total gene gain probability. Gene gain probability conditioned on the gene being absent would be $P_\textit{gene-gain}/(1-P_\textit{ORF} - P_\textit{RNA})$. Using the conditional probability of gene gain does not change these results.}
 \label{gainlossprob}
 
 \vspace{1ex}
@@ -90,9 +90,9 @@ P_\textit{RNA-first} = P_\textit{RNA-stay}\times P_\textit{ORF-gain}
 
 We calculated the log-transformed ratio of $P_\textit{ORF-first}$ and $P_\textit{RNA-first}$, such that a positive value of the ratio would mean that transcription gain for an untranscribed ORF (ORF-first) is more likely than ORF gain in an already transcribed DNA (RNA-first). In other words, ORF-first hypothesis is more feasible. Likewise, a negative value of the ratio would suggest that RNA-first hypothesis is more feasible. With the specific parameter values we used, it turns out that \textit{de novo} genes with up to 42 codons in their coding region, preferentially emerge ORF-first. \textit{De novo} genes with longer coding region, emerge transcription first (\autoref{whoisfirst}).
 
-A more stringent definition of ORF-first hypothesis would describe a two-step process. In the first step, an ORF emerges in an untranscribed region of DNA, but transcription does not emerge. In the second step transcription emerges, while ORF stays intact (\autoref{orffirsteq2})\footnote{$P_\textit{ORF-gain}$ describes the total probability of ORF emerging from a DNA region that does not have already have an ORF. Conditional probability of ORF gain would be $P_\textit{ORF-gain}/(1-P_\textit{ORF})$. Conditional probability of transcription gain can be described similarly.} . Likewise, RNA-first hypothesis can be defined by a two-step probability. In the first step transcription emerges in a non-genic DNA (that does not have an ORF), and in the second step an ORF emerges, while transcription remains intact (\autoref{rnafirsteq2}).
+A more stringent definition of ORF-first hypothesis would describe a two-step process. In the first step, an ORF emerges in an untranscribed region of DNA, but transcription does not emerge. In the second step transcription emerges, while ORF stays intact (\autoref{orffirsteq2}). Likewise, RNA-first hypothesis can be defined by a two-step probability. In the first step transcription emerges in a non-genic DNA (that does not have an ORF), and in the second step an ORF emerges, while transcription remains intact (\autoref{rnafirsteq2}).
 
-With this stringent definition, the difference between the probabilities of the two trajectories becomes very small ($< 3\times10^{-5}$). However, we still find that \textit{de novo} genes with shorter ORFs ($<$ 34 codons) have a slightly higher chance of emerging ORF first.
+With this stringent definition, the difference between the probabilities of the two trajectories becomes very small ($< 3\times10^{-5}\ \%$). However, we still find that \textit{de novo} genes with shorter ORFs ($<$ 34 codons) have a slightly higher chance of emerging ORF first.
 
 Overall, our analysis suggests that \textit{de novo} genes with long ORFs are more likely arise from DNA regions that are already transcribed (for example, non-coding RNAs). 
 
@@ -108,7 +108,7 @@ P_\textit{RNA-first}' & = \underbrace{P_\textit{RNA-gain} \times (1-P_\textit{OR
 
 To understand which is the most probable mechanism of gene loss, we compared the probabilities of ORF loss ($P_\textit{ORF-loss}$) and transcription loss ($P_\textit{RNA-loss}$). We found that ORF loss is more probable than transcription loss, for all ORF longer than 33 codons (\autoref{lossprob}).
 
-We reframed our question to make it more relatable to commonly observed findings from genomics experiments. For example, a hypothetical experiment involves DNA sequencing of a genomic locus in different related species. This experiment shows that transcription features are present in only one species, whereas the ORF is present in all species. Two evolutionary events could describe this observation. First possibility is that a \textit{de novo} gene existed in an ancestor and transcription was lost in multiple species. For any one species, the probability of this evolutionary trajectory is: $P_\textit{ORF-stay}\times P_\textit{RNA} \times P_\textit{RNA-loss}$ \footnote{Note that $P_\textit{RNA-loss}$ is a conditional probability dependent on the presence of RNA.}
+We reframed our question to make it more relatable to commonly observed findings from genomics experiments. For example, a hypothetical experiment involves DNA sequencing of a genomic locus in different related species. This experiment shows that transcription features are present in only one species, whereas the ORF is present in all species. Two evolutionary events could describe this observation. First possibility is that a \textit{de novo} gene existed in an ancestor and transcription was lost in multiple species. For any one species, the probability of this evolutionary trajectory is: $P_\textit{ORF-stay}\times P_\textit{RNA} \times P_\textit{RNA-loss}$. (Note that $P_\textit{RNA-loss}$ is a conditional probability dependent on the presence of RNA).
 
 \begin{figure}[!t]
 \centering
@@ -130,19 +130,47 @@ In sum, transcription loss cannot be reliably inferred as an evidence for negati
 
 In previous sections, we showed that mutation bias affects the rate of \textit{de novo} gene emergence and loss. We next turned our attention to whether this bias affects the composition (and thereby the chemistry) of \textit{de novo} proteins. To this end, we first asked if the expected frequency of different amino acids is uniform, and found that it is not uniform. Amino acids like leucine (L) and serine (S) have a higher expected frequency than other amino acids. On the other hand, amino acids like methionine (M) and tryptophan (W) are less probable (\autoref{aafreq}). This non-uniformity is to a great extent determined by number of degenerate codons for an amino acid. However, GC content also plays a role. For example, leucine, arginine and serine, all have six codons each. However, leucine is more probable than serine which in turn is more probable than arginine (\autoref{aafreq}). 
 
-Previous studies have argued that hydrophobic amino acids are comprise 40\% of amino acids and can also easily arise due to mutation pressure. They based these conclusions on mutation rate bias estimated in bacteria. We asked if our model also makes similar predictions. To this end we calculated expected hydropathy in a protein sequence, based on expected frequency of different amino acids (\autoref{aafreq}) and their hydropathic index values (Kyte and Doolittle). We found that the expected hydropathy is $-0.08628$, which suggests that random protein sequences are not mostly hydrophobic. 
+Next, we tried to find out if some amino acid substitutions are more probable, than the others. To this end, we calculated the gain probability ($G$) for every amino acid. Specifically for every amino acid $i$, we calculated the average probability that it substitutes any of the other nineteen amino acids, due to mutations. More precisely, the total probability that an amino acid $j$ will mutate to an amino acid $i$ is the product of the expected frequency of amino acid $j$ ($P_j$), and the substitution rate from $i$ to $j$ ($\mu_{j\to i}$). The gain probability for amino acid $i$ is thus defined as:
 
-Next, we calculated the probability that any 
+$$G_i = \sum_{j \neq i} P_j \times \mu_{j\to i}$$
 
-\begin{itemize}
-\item expected hydropathy index = $-0.08628$
-\item acid to basic rate is $1.3074\times$ higher than \textit{vice versa}. Conditional prob = $1.80543$
-\item mutations do not preferentially create hydrophobic amino acid. Total prob ratio = 1.025, Conditional prob ratio = 0.971
-\end{itemize}
+We found that amino gain probabilities were also non-uniform across different amino acids but had a good positive correlation with the expected frequency (Pearson $\rho = 0.955, P<10^{-10}$).
+
+Next, we calculated how easily is an amino acid mutated to any other amino acid. Specifically, the conditional loss probability ($L$), given the amino acid already exists, is defined as:
+
+$$L_i = \sum_{j \neq i} \mu_{i\to j}$$
+
+The loss probability did not significantly correlate with the expected frequency (Pearson $\rho = -0.255, P = 0.2818$). 
+
+Previous studies have argued that hydrophobic amino acids are comprise 40\% of amino acids and can also easily arise due to mutation pressure. They based these conclusions on mutation rate bias estimated in bacteria. We asked if our model also makes similar predictions. To this end we calculated expected average hydropathy ($\bar{\alpha}$) of a protein sequence, based on expected frequency of different amino acids ($P_i$, \autoref{aafreq}) and their hydropathic index values ($\alpha$, Kyte and Doolittle). Specifically: 
+
+$$\bar{\alpha} = \sum_{i} P_i \alpha_i$$
+
+We found that the expected hydropathy is $-0.08628$, which suggests that random protein sequences are not mostly hydrophobic. 
+ 
+Next, we calculated the probability that any mutation substitutes a non-hydrophobic amino acid with a hydrophobic amino acid ($P_{\alpha\textit{-gain}}$). We defined hydrophobic amino acids as those with hydropathy index greater than 0 (i.e A, C, F, I, L, M \& V). Likewise, we calculated the probability that any mutation causes a hydrophobic to non-hydrophobic amino acid substitution ($P_{\alpha\textit{-loss}}$). Next, we calculated the ratio of $P_{\alpha\textit{-gain}}$ and $P_{\alpha\textit{-loss}}$, and found that it was 1.053. This shows that random mutations do not have a strong bias towards causing hydrophobic amino acids to accumulate in protein sequence. 
+
 
 \begin{figure}[!t]
 \centering
-\includegraphics[scale=0.6]{Figures/pAAfreq.pdf}
+\begin{subfigure}{0.49\textwidth}
+\caption{}
+\centering
+\includegraphics[scale=0.5]{Figures/pAAfreq.pdf}
+\end{subfigure}\hfill%
+\begin{subfigure}{0.49\textwidth}
+\caption{}
+\centering
+\includegraphics[scale=0.5]{Figures/pToAA.pdf}
+\end{subfigure}
+
+\begin{subfigure}{0.49\textwidth}
+\caption{}
+\centering
+\includegraphics[scale=0.5]{Figures/pFrAA.pdf}
+\end{subfigure}
+
+
 \caption{ORF loss is more probable than transcription loss, for \textit{de novo} genes containing more than 33 codons. The horizontal axis denotes the number of codons in the ORF. The vertical axis shows the log transformed ratio of ORF loss and RNA loss probabilities, such that a positive value means ORF-loss is more probable than RNA loss, and \textit{vice versa}.}
 \label{aafreq}
 
