@@ -6,3 +6,4 @@
 *.bbl
 *.svg
 *.png
+.vscode/settings.json
