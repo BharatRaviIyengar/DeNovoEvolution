@@ -1,7 +1,9 @@
 \documentclass[12pt,a4paper]{article}
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{amsmath,amssymb,graphicx,setspace,palatino, subcaption}
-\usepackage[hidelinks]{hyperref}
+\usepackage[colorlinks, allcolors = blue]{hyperref}
+\usepackage{natbib}
+\citestyle{egu}
 
 \captionsetup[figure]{labelfont=bf,textfont={small,normalfont}}
 \captionsetup[subfigure]{labelsep=quad, labelfont={bf,small}, textfont=small, singlelinecheck=off, justification=raggedright, position=top}
@@ -18,9 +20,24 @@
 
 \section{Results}
 
-In this work, we developed mathematical models to estimate the rates and probabilities of \textit{de novo} gene emergence, as well as gene loss. A \textit{de novo} gene emerges from a non-genic DNA, when the latter mutates to gain sequence features necessary for transcription and translation. Both transcription and translation are complex processes involving many biomolecular complexes that work in concert. Here, we focus on the minimal requirements for these processes to occur. Specifically for transcription, we require a gene to have one of the two core promoter motifs, the TATA-box or the Initiator element (Inr), and a polyadenylation (poly-A) signal sequence. For translation, we only require the gene to have an open reading frame (ORF). Using simple probability models, we calculate the likelihood of finding these features in a DNA sequence by random chance, and the rate at which these features are gained and lost via mutagenesis. Using a similar approach, we estimate some fundamental biochemical properties of proteins that arise from random DNA sequences. Our models thus define a null hypothesis under which DNA sequences evolve neutrally through mutation pressure alone. A significant deviation from this null hypothesis may be interpreted as evidence in support of natural selection. 
+In this work, we developed mathematical models to estimate the rates and probabilities of \textit{de novo} gene emergence, as well as gene loss. A \textit{de novo} gene emerges from a non-genic DNA, when the latter mutates to gain sequence features necessary for transcription and translation. Both transcription and translation are complex processes involving many biomolecular complexes that work in concert. Here, we focus on the minimal requirements for these processes to occur. Specifically for transcription, we require a gene to have one of the two core promoter motifs, the TATA-box or the Initiator element (Inr), and a polyadenylation (poly-A) signal sequence. For translation, we only require the gene to have an open reading frame (ORF). Using simple probability models, we calculate the likelihood of finding these features in a DNA sequence by random chance, and the rate at which these features are gained and lost via mutagenesis. These probability models are essentially described by two kinds of probability. First is the probability of finding a DNA sequence feature (such as TATA box or an ORF). This probability depends on the nucleotide distribution given by the GC content. The second kind of probability is the transition probability, that is the probability of a DNA sequence mutating to another. Transition probabilities that describe the gain and loss of DNA sequence features, depend on mutation rate, mutation bias, and GC content. 
+
+For all calculations we used a GC content of 0.42 which is reasonably close to the global GC content of human, \textit{Drosophila melanogaster}, and \textit{Saccharomyces cerevisiae} genomes. We used a mutation rate of $7.8\times10^{-9}$ mutations per nucleotide position per generation, which corresponds to spontaneous mutation rate estimated in a \textit{Drosophila melanogaster} population that was subjected to periodic population bottlenecks \cite[mutation accumulation line,][]{drosophilamutrate}. We used mutation bias data from the same study \citep{drosophilamutrate} which was in agreement with another previous study on human pseudogenes \citep{humanmutrate}. shows the values of different mutation rates. 
+
+Using a similar approach, we predict how the nucleotide distribution and random mutations shape protein composition and evolution. 
+
+Overall our models define a null hypothesis under which protein coding DNA sequences evolve neutrally through mutation pressure alone. A significant deviation from this null hypothesis may be interpreted as evidence in support of natural selection. 
 
 \subsection{How many times can a gene be lost?}
+
+\begin{figure}[!b]
+\hrule
+\vspace{1ex}
+\centering
+\includegraphics[scale=0.6]{Figures/geneGainLoss.pdf}
+\caption{Genes are more likely to be independently lost twice, than being born once. The vertical axis shows the number of independent gene loss events (\autoref{genelosseq}) than can happen relative to one gene gain event (\autoref{genegaineq}) i.e. $\log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$. The horizontal axis shows the number of codons in the ORF. \autoref{genegaineq} describes total gene gain probability. Gene gain probability conditioned on the gene being absent would be $P_\textit{gene-gain}/(1-P_\textit{ORF} - P_\textit{RNA})$. Using the conditional probability of gene gain does not change these results.}
+\label{gainlossprob}
+\end{figure}
 
 If a gene is found in one species but not in sister taxa, then the most common assumption is that this gene emerged only in one specific species. We asked what is the chance that the gene was present in a common ancestor, but was lost in all lineages except one. To this end we calculated the probability of gene emergence and gene loss (Materials and Methods). Specifically, the probability of gene gain can be defined as the sum of three probabilities. First is the probability that an ORF already exists, and a mutation causes transcription to emerge ($P_\textit{RNA-gain}$) but doesn't disrupt the ORF ($P_\textit{ORF-stay}$). Second is the probability that the DNA is transcribed, and an ORF emerges due to mutations ($P_\textit{ORF-gain}$) while transcription stays intact ($P_\textit{RNA-stay}$). Third is the probability that neither of the two features already exist and both emerge at the same time due to mutations (this probability is very small, and negligible). The following equation describes the probability of gene gain:
 
@@ -37,16 +54,6 @@ P_\textit{gene-loss} = P_\textit{RNA-loss} + P_\textit{ORF-loss}
 \end{equation}
 
 The probability that a gene is lost $n$ times independently, is $(P_\textit{gene-loss})^{n}$. To find out how many independent gene loss events are as likely as a single gene gain event, we calculate the ratio of logarithms of gene gain and gene loss: $\log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$. For example, the ratio value of 2 would indicate that two independent gene loss events are as likely as a single gene gain event. We calculated this ratio for genes with different ORF lengths, because ORF gain and loss probabilities depend on the length of the ORF. We found that for all ORF lengths, the gene can be lost at least two times independently, in the time required to gain it (\autoref{gainlossprob}). 
-
-\begin{figure}[!t]
-\centering
-\includegraphics[scale=0.6]{Figures/geneGainLoss.pdf}
-\caption{Genes are more likely to be independently lost twice, than being born once. The vertical axis shows the number of independent gene loss events (\autoref{genelosseq}) than can happen relative to one gene gain event (\autoref{genegaineq}) i.e. $\log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$. The horizontal axis shows the number of codons in the ORF. \autoref{genegaineq} describes total gene gain probability. Gene gain probability conditioned on the gene being absent would be $P_\textit{gene-gain}/(1-P_\textit{ORF} - P_\textit{RNA})$. Using the conditional probability of gene gain does not change these results.}
-\label{gainlossprob}
-
-\vspace{1ex}
-\hrule
-\end{figure}
 
 We performed the same analysis to just the ORF (and not the whole genes). That is, we calculated the ratio of logarithms of ORF gain and ORF loss. We found that for ORFs longer than 143 codons, the likelihood of two independent ORF loss events is more than or equal to a single ORF gain event. 
 
@@ -92,14 +99,14 @@ We calculated the log-transformed ratio of $P_\textit{ORF-first}$ and $P_\textit
 
 A more stringent definition of ORF-first hypothesis would describe a two-step process. In the first step, an ORF emerges in an untranscribed region of DNA, but transcription does not emerge. In the second step transcription emerges, while ORF stays intact (\autoref{orffirsteq2}). Likewise, RNA-first hypothesis can be defined by a two-step probability. In the first step transcription emerges in a non-genic DNA (that does not have an ORF), and in the second step an ORF emerges, while transcription remains intact (\autoref{rnafirsteq2}).
 
-With this stringent definition, the difference between the probabilities of the two trajectories becomes very small ($< 3\times10^{-5}\ \%$). However, we still find that \textit{de novo} genes with shorter ORFs ($<$ 34 codons) have a slightly higher chance of emerging ORF first.
-
-Overall, our analysis suggests that \textit{de novo} genes with long ORFs are more likely arise from DNA regions that are already transcribed (for example, non-coding RNAs). 
-
 \begin{align}
 P_\textit{ORF-first}' & = \underbrace{P_\textit{ORF-gain} \times (1-P_\textit{RNA} -P_\textit{RNA-gain})}_\textit{first step} \times \underbrace{P_\textit{ORF-stay}\times P_\textit{RNA-gain}/(1-P_\textit{RNA})}_\textit{second step} \label{orffirsteq2}\\[1em]
 P_\textit{RNA-first}' & = \underbrace{P_\textit{RNA-gain} \times (1-P_\textit{ORF} -P_\textit{ORF-gain})}_\textit{first step} \times \underbrace{P_\textit{RNA-stay}\times P_\textit{ORF-gain}/(1-P_\textit{ORF})}_\textit{second step}\label{rnafirsteq2}
 \end{align}
+
+With this stringent definition, the difference between the probabilities of the two trajectories becomes very small ($< 3\times10^{-5}\ \%$). However, we still find that \textit{de novo} genes with shorter ORFs ($<$ 34 codons) have a slightly higher chance of emerging ORF first.
+
+Overall, our analysis suggests that \textit{de novo} genes with long ORFs are more likely arise from DNA regions that are already transcribed (for example, non-coding RNAs). 
 
 \subsection{Would extensive transcription loss suggest negative selection of toxic proteins?}
 
@@ -128,7 +135,40 @@ In sum, transcription loss cannot be reliably inferred as an evidence for negati
 
 \subsection{Does mutation bias shape protein composition?}
 
-In previous sections, we showed that mutation bias affects the rate of \textit{de novo} gene emergence and loss. We next turned our attention to whether this bias affects the composition (and thereby the chemistry) of \textit{de novo} proteins. To this end, we first asked if the expected frequency of different amino acids is uniform, and found that it is not uniform. Amino acids like leucine (L) and serine (S) have a higher expected frequency than other amino acids. On the other hand, amino acids like methionine (M) and tryptophan (W) are less probable (\autoref{aafreq}). This non-uniformity is to a great extent determined by number of degenerate codons for an amino acid. However, GC content also plays a role. For example, leucine, arginine and serine, all have six codons each. However, leucine is more probable than serine which in turn is more probable than arginine (\autoref{aafreq}). 
+\begin{figure}[!t]
+\centering
+\begin{subfigure}{0.47\textwidth}
+\caption{}
+\flushleft
+\includegraphics[scale=0.5]{Figures/pAAfreq.pdf}
+\end{subfigure}\hfill%
+\begin{subfigure}{0.47\textwidth}
+\caption{}
+\flushleft
+\includegraphics[scale=0.5]{Figures/pToAA.pdf}
+\end{subfigure}
+
+\vspace{1em}
+
+\begin{subfigure}[t]{0.47\textwidth}
+\caption{}
+\flushleft
+\includegraphics[scale=0.5]{Figures/pFrAA.pdf}
+\end{subfigure}\hfill%
+\begin{subfigure}[t]{0.47\textwidth}
+\caption{}
+\flushright
+\includegraphics[scale=0.5]{Figures/pAAsubSymCond.pdf}
+\end{subfigure}
+
+\caption{Mutation bias and GC content shape protein composition. Panels \textbf{(A)}, \textbf{(B)} and \textbf{(C)} show expected frequency, gain probability (\autoref{aagaineq}), and loss probability (\autoref{aalosseq}) for different amino acids (horizontal axes). The vertical axis in all these three subplots show the normalized values of these measures such that their sum over all amino acids is equal to one. Panel \textbf{(D)} shows the directionality (colored tiles, $\textit{D}_{x\to y}$, \autoref{directionality}) of the substitution from an amino acid (vertical axis) to another (horizontal axis). Positive values of $\textit{D}_{x\to y}$ are shown in shades of red, whereas negative values are shown in shades of blue.}
+\label{aafreq}
+
+\vspace{1ex}
+\hrule
+\end{figure}
+
+In previous sections, we showed that mutation bias affects the rate of \textit{de novo} gene emergence and loss. We next turned our attention to whether this bias affects the composition (and thereby the chemistry) of \textit{de novo} proteins. To this end, we first asked if the expected frequency of different amino acids is uniform, and found that it is not uniform. Amino acids like leucine (L) and serine (S) have a higher expected frequency than other amino acids. On the other hand, amino acids like methionine (M) and tryptophan (W) are less probable (\autoref{aafreq}A). This non-uniformity is to a great extent determined by number of degenerate codons for an amino acid. However, GC content also plays a role. For example, leucine, arginine and serine, all have six codons each. However, leucine is more probable than serine which in turn is more probable than arginine (\autoref{aafreq}A). 
 
 Next, we aimed to find out if some amino acid substitutions are more probable, than the others. To this end, we calculated the gain probability (\autoref{aagaineq}) for every amino acid. Specifically for every amino acid $x$, we calculated the average probability that it substitutes any of the other nineteen amino acids, due to mutations. More precisely, the total probability that an amino acid $y$ will mutate to an amino acid $x$ is the product of the expected frequency of amino acid $y$ ($P_y$), and the substitution rate from $x$ to $y$ ($\mu_{y\to x}$). The gain probability for an amino acid $x$ is then defined as:
 
@@ -137,26 +177,29 @@ G_x = \sum_{b \neq a} P_y \times \mu_{y\to x}
 \label{aagaineq}
 \end{equation}
 
-We found that amino gain probabilities were also non-uniform across different amino acids but had a good positive correlation with the expected frequency (Pearson $\rho = 0.955, P<10^{-10}$).
+We found that amino gain probabilities were also non-uniform across different amino acids (\autoref{aafreq}B) but had a good positive correlation with the expected frequency (Pearson $\rho = 0.955, P<10^{-10}$).
 
 Next, we calculated how easily is an amino acid mutated to any other amino acid. Specifically, the conditional loss probability for an amino acid ($L_x$), given the amino acid already exists, is defined as:
 
 \begin{equation}
 L_x = \sum_{b \neq a} \mu_{x\to y}
+\label{aalosseq}
 \end{equation}
 
 
-The loss probability was also not uniformly distributed but it did not significantly correlate with the expected frequency of the amino acids (Pearson $\rho = -0.255, P = 0.2818$).
+The loss probability was also not uniformly distributed (\autoref{aafreq}C) but it did not significantly correlate with the expected frequency of the amino acids (Pearson $\rho = -0.255, P = 0.2818$).
 
-Next, we investigated if some amino acid substitutions are more common than the others. As expected, amino acid substitutions that require more than one nucleotide change were much less probable than those needing just a single nucleotide change. Therefore, we focused our analysis on amino acid substitutions whose total probabilities were more than that of a double nucleotide mutation (note that this procedure identifies amino acid substitutions that are possible via single nucleotide mutation, but it does not exclude multinucleotide mutations from the calculation of amino acid substitution probabilities). Although single nucleotide mutations are more probable than double mutations, the different single mutations do not occur at the same rate due to mutation rate bias. Thus an amino acid substitution (for example K$\to$E) may not be as likely to occur as the reverse substitution (E$\to$K). To verify if such a directionality exists, we calculated the log transformed ratio of forward and reverse substitution probability, $D_{xy}$, for every pair of amino acids, $x$ and $y$. A positive value of $D_{xy}$ means that $x$ to $y$ substitution is more likely than $y$ to $x$ substitution, and \textit{vice versa}.
+Next, we investigated if some amino acid substitutions are more common than the others. As expected, amino acid substitutions that require more than one nucleotide change were much less probable than those needing just a single nucleotide change. Therefore, we focused our analysis on amino acid substitutions whose total probabilities were more than that of a double nucleotide mutation (note that this procedure identifies amino acid substitutions that are possible via single nucleotide mutation, but it does not exclude multinucleotide mutations from the calculation of amino acid substitution probabilities). Although single nucleotide mutations are more probable than double mutations, the different single mutations do not occur at the same rate due to mutation rate bias. Thus an amino acid substitution (for example K$\to$E) may not be as likely to occur as the reverse substitution (E$\to$K). To verify if such a directionality exists, we calculated the log transformed ratio of forward and reverse substitution probability, $D_{x\to y}$, for every pair of amino acids, $x$ and $y$. A positive value of $D_{x\to y}$ means that $x$ to $y$ substitution is more likely than $y$ to $x$ substitution, and \textit{vice versa}.
 
 \begin{equation}
-\textit{D}_{xy} = \log_2\left(\frac{\mu_{x\to y}}{\mu_{y\to x}}\right)
+\textit{D}_{x\to y} = \log_2\left(\frac{\mu_{x\to y}}{\mu_{y\to x}}\right)
+\label{directionality}
 \end{equation}
 
-As we mentioned in previous paragraph, we restricted this analysis to substitutions that can be achieved via single nucleotide mutations. We found that most substitutions indeed had a preferred direction $\textit{D}_{xy} \neq 0$. The median absolute value of $\textit{D}_{xy}$ was 0.905 and the maximum value was 2.836. That is, in 38 out of 75 amino acid pairs we analysed, one direction of substitution was at least 1.87 times more probable than the other. For example, E$\to$K substitution is 1.8 times more probable than K$\to$E substitution. This may appear as a small number but many such unidirectional substitutions occurring in an evolving protein could indicate a directional selection. We also performed a supporting analysis where we defined the substitution directionality using the ratio of corresponding amino acid gain probabilities (\autoref{aagaineq}). 
+As we mentioned in previous paragraph, we restricted this analysis to substitutions that can be achieved via single nucleotide mutations. We found that most substitutions indeed had a preferred direction ($\textit{D}_{xy} \neq 0$,  \autoref{aafreq}D). The median absolute value of $\textit{D}_{xy}$ was 0.905 and the maximum value was 2.836. That is, in 38 out of 75 amino acid pairs we analysed, one direction of substitution was at least 1.87 times more probable than the other. For example, E$\to$K substitution is 1.8 times more probable than K$\to$E substitution. This may appear as a small number but many such unidirectional substitutions occurring in an evolving protein could indicate a directional selection. We also performed an analogous analysis where we defined the substitution directionality using the ratio of corresponding amino acid gain probabilities (\autoref{aagaineq}). Using this definition reduces the range of directionality values ($\textit{D}_{xy}$) such that the median value is 0.38. Although this more stringent definition reduces the intensity of the directionality, it does not change the qualitative results. 
 
-Previous studies have argued that proteins that haven't been shaped via selection, tend to be hydrophobic because hydrophobic amino acids comprise 40\% of amino acids and can also easily arise in a protein sequence due to mutation pressure. They based these conclusions on mutation rate bias estimated in bacteria. We asked if our model also makes similar predictions. To this end, we first calculated the percentage of amino acids in a protein sequence that are expected to be hydrophobic. We classified an amino acid hydrophobic if its hydropathy index (Kyte and Doolittle) is greater than 0 (i.e A, C, F, I, L, M \& V). Based on this definition and the expected frequency of amino acids, we found that $\sim$39\% of amino acids in a protein sequence are expected to be hydrophobic. Next, we asked if a protein sequence in general tends to be hydrophobic. Specifically, we calculated expected hydropathy ($\bar{\alpha}$, \autoref{expHydropathy}) of a protein sequence, based on expected frequency of different amino acids ($P_x$, \autoref{aafreq}) and their hydropathic index values ($\alpha_x$). 
+
+Previous studies have argued that proteins that haven't been shaped via selection, tend to be hydrophobic because hydrophobic amino acids comprise 40\% of amino acids and can also easily arise in a protein sequence due to mutation pressure. They based these conclusions on mutation rate bias estimated in bacteria. We asked if our model also makes similar predictions. To this end, we first calculated the percentage of amino acids in a protein sequence that are expected to be hydrophobic. We classified an amino acid hydrophobic if its hydropathy index (Kyte and Doolittle) is greater than 0 (i.e A, C, F, I, L, M \& V). Based on this definition and the expected frequency of amino acids, we found that $\sim$39\% of amino acids in a protein sequence are expected to be hydrophobic. This finding is in agreement with the previous studies. Next, we asked if a protein sequence in general tends to be hydrophobic. Specifically, we calculated expected hydropathy ($\bar{\alpha}$, \autoref{expHydropathy}) of a protein sequence, based on expected frequency of different amino acids ($P_x$, \autoref{aafreq}) and their hydropathic index values ($\alpha_x$). 
 
 \begin{equation}
 \bar{\alpha} = \sum_{x} P_x \alpha_x
@@ -166,7 +209,7 @@ Previous studies have argued that proteins that haven't been shaped via selectio
 
 We found that the expected hydropathy is $-0.08628$, which suggests that random protein sequences are not generally hydrophobic. 
  
-Next, we calculated the probability that any mutation substitutes a non-hydrophobic amino acid with a hydrophobic amino acid ($P_{\alpha\textit{-gain}}$, \autoref{alphagain}). Likewise, we calculated the probability that any mutation causes a hydrophobic to non-hydrophobic amino acid substitution ($P_{\alpha\textit{-loss}}$, \autoref{alphaloss}). Next, we calculated the ratio of $P_{\alpha\textit{-gain}}$ and $P_{\alpha\textit{-loss}}$, and found that it was 1.053. This shows that random mutations do not have a strong bias towards causing hydrophobic amino acids to accumulate in protein sequence. 
+To find out if random mutations indeed cause hydrobphobic amino acids to occur in protein sequences, we calculated the probability that any mutation substitutes a non-hydrophobic amino acid with a hydrophobic amino acid ($P_{\alpha\textit{-gain}}$, \autoref{alphagain}). Likewise, we calculated the probability that any mutation causes a hydrophobic to non-hydrophobic amino acid substitution ($P_{\alpha\textit{-loss}}$, \autoref{alphaloss}).  
 
 \begin{align}
 P_{\alpha\textit{-gain}} & = \sum_{\genfrac{}{}{0pt}{1}{x}{\ |\ \alpha_x>0}} \sum_{\genfrac{}{}{0pt}{1}{y}{\ |\ \alpha_y \geq 0}} P_y \times \mu_{y\to x}\label{alphagain}\\[1em]
@@ -174,36 +217,15 @@ P_{\alpha\textit{-gain}} & = \sum_{\genfrac{}{}{0pt}{1}{x}{\ |\ \alpha_x>0}} \su
 P_{\alpha\textit{-loss}} &= \sum_{\genfrac{}{}{0pt}{1}{x}{\ |\ \alpha_x>0}} \sum_{\genfrac{}{}{0pt}{1}{y}{\ |\ \alpha_y \geq 0}} P_x \times \mu_{x\to y}\label{alphaloss}
 \end{align}
 
-\begin{figure}[!t]
-\centering
-\begin{subfigure}{0.49\textwidth}
-\caption{}
-\centering
-\includegraphics[scale=0.5]{Figures/pAAfreq.pdf}
-\end{subfigure}\hfill%
-\begin{subfigure}{0.49\textwidth}
-\caption{}
-\centering
-\includegraphics[scale=0.5]{Figures/pToAA.pdf}
-\end{subfigure}
-
-\begin{subfigure}{0.49\textwidth}
-\caption{}
-\centering
-\includegraphics[scale=0.5]{Figures/pFrAA.pdf}
-\end{subfigure}
-
-
-\caption{ORF loss is more probable than transcription loss, for \textit{de novo} genes containing more than 33 codons. The horizontal axis denotes the number of codons in the ORF. The vertical axis shows the log transformed ratio of ORF loss and RNA loss probabilities, such that a positive value means ORF-loss is more probable than RNA loss, and \textit{vice versa}.}
-\label{aafreq}
-
-\vspace{1ex}
-\hrule
-\end{figure}
+Next, we calculated the ratio of $P_{\alpha\textit{-gain}}$ and $P_{\alpha\textit{-loss}}$, and found that it was 1.053. This shows that random mutations do not preferentially cause hydrophobic amino acids to accumulate in protein sequence.
 
 \section{Discussion} 
 
 
 
+\section{Materials and Methods}
+
+\bibliographystyle{plainnat}
+\bibliography{refs}
 
 \end{document}

@@ -214,9 +214,10 @@ pHydrophobic = sum(aaprob[hydrophobic]);
 
 plot_aafreq = bar(aas,aaprob2,
     xticks = (0.5:20, aas),
+    yticks = (0:0.03:0.9),
     fill = :black,
     xlabel = "Amino acid",
-    ylabel = "Expected frequency",
+    ylabel = "Expected frequency\n(Normalized)",
     size = (width = cm2pt(15), height = cm2pt(11))
 );
 savefig(plot_aafreq, figdir*"pAAfreq.pdf")
@@ -299,9 +300,10 @@ savefig(plot_aasymprob2, figdir*"pAAsubSymCond.pdf")
 
 plot_toaa = bar(aas,gainAA./sum(gainAA),
     xticks = (0.5:20, aas),
+    yticks = (0:0.03:0.9),
     fill = :black,
     xlabel = "Amino acid",
-    ylabel = "Gain Probability",
+    ylabel = "Gain Probability\n(Normalized)",
     size = (width = cm2pt(15), height = cm2pt(11))
 );
 
@@ -311,7 +313,7 @@ plot_fraa = bar(aas,lossAA./sum(lossAA),
     xticks = (0.5:20, aas),
     fill = :black,
     xlabel = "Amino acid",
-    ylabel = "Loss Probability",
+    ylabel = "Loss Probability\n(Normalized)",
     size = (width = cm2pt(15), height = cm2pt(11))
 );
 
