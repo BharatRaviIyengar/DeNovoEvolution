@@ -244,8 +244,8 @@ asymmetric_conditional = log2.(aasubprob_conditional./aasubprob_conditional');
 
 # c = kmeans(asymmetric_transitions,3);
 # idx = sortperm(assignments(c));
-hcl = hclust(aasubhighprob .+ aasubhighprob');
-idx = hcl.order;
+# hcl = hclust(aasubhighprob .+ aasubhighprob');
+# idx = hcl.order;
 
 gainAA = Vector{Float64}(vec(sum(aasubprob, dims=1)'));
 lossAA = Vector{Float64}(vec(sum(aasubprob, dims=2)./aaprob2));

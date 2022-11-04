@@ -130,32 +130,49 @@ In sum, transcription loss cannot be reliably inferred as an evidence for negati
 
 In previous sections, we showed that mutation bias affects the rate of \textit{de novo} gene emergence and loss. We next turned our attention to whether this bias affects the composition (and thereby the chemistry) of \textit{de novo} proteins. To this end, we first asked if the expected frequency of different amino acids is uniform, and found that it is not uniform. Amino acids like leucine (L) and serine (S) have a higher expected frequency than other amino acids. On the other hand, amino acids like methionine (M) and tryptophan (W) are less probable (\autoref{aafreq}). This non-uniformity is to a great extent determined by number of degenerate codons for an amino acid. However, GC content also plays a role. For example, leucine, arginine and serine, all have six codons each. However, leucine is more probable than serine which in turn is more probable than arginine (\autoref{aafreq}). 
 
-Next, we tried to find out if some amino acid substitutions are more probable, than the others. To this end, we calculated the gain probability ($G$) for every amino acid. Specifically for every amino acid $a$, we calculated the average probability that it substitutes any of the other nineteen amino acids, due to mutations. More precisely, the total probability that an amino acid $b$ will mutate to an amino acid $a$ is the product of the expected frequency of amino acid $b$ ($P_b$), and the substitution rate from $a$ to $b$ ($\mu_{b\to a}$). The gain probability for amino acid $a$ is thus defined as:
+Next, we aimed to find out if some amino acid substitutions are more probable, than the others. To this end, we calculated the gain probability (\autoref{aagaineq}) for every amino acid. Specifically for every amino acid $x$, we calculated the average probability that it substitutes any of the other nineteen amino acids, due to mutations. More precisely, the total probability that an amino acid $y$ will mutate to an amino acid $x$ is the product of the expected frequency of amino acid $y$ ($P_y$), and the substitution rate from $x$ to $y$ ($\mu_{y\to x}$). The gain probability for an amino acid $x$ is then defined as:
 
-$$G_a = \sum_{b \neq a} P_b \times \mu_{b\to a}$$
+\begin{equation}
+G_x = \sum_{b \neq a} P_y \times \mu_{y\to x}
+\label{aagaineq}
+\end{equation}
 
 We found that amino gain probabilities were also non-uniform across different amino acids but had a good positive correlation with the expected frequency (Pearson $\rho = 0.955, P<10^{-10}$).
 
-Next, we calculated how easily is an amino acid mutated to any other amino acid. Specifically, the conditional loss probability ($L$), given the amino acid already exists, is defined as:
+Next, we calculated how easily is an amino acid mutated to any other amino acid. Specifically, the conditional loss probability for an amino acid ($L_x$), given the amino acid already exists, is defined as:
 
-$$L_a = \sum_{b \neq a} \mu_{a\to b}$$
+\begin{equation}
+L_x = \sum_{b \neq a} \mu_{x\to y}
+\end{equation}
 
-The loss probability did not significantly correlate with the expected frequency (Pearson $\rho = -0.255, P = 0.2818$).
 
-Next, we investigated if some amino acid substitutions are more common than the others. As expected, amino acid substitutions that require more than one nucleotide change were much less probable than those needing just a single nucleotide change. Therefore, we focused our analysis on amino acid substitutions whose total probabilities were more than that of a double nucleotide mutation (note that this procedure identifies amino acid substitutions that are possible via single nucleotide mutation, but it does not exclude multinucleotide mutations from the calculation of amino acid substitution probabilities). Although double nucleotide mutations are less probable than single mutations, the mutation bias makes causes different single mutations to occur with different probabilities. Thus it is very likely that an amino acid substitution (for example K$\to$E) may not be as probable as the reverse substitution (E$\to$K). To identify if such a directionality exists, we calculated the log transformed ratio of forward and reverse substitution probability, $D_{ab}$, for every pair of amino acids, $a$ and $b$. A positive value of $D_{ab}$ means that $a$ to $b$ substitution is more likely than $B$ to $a$ substitution, and \textit{vice versa}.
+The loss probability was also not uniformly distributed but it did not significantly correlate with the expected frequency of the amino acids (Pearson $\rho = -0.255, P = 0.2818$).
 
-$$ \textit{D}_{ab} = \log_2\left(\frac{\mu_{a\to b}}{\mu_{b\to a}}\right)$$
+Next, we investigated if some amino acid substitutions are more common than the others. As expected, amino acid substitutions that require more than one nucleotide change were much less probable than those needing just a single nucleotide change. Therefore, we focused our analysis on amino acid substitutions whose total probabilities were more than that of a double nucleotide mutation (note that this procedure identifies amino acid substitutions that are possible via single nucleotide mutation, but it does not exclude multinucleotide mutations from the calculation of amino acid substitution probabilities). Although single nucleotide mutations are more probable than double mutations, the different single mutations do not occur at the same rate due to mutation rate bias. Thus an amino acid substitution (for example K$\to$E) may not be as likely to occur as the reverse substitution (E$\to$K). To verify if such a directionality exists, we calculated the log transformed ratio of forward and reverse substitution probability, $D_{xy}$, for every pair of amino acids, $x$ and $y$. A positive value of $D_{xy}$ means that $x$ to $y$ substitution is more likely than $y$ to $x$ substitution, and \textit{vice versa}.
 
-We restricted this analysis to substitutions that can be achieved via single nucleotide mutations. We found that most substitutions indeed had a preferred direction $\textit{D}_{ab} \neq 0$. The median absolute value of $\textit{D}_{ab}$ was 0.905 and the maximum value was 2.836. This means that for 50\% of the pairs we analysed, one substitution direction was 1.87 times more probable than the other. For example, E$\to$K is 1.8 times more probable than K$\to$E. This may appear as a small number but many such directional substitutions occurring in an evolving protein could indicate a directional selection. 
+\begin{equation}
+\textit{D}_{xy} = \log_2\left(\frac{\mu_{x\to y}}{\mu_{y\to x}}\right)
+\end{equation}
 
-Previous studies have argued that hydrophobic amino acids are comprise 40\% of amino acids and can also easily arise due to mutation pressure. They based these conclusions on mutation rate bias estimated in bacteria. We asked if our model also makes similar predictions. To this end we calculated expected average hydropathy ($\bar{\alpha}$) of a protein sequence, based on expected frequency of different amino acids ($P_i$, \autoref{aafreq}) and their hydropathic index values ($\alpha$, Kyte and Doolittle). Specifically: 
+As we mentioned in previous paragraph, we restricted this analysis to substitutions that can be achieved via single nucleotide mutations. We found that most substitutions indeed had a preferred direction $\textit{D}_{xy} \neq 0$. The median absolute value of $\textit{D}_{xy}$ was 0.905 and the maximum value was 2.836. That is, in 38 out of 75 amino acid pairs we analysed, one direction of substitution was at least 1.87 times more probable than the other. For example, E$\to$K substitution is 1.8 times more probable than K$\to$E substitution. This may appear as a small number but many such unidirectional substitutions occurring in an evolving protein could indicate a directional selection. We also performed a supporting analysis where we defined the substitution directionality using the ratio of corresponding amino acid gain probabilities (\autoref{aagaineq}). 
 
-$$\bar{\alpha} = \sum_{i} P_i \alpha_i$$
+Previous studies have argued that proteins that haven't been shaped via selection, tend to be hydrophobic because hydrophobic amino acids comprise 40\% of amino acids and can also easily arise in a protein sequence due to mutation pressure. They based these conclusions on mutation rate bias estimated in bacteria. We asked if our model also makes similar predictions. To this end, we first calculated the percentage of amino acids in a protein sequence that are expected to be hydrophobic. We classified an amino acid hydrophobic if its hydropathy index (Kyte and Doolittle) is greater than 0 (i.e A, C, F, I, L, M \& V). Based on this definition and the expected frequency of amino acids, we found that $\sim$39\% of amino acids in a protein sequence are expected to be hydrophobic. Next, we asked if a protein sequence in general tends to be hydrophobic. Specifically, we calculated expected hydropathy ($\bar{\alpha}$, \autoref{expHydropathy}) of a protein sequence, based on expected frequency of different amino acids ($P_x$, \autoref{aafreq}) and their hydropathic index values ($\alpha_x$). 
 
-We found that the expected hydropathy is $-0.08628$, which suggests that random protein sequences are not mostly hydrophobic. 
+\begin{equation}
+\bar{\alpha} = \sum_{x} P_x \alpha_x
+\label{expHydropathy}
+\end{equation}
+
+
+We found that the expected hydropathy is $-0.08628$, which suggests that random protein sequences are not generally hydrophobic. 
  
-Next, we calculated the probability that any mutation substitutes a non-hydrophobic amino acid with a hydrophobic amino acid ($P_{\alpha\textit{-gain}}$). We defined hydrophobic amino acids as those with hydropathy index greater than 0 (i.e A, C, F, I, L, M \& V). Likewise, we calculated the probability that any mutation causes a hydrophobic to non-hydrophobic amino acid substitution ($P_{\alpha\textit{-loss}}$). Next, we calculated the ratio of $P_{\alpha\textit{-gain}}$ and $P_{\alpha\textit{-loss}}$, and found that it was 1.053. This shows that random mutations do not have a strong bias towards causing hydrophobic amino acids to accumulate in protein sequence. 
+Next, we calculated the probability that any mutation substitutes a non-hydrophobic amino acid with a hydrophobic amino acid ($P_{\alpha\textit{-gain}}$, \autoref{alphagain}). Likewise, we calculated the probability that any mutation causes a hydrophobic to non-hydrophobic amino acid substitution ($P_{\alpha\textit{-loss}}$, \autoref{alphaloss}). Next, we calculated the ratio of $P_{\alpha\textit{-gain}}$ and $P_{\alpha\textit{-loss}}$, and found that it was 1.053. This shows that random mutations do not have a strong bias towards causing hydrophobic amino acids to accumulate in protein sequence. 
 
+\begin{align}
+P_{\alpha\textit{-gain}} & = \sum_{\genfrac{}{}{0pt}{1}{x}{\ |\ \alpha_x>0}} \sum_{\genfrac{}{}{0pt}{1}{y}{\ |\ \alpha_y \geq 0}} P_y \times \mu_{y\to x}\label{alphagain}\\[1em]
+%
+P_{\alpha\textit{-loss}} &= \sum_{\genfrac{}{}{0pt}{1}{x}{\ |\ \alpha_x>0}} \sum_{\genfrac{}{}{0pt}{1}{y}{\ |\ \alpha_y \geq 0}} P_x \times \mu_{x\to y}\label{alphaloss}
+\end{align}
 
 \begin{figure}[!t]
 \centering
