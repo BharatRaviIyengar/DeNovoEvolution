@@ -1,6 +1,6 @@
 \documentclass[12pt,a4paper]{article}
 \usepackage[margin=2.5cm]{geometry}
-\usepackage{amsmath,amssymb,graphicx,setspace,palatino, subcaption}
+\usepackage{amsmath,amssymb,graphicx,setspace,palatino,float,subcaption, booktabs}
 \usepackage[colorlinks, allcolors = blue]{hyperref}
 \usepackage{natbib}
 \citestyle{egu}
@@ -8,6 +8,9 @@
 \captionsetup[figure]{labelfont=bf,textfont={small,normalfont}}
 \captionsetup[subfigure]{labelsep=quad, labelfont={bf,small}, textfont=small, singlelinecheck=off, justification=raggedright, position=top}
 \renewcommand{\thesubfigure}{\Alph{subfigure}}
+
+\renewcommand{\subsectionautorefname}{Section}
+\renewcommand{\subsubsectionautorefname}{Section}
 
 \renewcommand*{\thefootnote}{\fnsymbol{footnote}}
 \setcounter{footnote}{1}
@@ -20,9 +23,11 @@
 
 \section{Results}
 
-In this work, we developed mathematical models to estimate the rates and probabilities of \textit{de novo} gene emergence, as well as gene loss. A \textit{de novo} gene emerges from a non-genic DNA, when the latter mutates to gain sequence features necessary for transcription and translation. Both transcription and translation are complex processes involving many biomolecular complexes that work in concert. Here, we focus on the minimal requirements for these processes to occur. Specifically for transcription, we require a gene to have one of the two core promoter motifs, the TATA-box or the Initiator element (Inr), and a polyadenylation (poly-A) signal sequence. For translation, we only require the gene to have an open reading frame (ORF). Using simple probability models, we calculate the likelihood of finding these features in a DNA sequence by random chance, and the rate at which these features are gained and lost via mutagenesis. These probability models are essentially described by two kinds of probability. First is the probability of finding a DNA sequence feature (such as TATA box or an ORF). This probability depends on the nucleotide distribution given by the GC content. The second kind of probability is the transition probability, that is the probability of a DNA sequence mutating to another. Transition probabilities that describe the gain and loss of DNA sequence features, depend on mutation rate, mutation bias, and GC content. 
+In this work, we developed mathematical models to estimate the rates and probabilities of \textit{de novo} gene emergence, as well as gene loss. A \textit{de novo} gene emerges from a non-genic DNA, when the latter mutates to gain sequence features necessary for transcription and translation. Both transcription and translation are complex processes involving many biomolecular complexes that work in concert. Here, we focus on the minimal requirements for these processes to occur. Specifically for transcription, we require a gene to have one of the two core promoter motifs, the TATA-box or the Initiator element (Inr), and a polyadenylation (poly-A) signal sequence. [here a rationale for this choice]. For translation, we only require the gene to have an open reading frame (ORF). 
 
-For all calculations we used a GC content of 0.42 which is reasonably close to the global GC content of human, \textit{Drosophila melanogaster}, and \textit{Saccharomyces cerevisiae} genomes. We used a mutation rate of $7.8\times10^{-9}$ mutations per nucleotide position per generation, which corresponds to spontaneous mutation rate estimated in a \textit{Drosophila melanogaster} population that was subjected to periodic population bottlenecks \cite[mutation accumulation line,][]{drosophilamutrate}. We used mutation bias data from the same study \citep{drosophilamutrate} which was in agreement with another previous study on human pseudogenes \citep{humanmutrate}. shows the values of different mutation rates. 
+Using simple probability models, we calculate the likelihood of finding these features in a DNA sequence by random chance, and the rate at which these features are gained and lost via mutagenesis. These probability models are essentially described by two kinds of probability. First is the probability of finding a DNA sequence feature (such as TATA box or an ORF). This probability depends on the nucleotide distribution given by the GC content. The second kind of probability is the transition probability, that is the probability of a DNA sequence mutating to another. Transition probabilities that describe the gain and loss of DNA sequence features, depend on mutation rate, mutation bias, and GC-content. 
+
+For all calculations we used a GC-content of 0.42 which is reasonably close to the global GC-content of human, \textit{Drosophila melanogaster}, and \textit{Saccharomyces cerevisiae} genomes. We used a mutation rate of $7.8\times10^{-9}$ mutations per nucleotide position per generation, which corresponds to spontaneous mutation rate estimated in a \textit{Drosophila melanogaster} population that was subjected to periodic population bottlenecks \cite[mutation accumulation line,][]{drosophilamutrate}. We used mutation bias data from the same study \citep{drosophilamutrate} which was in agreement with another previous study on human pseudogenes \citep{humanmutrate}. shows the values of different mutation rates. 
 
 Using a similar approach, we predict how the nucleotide distribution and random mutations shape protein composition and evolution. 
 
@@ -182,7 +187,7 @@ We found that amino gain probabilities were also non-uniform across different am
 Next, we calculated how easily is an amino acid mutated to any other amino acid. Specifically, the conditional loss probability for an amino acid ($L_x$), given the amino acid already exists, is defined as:
 
 \begin{equation}
-L_x = \sum_{b \neq a} \mu_{x\to y}
+L_x = \sum_{x \neq y} \mu_{x\to y}
 \label{aalosseq}
 \end{equation}
 
@@ -199,7 +204,7 @@ Next, we investigated if some amino acid substitutions are more common than the 
 As we mentioned in previous paragraph, we restricted this analysis to substitutions that can be achieved via single nucleotide mutations. We found that most substitutions indeed had a preferred direction ($\textit{D}_{xy} \neq 0$,  \autoref{aafreq}D). The median absolute value of $\textit{D}_{xy}$ was 0.905 and the maximum value was 2.836. That is, in 38 out of 75 amino acid pairs we analysed, one direction of substitution was at least 1.87 times more probable than the other. For example, E$\to$K substitution is 1.8 times more probable than K$\to$E substitution. This may appear as a small number but many such unidirectional substitutions occurring in an evolving protein could indicate a directional selection. We also performed an analogous analysis where we defined the substitution directionality using the ratio of corresponding amino acid gain probabilities (\autoref{aagaineq}). Using this definition reduces the range of directionality values ($\textit{D}_{xy}$) such that the median value is 0.38. Although this more stringent definition reduces the intensity of the directionality, it does not change the qualitative results. 
 
 
-Previous studies have argued that proteins that haven't been shaped via selection, tend to be hydrophobic because hydrophobic amino acids comprise 40\% of amino acids and can also easily arise in a protein sequence due to mutation pressure. They based these conclusions on mutation rate bias estimated in bacteria. We asked if our model also makes similar predictions. To this end, we first calculated the percentage of amino acids in a protein sequence that are expected to be hydrophobic. We classified an amino acid hydrophobic if its hydropathy index (Kyte and Doolittle) is greater than 0 (i.e A, C, F, I, L, M \& V). Based on this definition and the expected frequency of amino acids, we found that $\sim$39\% of amino acids in a protein sequence are expected to be hydrophobic. This finding is in agreement with the previous studies. Next, we asked if a protein sequence in general tends to be hydrophobic. Specifically, we calculated expected hydropathy ($\bar{\alpha}$, \autoref{expHydropathy}) of a protein sequence, based on expected frequency of different amino acids ($P_x$, \autoref{aafreq}) and their hydropathic index values ($\alpha_x$). 
+Previous studies have argued that proteins that haven't been shaped via selection, tend to be hydrophobic because hydrophobic amino acids comprise 40\% of amino acids and can also easily arise in a protein sequence due to mutation pressure. They based these conclusions on mutation rate bias estimated in bacteria. We asked if our model also makes similar predictions. To this end, we first calculated the percentage of amino acids in a protein sequence that are expected to be hydrophobic. We classified an amino acid hydrophobic if its hydropathy index \citep{hydropathy} is greater than 0 (i.e A, C, F, I, L, M \& V). Based on this definition and the expected frequency of amino acids, we found that $\sim$39\% of amino acids in a protein sequence are expected to be hydrophobic. This finding is in agreement with the previous studies. Next, we asked if a protein sequence in general tends to be hydrophobic. Specifically, we calculated expected hydropathy ($\bar{\alpha}$, \autoref{expHydropathy}) of a protein sequence, based on expected frequency of different amino acids ($P_x$, \autoref{aafreq}) and their hydropathic index values ($\alpha_x$). 
 
 \begin{equation}
 \bar{\alpha} = \sum_{x} P_x \alpha_x
@@ -224,6 +229,177 @@ Next, we calculated the ratio of $P_{\alpha\textit{-gain}}$ and $P_{\alpha\texti
 
 
 \section{Materials and Methods}
+
+\subsection{Mutation probabilities}
+
+We calculated nucleotide substitution probabilities based on mutation rate and mutation rate bias data. Specifically, we  used a mutation rate ($\lambda$) of $7.8\times10^{-9}$ mutations per nucleotide position per generation \citep{drosophilamutrate}. We derived our mutation bias parameters from two published studies, the first on \textit{Drosophila melanogaster} \citep{drosophilamutrate}, and the second on humans \citep{humanmutrate}. \autoref{mutbias} shows the exact values of mutation bias probabilities that we used in this study.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c c}
+\toprule
+\textbf{Substitution} & Probability($\mu$) \\\midrule
+\texttt{A:T}$\to$\texttt{T:A} & 0.056 \\\midrule
+\texttt{A:T}$\to$\texttt{G:C} & 0.243 \\\midrule
+\texttt{A:T}$\to$\texttt{C:G} & 0.074 \\\midrule
+\texttt{G:C}$\to$\texttt{A:T} & 0.483 \\\midrule
+\texttt{G:C}$\to$\texttt{T:A} & 0.075 \\\midrule
+\texttt{G:C}$\to$\texttt{C:G} & 0.069 \\\bottomrule
+\end{tabular}
+\caption{Mutation bias probabilities.}
+\label{mutbias}
+\end{table}
+
+\subsection{Probabilities of finding, gaining, and losing a DNA sequence}
+
+\subsubsection{Probability of finding a DNA sequence}
+
+We calculated the probability of finding a DNA sequence based on global nucleotide frequency distributions, given by the GC-content. We used a GC content of 0.42 for our calculations. Specifically, the probability of finding either a \texttt{G} or a \texttt{C} is: $S = 0.5\times$GC-content. The probability of finding an \texttt{A} or a \texttt{T} is: $W = 1 - 0.5\times$GC-content. Using these values, we calculated the probability of finding a DNA sequence motif by chance. For example, the probability of finding the sequence \texttt{ATG} would be: $W\times W \times S$.
+
+\subsubsection{Probability of gaining a DNA sequence}
+\label{methgain}
+
+We calculated the probability of gaining a DNA sequence due to mutations using GC-content, mutation rate and mutation bias. Specifically, we calculated the probability that a DNA sequence does not exist, and it emerges due to specific nucleotide mutations. More precisely, this probability is the product of two other probabilities. The first is the probability of finding a DNA sequence ($x$) that is not the sequence of interest. The second probability is that this sequence $x$ mutates to the sequence of interest. To explain this calculation better, we use the example of \texttt{CTA} mutating to \texttt{ATG}. The first probability i.e. the probability of finding \texttt{CTA} by chance is $SW^2$. \texttt{CTA} mutates to \texttt{ATG} via two nucleotide mutations (\texttt{C}$\to$\texttt{A} and \texttt{A}$\to$\texttt{G}). Thus the probability of this DNA change would be the probability of two nucleotide mutations ($\lambda^2$) multiplied by two mutation bias probabilities (\texttt{G:C}$\to$\texttt{T:A} and \texttt{A:T}$\to$\texttt{G:C}). Overall, the chance of \texttt{CTA} mutating to \texttt{ATG} would be:
+
+$$SW^2 \times \lambda^2 \times \mu_{\texttt{G:C}\to\texttt{T:A}} \times \mu_{\texttt{A:T}\to\texttt{G:C}}$$
+
+Next, we calculated the probability that every nucleotide triplet that is not \texttt{ATG}, mutates to \texttt{ATG}. This can happen via one, two, or three nucleotide mutations. The sum of all these mutation probabilities is the probability of \texttt{ATG} gain.
+
+Using the same principle we calculated the gain probability of any DNA sequence motif (of any length or composition). We excluded insertions and deletions as a mechanism of gain of small DNA sequences that we analysed in this study. 
+
+\subsubsection{Probability of losing a DNA sequence}
+
+We calculated the loss of a DNA sequence motif using the same principle we used for calculating gain probabilities. However, we defined loss probability as a conditional probability i.e. we assume that the DNA sequence of interest already exists in the genome. For example, the loss probability of a specific \texttt{ATG} sequence would be the sum of probabilities of \texttt{ATG} mutating to any of the other 63 nucleotide triplets (via one, two, or three nucleotide mutations). We use conditional loss probabilities by default, because usually one is interested in finding out how quickly can an existing DNA sequence erode.
+
+We used this method to calculate the loss probability of any DNA sequence motif, and we excluded insertions and deletions from this calculation.
+
+\subsection{Probabilities of finding, gaining, and losing DNA features}
+
+Usually, a specific function is encoded in DNA by several DNA sequences. For example, translation stop is encoded by three codons (\texttt{TGA}, \texttt{TAG}, \texttt{TAA}). We use the term DNA features to mean a set of DNA sequences that are associated with the same function. For every such DNA feature set, there is a complementary set of non-features i.e DNA sequences that are not associated with the feature's function. For example, the non-feature set of stop codons would be all the other 61 codons. 
+
+The probability that a DNA feature exists, is the sum of probabilities of every DNA sequence in that set.
+
+The probability that a DNA feature is gained via mutations, is the sum of probabilities of every non-feature sequence mutating to any feature sequence. If $F$ denotes the feature set, and $\mu_{y\to x}$ denotes the probability of a DNA sequence $y$ mutating to a DNA sequence $x$ (see \autoref{methgain}), then:
+
+\begin{equation}
+P_\textit{feature-gain} = \sum_{x \in F} \sum_{y \notin F} P_y \times \mu_{y\to x}
+\end{equation}
+
+The probability that a DNA feature is lost via mutations is a conditional probability that given a feature exists, it mutates to any of the non-feature sequences. 
+
+\begin{equation}
+P_\textit{feature-loss} = \frac{\displaystyle\sum_{x \in F} \sum_{y \notin F} P_x \times \mu_{x\to y}}{\displaystyle\sum_{x \in F} P_x}
+\end{equation}
+
+Because a feature set usually has many DNA sequences, a mutation can change a feature sequence such that the resulting sequence is also a part of the feature set. Thus we defined the probability ($P_\textit{feature-stay}$) that a feature does not erode because of mutations. Specifically, it is the the sum of two probabilities. First is the probability that no mutation occurs in the DNA sequence ($P_0$), and the second probability describes the event where mutated sequence is still a part of the feature set.
+
+\begin{equation}
+P_\textit{feature-stay} = P_0 + \sum_{x \in F} \sum_{\genfrac{}{}{0pt}{1}{y \in F}{y\neq x}} \mu_{x\to y}
+\end{equation}
+
+
+The probability that no mutation occurs ($P_0$) in a DNA sequence of length $k$ is described by Poisson distribution. 
+
+\vspace{-1ex}
+
+$$P_0 = 1-e^{-k\lambda}$$
+
+Because the mutation rate is biased (\autoref{mutbias}), the probability that a mutation does not occur in a DNA sequence depends on the composition of the sequence. 
+
+The probability that an \texttt{A} or a \texttt{T} mutates ($\lambda_\texttt{AT}$), is described by the mutation bias (\autoref{mutbias}) as:
+
+\vspace{-1ex}
+
+$$\lambda_\texttt{AT} = 2\times\lambda\times(\mu_{\texttt{A:T}\to\texttt{T:A}} + \mu_{\texttt{A:T}\to\texttt{G:C}} + \mu_{\texttt{A:T}\to\texttt{C:G}})$$
+
+Likewise, the probability that a \texttt{G} or a \texttt{C} mutates ($\lambda_\texttt{GC}$) is: 
+
+\vspace{-1ex}
+
+$$\lambda_\texttt{GC} = 2\times\lambda\times(\mu_{\texttt{G:C}\to\texttt{A:T}} + \mu_{\texttt{G:C}\to\texttt{T:A}} + \mu_{\texttt{G:C}\to\texttt{C:G}})$$
+
+(Note that the general mutation rate, $\lambda$, is an average of $\lambda_\texttt{AT}$ and $\lambda_\texttt{GC}$.)
+
+\vspace{1\baselineskip}
+
+Thus the probability that a sequence of length $k$, containing $m$ number of \texttt{A} and \texttt{T}, does not mutate is:
+
+$$P_0 = (1-e^{-m\lambda_\texttt{AT}})\times(1-e^{-(k-m)\lambda_\texttt{GC}})$$
+
+\subsection{Probabilities of finding, gaining, and losing transcription}
+
+To calculate the probabilities of finding, gaining, and losing transcription, we first defined the minimum requirements for transcription. These requirements are a promoter, either a TATA-box or an Initiator (Inr) element, and a polyadenylation signal. Each of these three DNA sequence motifs consists of more than one DNA sequence.
+
+\subsubsection{Definition of TATA-box, Inr and poly-A signal}
+
+\paragraph{TATA box:}
+
+The consensus sequence of TATA-box is \texttt{TATA [T/A] A [T/A] [G/A]} \citep{tata2}. Square brackets mean that, any of the nucleotides enclosed by them, can exist in that specific position. Another study used X-ray crystallography to identify mutations that are tolerated in TATA-box consensus sequence \cite{tata1}. Thus there are eight consensus sequences, and at seven positions, a non-consensus nucleotide is tolerated (\autoref{tatatab}). This makes a TATA-box feature set that contains 136 sequences. We defined the corresponding non-feature set by generating all 8-mer DNA sequences that do not belong to the TATA-box feature set.
+
+\begin{table}[!t]
+\centering
+\begin{tabular}{@{}ccc@{}}
+\toprule
+Position  & Accepted nucleotides & \begin{tabular}[c]{@{}c@{}}Number of Variants\\ (consensus + suboptimal)\end{tabular} \\ \midrule
+1         & T$\gg$C$>$A,G        & $1+3$                                                                                 \\ \midrule
+2         & A$\gg$T              & $1+1$                                                                                 \\ \midrule
+3         & T$\gg$A,C            & $1+2$                                                                                 \\ \midrule
+4         & A$\gg$T              & $1+1$                                                                                 \\ \midrule
+5         & T/A                  & $2+0$                                                                                 \\ \midrule
+6         & A$\gg$G$>$C/T        & $1+3$                                                                                 \\ \midrule
+7         & A/T$>$G$>$C          & $2+2$                                                                                 \\ \midrule
+8         & G/A$>$C/T            & $2+2$                                                                                                                                                                 \\ \bottomrule
+\end{tabular}
+\caption{Nucleotide residues that are tolerated at different positions in a TATA-box \citep[based on][]{tata1}}
+\label{tatatab}
+\end{table}
+
+
+\paragraph{Inr:} The consensus sequence of Inr is \texttt{[T/G/C] [T/G/C] CA [T/G/C] [T/A]} \citep{Inr}, which gives 54 sequences in the Inr feature set. We generated the corresponding non-feature set by taking all DNA 6-mers that are distinct from the 54 Inr sequences.
+
+\paragraph{poly-A signal:} There are four known poly-A signal variants -- \texttt{AATAAA}, \texttt{ATTAAA}, \texttt{AGTAAA}, and \texttt{TATAAA} that compose the poly-A signal feature set \citep{polyA}. The non-feature set consists of all other DNA 6-mers.
+
+We calculated probabilities of finding, gaining and losing these features as we described in the previous section.
+
+\subsubsection{Definition of the probabilities}
+
+Probability that a DNA region is transcribed by chance ($P_\textit{RNA}$), is the probability of finding a poly-A signal multiplied by the sum of probabilities of finding a TATA-box, and an Inr element. 
+
+\begin{equation}
+P_\textit{RNA} = P_\textit{polyA} \times (P_\textit{TATA} + P_\textit{Inr})
+\end{equation}
+
+Gain of transcription can happen via two mechanisms. In the first mechanism a promoter (TATA-box or Inr) already exists, and mutations cause a poly-A signal to emerge ($P_\textit{polyA-gain}$) but do not destroy the promoter ($P_\textit{TATA-stay}$,  $P_\textit{Inr-stay}$). In the second mechanism, a poly-A signal exists and the promoter emerges due to mutations ($P_\textit{TATA-gain}$,  $P_\textit{Inr-gain}$), while the poly-A signal remains undisrupted ($P_\textit{polyA-stay}$). Thus the total probability of transcription gain ($P_\textit{RNA-gain}$) would be the sum of the probabilities of the two mechanisms.
+
+\begin{equation}
+P_\textit{RNA-gain} = (P_\textit{TATA-stay} + P_\textit{Inr-stay})\times P_\textit{polyA-gain} + (P_\textit{TATA-gain} + P_\textit{Inr-gain})\times P_\textit{polyA-stay}
+\end{equation}
+
+It is also possible that both the promoter and the poly-A signal were initially absent, and emerge via mutations. However, this probability is very small and is negligible.
+
+Transcription is lost when either the promoter is lost or when the poly-A signal is lost. Since two kinds of promoters can initiate transcription, there can be three kinds of transcription units. First that has only TATA-box, second that has only Inr, and the third that has both these promoters. All these three transcription units must also have a poly-A signal. To calculate the conditional probability of promoter loss, we calculated the fraction of transcription units ($Q$) that belong to each of these three classes. For example, the fraction of transcription units that are TATA-only is ($Q_\textit{TATA-only}$):
+
+$$Q_\textit{TATA-only} = \frac{P_\textit{TATA}\times(1 - P_\textit{Inr})}{(P_\textit{TATA} + P_\textit{Inr} - P_\textit{TATA}\times P_\textit{Inr})}$$
+
+Here, the numerator denotes probability of finding a TATA-box but not an Inr, and the denominator denotes the probability of finding a promoter that can be a TATA-box, Inr, or both. Likewise, the fraction of Inr-only ($Q_\textit{Inr-only}$) and TATA-Inr promoters ($Q_\textit{both}$) are given by:
+
+\vspace{-1em}
+
+\begin{align*}
+Q_\textit{Inr-only} & = \frac{P_\textit{Inr}\times(1 - P_\textit{Inr})}{(P_\textit{TATA} + P_\textit{Inr} - P_\textit{TATA}\times P_\textit{Inr})} \\[1em]
+Q_\textit{both} & = 1 - Q_\textit{TATA-only} -Q_\textit{Inr-only}
+\end{align*}
+
+For a TATA-only transcription unit to lose a promoter, it should lose the TATA-box but simultaneously not gain an Inr. Likewise, an Inr-only transcription unit will lose a promoter when it loses the Inr but not gain a TATA-box. A transcription unit that has both the promoters must lose both of them. For all the three kinds of transcription units, transcription would be lost if poly-A signal is lost.
+
+The conditional probability of transcription loss ($P_\textit{RNA-loss}$), given that transcription exists, is thus defined as:
+
+\begin{align}
+P_\textit{RNA-loss} & = Q_\textit{TATA-only} \times P_\textit{TATA-loss}\times(1-P_\textit{Inr-gain}) \nonumber\\[1ex]
+ & \quad + Q_\textit{Inr-only}\times P_\textit{Inr-loss}\times(1-P_\textit{TATA-gain}) \nonumber \\[1ex]
+ & \quad + Q_\textit{both}\times P_\textit{TATA-loss} \times P_\textit{Inr-loss} + P_\textit{polyA-loss}
+\end{align}
+
 
 \bibliographystyle{plainnat}
 \bibliography{refs}

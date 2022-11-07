@@ -31,55 +31,55 @@ function rnavals(gccontent)
 [degen(s,7,nucs) for s in tataboxes],
 [degen(s,8,nucs) for s in tataboxes],
         ])
-    ))
+    ));
 
-    notata = setdiff(kmers(8),tatavars)
+    notata = setdiff(kmers(8),tatavars);
 
-    tataprob = sum([nucprob(x,gccontent) for x in tatavars])
-    tatagain = featuregain(notata,tatavars,gccontent)
-    tataloss1 = featuregain(tatavars,notata,gccontent)
-    tataloss2 = tataloss1/tataprob
-    tatastay = featurestay(tatavars,gccontent)
-    notatastay = 1 - tatagain - tataprob
+    tataprob = sum([nucprob(x,gccontent) for x in tatavars]);
+    tatagain = featuregain(notata,tatavars,gccontent);
+    tataloss1 = featuregain(tatavars,notata,gccontent);
+    tataloss2 = tataloss1/tataprob;
+    tatastay = featurestay(tatavars,gccontent);
+    notatastay = 1 - tatagain;
 
     ## Initiator element
     # Consensus sequence = "BBCABW";  DOI:10.1101/gad.295980.117
 
-    mers6 = kmers(6)
-    inrvars = vec(join.(product("TGC","TGC","C", "A","TGC","TA")))
-    noinrs = setdiff(mers6, inrvars)
-    inrprob = sum([nucprob(x,gccontent) for x in inrvars])
-    inrgain = featuregain(noinrs,inrvars,gccontent)
-    inrloss1 = featuregain(inrvars,noinrs,gccontent)
-    inrloss2 = inrloss1/inrprob
-    inrstay = featurestay(inrvars,gccontent)
-    noinrstay = 1- inrgain -inrprob
+    mers6 = kmers(6);
+    inrvars = vec(join.(product("TGC","TGC","C", "A","TGC","TA")));
+    noinrs = setdiff(mers6, inrvars);
+    inrprob = sum([nucprob(x,gccontent) for x in inrvars]);
+    inrgain = featuregain(noinrs,inrvars,gccontent);
+    inrloss1 = featuregain(inrvars,noinrs,gccontent);
+    inrloss2 = inrloss1/inrprob;
+    inrstay = featurestay(inrvars,gccontent);
+    noinrstay = 1- inrgain;
 
     ## PolyA signal
 
-    polyavars = ["AATAAA";"ATTAAA"; "AGTAAA";"TATAAA"]
-    nopolyas = setdiff(mers6, polyavars)
-    polyaprob = sum([nucprob(x,gccontent) for x in polyavars])
-    polyagain = featuregain(nopolyas,polyavars,gccontent)
-    polyaloss1 = featuregain(polyavars,nopolyas,gccontent)
-    polyaloss2 = polyaloss1/polyaprob
-    polyastay = featurestay(polyavars,gccontent)
+    polyavars = ["AATAAA";"ATTAAA"; "AGTAAA";"TATAAA"];
+    nopolyas = setdiff(mers6, polyavars);
+    polyaprob = sum([nucprob(x,gccontent) for x in polyavars]);
+    polyagain = featuregain(nopolyas,polyavars,gccontent);
+    polyaloss1 = featuregain(polyavars,nopolyas,gccontent);
+    polyaloss2 = polyaloss1/polyaprob;
+    polyastay = featurestay(polyavars,gccontent);
 
     ## Transcription
     # (Initiator or TATA) and polyA
 
-    rnaprob = (tataprob + inrprob)*polyaprob
-    rnagain = (tatagain + inrgain)*polyastay + (tatastay + inrstay)*polyagain
-    tfpinr = inrprob*(1-tataprob)/(tataprob + inrprob - inrprob*tataprob)
-    tfptata = tataprob*(1-inrprob)/(tataprob + inrprob - inrprob*tataprob)
-    tfpboth = inrprob*tataprob/(tataprob + inrprob - inrprob*tataprob)
-    tfpboth = 1 - tfptata - tfpinr
+    rnaprob = (tataprob + inrprob)*polyaprob;
+    rnagain = (tatagain + inrgain)*polyastay + (tatastay + inrstay)*polyagain;
+    tfpinr = inrprob*(1-tataprob)/(tataprob + inrprob - inrprob*tataprob);
+    tfptata = tataprob*(1-inrprob)/(tataprob + inrprob - inrprob*tataprob);
+    tfpboth = inrprob*tataprob/(tataprob + inrprob - inrprob*tataprob);
+    tfpboth = 1 - tfptata - tfpinr;
 
-    rnaloss = ( tfpinr*inrloss2*notatastay +
+    rnaloss = (tfpinr*inrloss2*notatastay +
       tfptata*tataloss2*noinrstay +
       tfpboth*tataloss2*inrloss2 +
       polyaloss2
-    )
+    );
     rnastay = (inrstay + tatastay)*polyastay
     return [rnaprob; rnagain; rnaloss; rnastay]
 end
