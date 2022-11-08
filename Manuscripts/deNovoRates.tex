@@ -1,6 +1,6 @@
 \documentclass[12pt,a4paper]{article}
 \usepackage[margin=2.5cm]{geometry}
-\usepackage{amsmath,amssymb,graphicx,setspace,palatino,float,subcaption, booktabs}
+\usepackage{amsmath,amssymb,graphicx,setspace,palatino,float,subcaption, booktabs, titlesec}
 \usepackage[colorlinks, allcolors = blue]{hyperref}
 \usepackage{natbib}
 \citestyle{egu}
@@ -11,13 +11,17 @@
 
 \renewcommand{\subsectionautorefname}{Section}
 \renewcommand{\subsubsectionautorefname}{Section}
-
-\renewcommand*{\thefootnote}{\fnsymbol{footnote}}
-\setcounter{footnote}{1}
+\titleformat{\paragraph}[hang]{\normalfont\normalsize\itshape}{\theparagraph}{0em}{}
+\titlespacing*{\paragraph}{0pt}{1\baselineskip}{3pt}
+\setlength{\parindent}{0pt}
 
 \begin{document}
 
 \onehalfspacing
+
+\setlength{\abovedisplayskip}{0pt}
+\setlength{\belowdisplayskip}{1em}
+
 
 \section{Introduction}
 
@@ -300,15 +304,11 @@ P_\textit{feature-stay} = P_0 + \sum_{x \in F} \sum_{\genfrac{}{}{0pt}{1}{y \in 
 
 The probability that no mutation occurs ($P_0$) in a DNA sequence of length $k$ is described by Poisson distribution. 
 
-\vspace{-1ex}
-
 $$P_0 = 1-e^{-k\lambda}$$
 
-Because the mutation rate is biased (\autoref{mutbias}), the probability that a mutation does not occur in a DNA sequence depends on the composition of the sequence. 
+Because the mutation rate is biased (\autoref{mutbias}), the probability that no mutation occurs in a DNA sequence depends on its composition. 
 
-The probability that an \texttt{A} or a \texttt{T} mutates ($\lambda_\texttt{AT}$), is described by the mutation bias (\autoref{mutbias}) as:
-
-\vspace{-1ex}
+The probability that an \texttt{A} or a \texttt{T} mutates ($\lambda_\texttt{AT}$), is thus described as:
 
 $$\lambda_\texttt{AT} = 2\times\lambda\times(\mu_{\texttt{A:T}\to\texttt{T:A}} + \mu_{\texttt{A:T}\to\texttt{G:C}} + \mu_{\texttt{A:T}\to\texttt{C:G}})$$
 
@@ -324,6 +324,8 @@ $$\lambda_\texttt{GC} = 2\times\lambda\times(\mu_{\texttt{G:C}\to\texttt{A:T}} +
 
 Thus the probability that a sequence of length $k$, containing $m$ number of \texttt{A} and \texttt{T}, does not mutate is:
 
+\vspace{-1ex}
+
 $$P_0 = (1-e^{-m\lambda_\texttt{AT}})\times(1-e^{-(k-m)\lambda_\texttt{GC}})$$
 
 \subsection{Probabilities of finding, gaining, and losing transcription}
@@ -334,7 +336,7 @@ To calculate the probabilities of finding, gaining, and losing transcription, we
 
 \paragraph{TATA box:}
 
-The consensus sequence of TATA-box is \texttt{TATA [T/A] A [T/A] [G/A]} \citep{tata2}. Square brackets mean that, any of the nucleotides enclosed by them, can exist in that specific position. Another study used X-ray crystallography to identify mutations that are tolerated in TATA-box consensus sequence \cite{tata1}. Thus there are eight consensus sequences, and at seven positions, a non-consensus nucleotide is tolerated (\autoref{tatatab}). This makes a TATA-box feature set that contains 136 sequences. We defined the corresponding non-feature set by generating all 8-mer DNA sequences that do not belong to the TATA-box feature set.
+The consensus sequence of TATA-box is \texttt{TATA [T/A] A [T/A] [G/A]} \citep{tata2} such that, any of the nucleotides enclosed within the square brackets, can exist in that specific position in the sequence. Another study used X-ray crystallography to identify mutations that are tolerated in TATA-box consensus sequence \citep{tata1}. Thus there are eight consensus sequences, and at seven positions, a non-consensus nucleotide is tolerated (\autoref{tatatab}). This makes a TATA-box feature set that contains 136 sequences. We defined the corresponding non-feature set by generating all 8-mer DNA sequences that do not belong to the TATA-box feature set.
 
 \begin{table}[!t]
 \centering
@@ -355,9 +357,11 @@ Position  & Accepted nucleotides & \begin{tabular}[c]{@{}c@{}}Number of Variants
 \end{table}
 
 
-\paragraph{Inr:} The consensus sequence of Inr is \texttt{[T/G/C] [T/G/C] CA [T/G/C] [T/A]} \citep{Inr}, which gives 54 sequences in the Inr feature set. We generated the corresponding non-feature set by taking all DNA 6-mers that are distinct from the 54 Inr sequences.
+\paragraph{Inr:} The consensus sequence of Inr is \texttt{[T/G/C] [T/G/C] CA [T/G/C] [T/A]}, which gives 54 sequences in the Inr feature set \citep{Inr}. We generated the corresponding non-feature set with all DNA 6-mers that are distinct from the 54 Inr sequences.
 
 \paragraph{poly-A signal:} There are four known poly-A signal variants -- \texttt{AATAAA}, \texttt{ATTAAA}, \texttt{AGTAAA}, and \texttt{TATAAA} that compose the poly-A signal feature set \citep{polyA}. The non-feature set consists of all other DNA 6-mers.
+
+\vspace{1\baselineskip}
 
 We calculated probabilities of finding, gaining and losing these features as we described in the previous section.
 
@@ -379,14 +383,16 @@ It is also possible that both the promoter and the poly-A signal were initially 
 
 Transcription is lost when either the promoter is lost or when the poly-A signal is lost. Since two kinds of promoters can initiate transcription, there can be three kinds of transcription units. First that has only TATA-box, second that has only Inr, and the third that has both these promoters. All these three transcription units must also have a poly-A signal. To calculate the conditional probability of promoter loss, we calculated the fraction of transcription units ($Q$) that belong to each of these three classes. For example, the fraction of transcription units that are TATA-only is ($Q_\textit{TATA-only}$):
 
-$$Q_\textit{TATA-only} = \frac{P_\textit{TATA}\times(1 - P_\textit{Inr})}{(P_\textit{TATA} + P_\textit{Inr} - P_\textit{TATA}\times P_\textit{Inr})}$$
+\begin{equation*}
+Q_\textit{TATA-only} = \frac{P_\textit{TATA}\times(1 - P_\textit{Inr})}{(P_\textit{TATA} + P_\textit{Inr} - P_\textit{TATA}\times P_\textit{Inr})}
+\end{equation*}
+
+\vspace{1ex}
 
 Here, the numerator denotes probability of finding a TATA-box but not an Inr, and the denominator denotes the probability of finding a promoter that can be a TATA-box, Inr, or both. Likewise, the fraction of Inr-only ($Q_\textit{Inr-only}$) and TATA-Inr promoters ($Q_\textit{both}$) are given by:
 
-\vspace{-1em}
-
 \begin{align*}
-Q_\textit{Inr-only} & = \frac{P_\textit{Inr}\times(1 - P_\textit{Inr})}{(P_\textit{TATA} + P_\textit{Inr} - P_\textit{TATA}\times P_\textit{Inr})} \\[1em]
+Q_\textit{Inr-only} & = \frac{P_\textit{Inr}\times(1 - P_\textit{Inr})}{(P_\textit{TATA} + P_\textit{Inr} - P_\textit{TATA}\times P_\textit{Inr})} \\[1ex]
 Q_\textit{both} & = 1 - Q_\textit{TATA-only} -Q_\textit{Inr-only}
 \end{align*}
 
@@ -395,11 +401,26 @@ For a TATA-only transcription unit to lose a promoter, it should lose the TATA-b
 The conditional probability of transcription loss ($P_\textit{RNA-loss}$), given that transcription exists, is thus defined as:
 
 \begin{align}
-P_\textit{RNA-loss} & = Q_\textit{TATA-only} \times P_\textit{TATA-loss}\times(1-P_\textit{Inr-gain}) \nonumber\\[1ex]
- & \quad + Q_\textit{Inr-only}\times P_\textit{Inr-loss}\times(1-P_\textit{TATA-gain}) \nonumber \\[1ex]
+P_\textit{RNA-loss} & = Q_\textit{TATA-only} \times P_\textit{TATA-loss}\times(1-P_\textit{Inr-gain}) \nonumber\\[1pt]
+ & \quad + Q_\textit{Inr-only}\times P_\textit{Inr-loss}\times(1-P_\textit{TATA-gain}) \nonumber \\[1pt]
  & \quad + Q_\textit{both}\times P_\textit{TATA-loss} \times P_\textit{Inr-loss} + P_\textit{polyA-loss}
 \end{align}
 
+\subsection{Probabilities of finding, gaining, and losing an ORF}
+
+\subsubsection{Probability of finding an ORF}
+
+An open reading frame (ORF) is a nucleotide sequence with a length that is a multiple of three, that begins with a start codon (\texttt{ATG}), and ends with one of the three stop codons (\texttt{TAG}, \texttt{TGA}, \texttt{TAA}). This necessarily means that there are no stop codons within the sequence. Thus the probability of finding an ORF containing $k$ codons including start and stop codons ($P_\textit{ORF}$) is: 
+
+\begin{equation}
+P_\textit{ORF} = P_\textit{ATG} \times P_\textit{stop} \times (1 - P_\textit{stop})^{k-2}
+\end{equation}
+
+Here, $P_\textit{ATG}$ and $P_\textit{stop}$ are the probabilities of finding a start codon, and a stop codon by chance, respectively.
+
+\subsubsection{Probability of gaining an ORF}
+
+As we defined in the previous section, an ORF has three requirements (start codon, stop codon, and no premature stop codon in the sequence). Thus an ORF can emerge due to mutations via three mechanisms. In each of these mechanisms one requirement is absent whereas the other two are present. 
 
 \bibliographystyle{plainnat}
 \bibliography{refs}
