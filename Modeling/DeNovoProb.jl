@@ -70,14 +70,13 @@ function rnavals(gccontent)
 
     rnaprob = (tataprob + inrprob)*polyaprob;
     rnagain = (tatagain + inrgain)*polyastay + (tatastay + inrstay)*polyagain;
-    tfpinr = inrprob*(1-tataprob)/(tataprob + inrprob - inrprob*tataprob);
-    tfptata = tataprob*(1-inrprob)/(tataprob + inrprob - inrprob*tataprob);
-    tfpboth = inrprob*tataprob/(tataprob + inrprob - inrprob*tataprob);
-    tfpboth = 1 - tfptata - tfpinr;
+    Qinr = inrprob*(1-tataprob)/(tataprob + inrprob - inrprob*tataprob);
+    Qtata = tataprob*(1-inrprob)/(tataprob + inrprob - inrprob*tataprob);
+    Qboth = 1 - Qtata - Qinr;
 
-    rnaloss = (tfpinr*inrloss2*notatastay +
-      tfptata*tataloss2*noinrstay +
-      tfpboth*tataloss2*inrloss2 +
+    rnaloss = (Qinr*inrloss2*notatastay +
+      Qtata*tataloss2*noinrstay +
+      Qboth*tataloss2*inrloss2 +
       polyaloss2
     );
     rnastay = (inrstay + tatastay)*polyastay
