@@ -317,4 +317,3 @@ plot_fraa = bar(aas,lossAA./sum(lossAA),
 );
 
 savefig(plot_fraa, figdir*"pFrAA.pdf")
-
