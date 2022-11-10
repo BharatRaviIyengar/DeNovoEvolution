@@ -45,7 +45,7 @@ In this study we focus on the evolution of genes that encode new proteins. New p
 
 The primary requirement for transcription is recruitment of RNA polymerase at the gene's promoter \citep{Promoters}. A part of the promoter, called the core promoter is the region that determines the start of transcription \citep{corepromoters}. The second requirement for a productive transcription is its termination at appropriate sites. Even though transcription is widespread in eukaryotic genomes, a phenomenon known as pervasive transcription, most RNAs are quickly eliminated by RNA degrading enzymes \citep{RNAturnover}. Most eukaryotic mRNAs and long non-coding RNAs, are polyadenylated at their 3' termini, which makes them resistant to degradation. Polyadenylation, which also marks the end of transcription \citep{polyAterm}, is facilitated by sequences known as polyadenylation signals. In prokaryotes, end of transcription is determined by sequences known as terminators \citep{ProkTerm}. Thus the synthesis of a stable RNA, requires promoters, as well as termination/polyadenylation signal sequences.
 
-The second major requirement for protein expression is translation of the transcribed mRNA. The most fundamental requirement for translation is the presence of an open reading frame (ORF). Usually, an mRNA needs additional features to initiate protein synthesis. These features include ribosome binding sites in prokaryotes \citep{RBS}, and Kozak consensus sequences \citep{kozak} in eukaryotes. 
+The second major requirement for protein expression is translation of the transcribed mRNA. The most fundamental requirement for translation is the presence of an open reading frame (ORF). Usually, an mRNA needs additional features to initiate protein synthesis. These features include ribosome binding sites in prokaryotes \citep{RBS}, and Kozak consensus sequences in eukaryotes \citep{kozak,kozakDroso,kozakHuman}. 
 
 Although gain of transcription and translation features guarantees \textit{de novo} birth of a protein coding gene, it does not ensure that the gene would persist in the genome for many generations. The newly born gene can lose the features as easily as it gained them unless it is fixed in the genome via evolutionary selection. If the protein synthesized by the \textit{de novo} gene provides some fitness advantage to the host organism then it will undergo positive selection. Simulataneously, the protein should have low toxicity and cost of synthesis, to survive purifying selection. A common mechanism by which protein mediated toxicity occurs is by misfolding and aggregation of proteins \citep{misfold1,misfold2}.
 
@@ -378,17 +378,17 @@ The consensus sequence of TATA-box is \texttt{TATA [T/A] A [T/A] [G/A]} \citep{t
 
 \begin{table}[H]
 \centering
-\begin{tabular}{@{}ccc@{}}
+\begin{tabular}{c c}
 \toprule
-Position  & Accepted nucleotides & \begin{tabular}[c]{@{}c@{}}Number of Variants\\ (consensus + suboptimal)\end{tabular} \\ \midrule
-1         & T$\gg$C$>$A,G        & $1+3$                                                                                 \\ \midrule
-2         & A$\gg$T              & $1+1$                                                                                 \\ \midrule
-3         & T$\gg$A,C            & $1+2$                                                                                 \\ \midrule
-4         & A$\gg$T              & $1+1$                                                                                 \\ \midrule
-5         & T/A                  & $2+0$                                                                                 \\ \midrule
-6         & A$\gg$G$>$C/T        & $1+3$                                                                                 \\ \midrule
-7         & A/T$>$G$>$C          & $2+2$                                                                                 \\ \midrule
-8         & G/A$>$C/T            & $2+2$                                                                                                                                                                 \\ \bottomrule
+Position  & Accepted nucleotides \\ \midrule
+1         & T$\gg$C$>$A,G        \\ \midrule
+2         & A$\gg$T               \\ \midrule
+3         & T$\gg$A,C             \\ \midrule
+4         & A$\gg$T               \\ \midrule
+5         & T/A                   \\ \midrule
+6         & A$\gg$G$>$C/T         \\ \midrule
+7         & A/T$>$G$>$C           \\ \midrule
+8         & G/A$>$C/T             \\ \bottomrule
 \end{tabular}
 \caption{Nucleotide residues that are tolerated at different positions in a TATA-box \citep[based on][]{tata1}}
 \label{tatatab}
