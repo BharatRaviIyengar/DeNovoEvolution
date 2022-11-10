@@ -65,7 +65,7 @@ Overall our models define a null hypothesis under which protein coding DNA seque
 
 \subsection{How many times can a gene be lost?}
 
-If a gene is found in one species but not in sister taxa, then the most common assumption is that this gene emerged only in one specific species. We asked what is the chance that the gene was present in a common ancestor, but was lost in all lineages except one. To this end we calculated the probability of gene emergence and gene loss (Materials and Methods). Specifically, the probability of gene gain can be defined as the sum of three probabilities. First is the probability that an ORF already exists, and a mutation causes transcription to emerge ($P_\textit{RNA-gain}$, \autoref{eqrnagain}) but doesn't disrupt the ORF ($P_\textit{ORF-stay}$, \autoref{eqorfstay}). Second is the probability that the DNA is transcribed, and an ORF emerges due to mutations ($P_\textit{ORF-gain}$, \autoref{eqorfgain}) while transcription stays intact ($P_\textit{RNA-stay}$, \autoref{eqrnastay}). Third is the probability that neither of the two features already exist and both emerge at the same time due to mutations (this probability is very small, and negligible). The following equation describes the probability of gene gain:
+If a gene is found in one species but not in sister taxa, then the most common assumption is that this gene emerged only in one specific species. We asked what is the chance that the gene was present in a common ancestor, but was lost in all lineages except one. To this end we calculated the probability of gene emergence and gene loss (Materials and Methods). Specifically, the probability of gene gain can be defined as the sum of three probabilities. First is the probability that an ORF already exists, and a mutation causes transcription to emerge ($P_\textit{RNA-gain}$, \autoref{eqrnagain}) but doesn't disrupt the ORF ($P_\textit{ORF-stay}$, \autoref{eqorfstay}). Second is the probability that the DNA is transcribed, and an ORF emerges due to mutations ($P_\textit{ORF-gain}$, \autoref{eqorfgain}) while transcription stays intact ($P_\textit{RNA-stay}$, \autoref{eqrnastay}). Third is the probability that neither of the two features already exist and both emerge at the same time due to mutations (this probability is very small and is negligible). The following equation describes the probability of gene gain:
 
 \begin{equation}
 P_\textit{gene-gain} = P_\textit{ORF-stay}\times P_\textit{RNA-gain} + P_\textit{RNA-stay}\times P_\textit{ORF-gain} + P_\textit{RNA-gain}\times P_\textit{ORF-gain}
@@ -96,14 +96,14 @@ Overall, our analysis suggests that \textit{de novo} gene expressed in only one 
 
 \subsection{Does \textit{de novo} gene emergence have a preferred trajectory?}
 
-For a \textit{de novo} gene to emerge from a non-genic DNA sequence, both transcription and ORF need to emerge. That is, probability of gene emergence is equal to the product of probabilities of transcription gain and ORF gain. Thus it may appear that the order of the occurrence of these two events does not matter. However, gene emergence is much more likely when one of the two features already exist (\autoref{genegaineq}) and therefore it has two possible trajectories -- ORF emerges first (ORF-first) or transcription emerges first (RNA-first). To understand whether \textit{de novo} gene emergence has a preferred trajectory, we calculated two probabilities. First is the probability that ORF exists and  mutations cause gain of transcription but no disruption of the ORF. This probability denotes the trajectory where ORF emerges first ($P_\textit{ORF-first}$; \autoref{orffirsteq1}). 
+For a \textit{de novo} gene to emerge from a non-genic DNA sequence, both transcription and ORF need to emerge. That is, probability of gene emergence is equal to the product of probabilities of transcription gain and ORF gain. Thus it may appear that the order of the occurrence of these two events does not matter. However, gene emergence is much more likely when one of the two features already exist (\autoref{genegaineq}) and therefore it has two possible trajectories -- ORF emerges first (ORF-first) or transcription emerges first (RNA-first). To understand whether \textit{de novo} gene emergence has a preferred trajectory, we calculated two probabilities. First is the probability that ORF exists and  mutations cause gain of transcription but no disruption of the ORF. This probability denotes the trajectory where ORF emerges first ($P_\textit{ORF-first}$, \autoref{orffirsteq1}). 
 
 \begin{equation}
 P_\textit{ORF-first} = P_\textit{ORF-stay}\times P_\textit{RNA-gain}
 \label{orffirsteq1}
 \end{equation}
 
-The second probability ($P_\textit{RNA-first}$; \autoref{rnafirsteq1}) that denotes the trajectory where transcription emerges first, is the probability that DNA is already transcribed and mutations cause a gain of ORF but do not eliminate transcription. 
+The second probability ($P_\textit{RNA-first}$, \autoref{rnafirsteq1}) that denotes the trajectory where transcription emerges first, is the probability that DNA is already transcribed and mutations cause a gain of ORF but do not eliminate transcription. 
 
 \begin{equation}
 P_\textit{RNA-first} = P_\textit{RNA-stay}\times P_\textit{ORF-gain}
@@ -376,7 +376,7 @@ To calculate the probabilities of finding, gaining, and losing transcription, we
 
 The consensus sequence of TATA-box is \texttt{TATA [T/A] A [T/A] [G/A]} \citep{tata2} such that, any of the nucleotides enclosed within the square brackets, can exist in that specific position in the sequence. Another study used X-ray crystallography to identify mutations that are tolerated in TATA-box consensus sequence \citep{tata1}. Thus there are eight consensus sequences, and at seven positions, a non-consensus nucleotide is tolerated (\autoref{tatatab}). This makes a TATA-box feature set that contains 104 sequences. We defined the corresponding non-feature set by generating all 8-mer DNA sequences that do not belong to the TATA-box feature set.
 
-\begin{table}[H]
+\begin{table}[!t]
 \centering
 \begin{tabular}{c c}
 \toprule
