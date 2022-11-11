@@ -30,3 +30,4 @@ ATGneighborsR2 = ATGneighborsR2[(ATGneighborsR2[:,1].∉ Ref(stop)) .& (ATGneigh
 
 probATGR1 = sum(nucprob.(ATGneighborsR1[:,1],gccontent).*nucprob.(ATGneighborsR1[:,2],gccontent));
 probATGR2 = sum(nucprob.(ATGneighborsR2[:,1],gccontent).*nucprob.(ATGneighborsR2[:,2],gccontent));
+
