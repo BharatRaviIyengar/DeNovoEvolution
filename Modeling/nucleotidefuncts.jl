@@ -75,6 +75,20 @@ function frameXcodons(codon::String,frame::Int)
     end
 end
 
+function frameXcpairs(codon::String,frame::Int)
+    if(frame ∉ [-2,-1,1,2])
+            error("Frame should be ±1, or ±2")
+    end
+    frabs = abs(frame)
+    z = 3-frabs
+    if(frame<0)
+        codon = reverse(comp(codon))
+    end
+    down = codon[1+frabs:3].*vec(join.(product(repeated(nucs,frabs)...)))
+    up = vec(join.(product(repeated(nucs,z)...))).*codon[1:frabs]
+    return permutedims(hcat(collect.(product(up,down))...))
+end
+
 """
 `comp(s)`
 ...

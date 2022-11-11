@@ -11,46 +11,60 @@ allcodons = kmers(3)
 
 aasubmat[1:20,1:20] = (aasubmat[1:20,1:20] + aasubmat[1:20,1:20]')./2
 
+stop = ["TAA","TAG","TGA"]
+
 function nostop(codonset)
-        codonset[codonset .∉ Ref(["TAA","TAG","TGA"])]
+	codonset[codonset .∉ Ref(stop)]
 end
 
 function dfecdn(codon1, codon2)
-        mp = nucprob(codon1,gccontent)*mprob(codon1,codon2)
-        fe = aasubmat[aanames[transnucs(codon1)],aanames[transnucs(codon2)]]
-        return [-fe mp]
+	mp = nucprob(codon1,gccontent)*mprob(codon1,codon2)
+	fe = aasubmat[aanames[transnucs(codon1)],aanames[transnucs(codon2)]]
+	return [-fe mp]
 end
 
 function dfedistgen(codonset1,codonset2)
-        return vcat(reduce(vcat,[[dfecdn(y,x) for x in codonset2] for y in codonset1])...)
+	return vcat(reduce(vcat,[[dfecdn(y,x) for x in codonset2] for y in codonset1])...)
 end
 
 function combinedfe(dfeset)
-        return reduce(vcat,[[i sum(dfeset[dfeset[:,1] .== i,2])] for i in unique(dfeset[:,1])])
+	return reduce(vcat,[[i sum(dfeset[dfeset[:,1] .== i,2])] for i in unique(dfeset[:,1])])
 end
 
 function expdfe(dfeset)
-        return sum(dfeset[:,1].*dfeset[:,2])/sum(dfeset[:,2])
+	return sum(dfeset[:,1].*dfeset[:,2])/sum(dfeset[:,2])
 end
 
 function dfeframeX(cdn,frm)
-        fset0 = frameXcodons(cdn,frm)
-        # cset1 = singlemutant(cdn)
-        cset1 = nostopcodons[nostopcodons .!= cdn]
-        fset1 = hcat([frameXcodons(x,frm) for x in cset1]...)
-        dfe1 = combinedfe(vcat(vcat([[dfecdn(fset0[y],x) for x in fset1[y,:]] for y in 1:20]...)...))
-        return dfe1
+	fset0 = frameXcodons(cdn,frm)
+	# cset1 = singlemutant(cdn)
+	cset1 = nostopcodons[nostopcodons .!= cdn]
+	fset1 = hcat([frameXcodons(x,frm) for x in cset1]...)
+	dfe1 = combinedfe(vcat(vcat([[dfecdn(fset0[y],x) for x in fset1[y,:]] for y in 1:20]...)...))
+	return dfe1
 end
 
-nostopcodons = nostop(allcodons)
-
-f1cdn = permutedims(hcat(frameXcodons.(nostopcodons,1)...))
-f2cdn = permutedims(hcat(frameXcodons.(nostopcodons,2)...))
-
-r1cdn = reverse.(comp.(f1cdn))
-r2cdn = reverse.(comp.(f2cdn))
-
 gccontent = 0.42
+nostopcodons = nostop(allcodons);
+
+f1cdn = permutedims(hcat(frameXcodons.(nostopcodons,1)...));
+f2cdn = permutedims(hcat(frameXcodons.(nostopcodons,2)...));
+
+r1cdn = reverse.(comp.(f1cdn));
+r2cdn = reverse.(comp.(f2cdn));
+
+
+
+stopneighborsR1 = unique(permutedims(hcat(frameXcodons.(stop,-1)...)));
+stopneighborsR2 = unique(permutedims(hcat(frameXcodons.(stop,-2)...)));
+stopneighborsR0 = reverse.(comp.(stop));
+
+stopneighborsR = unique(vcat(vcat(stopneighborsR1,stopneighborsR2,stopneighborsR0)...));
+
+probSNR1 = sum(nucprob.(stopneighborsR1,gccontent));
+probSNR2 = sum(nucprob.(stopneighborsR2,gccontent));
+probSNR0 = sum(nucprob.(stopneighborsR0,gccontent));
+probSNR = sum(nucprob.(stopneighborsR,gccontent));
 
 dfedist0 = combinedfe(dfedistgen(nostopcodons,allcodons))
 

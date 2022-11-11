@@ -34,7 +34,7 @@
 \maketitle
 
 \begin{abstract}
-New protein coding genes can emerge from genomic regions that previously did not contain any genes, via a process called \textit{de novo} gene emergence. To synthesize a protein, DNA must be transcribed as well as translated, both of which need certain DNA sequence features. Stable transcription requires promoters and polydenylation signal, and translation requires at least an open reading frame (ORF). We develop mathematical models based on mutation probabilities, and the assumption of neutral evolution, to find out how quickly do genes emerge and are lost. We also investigate whether different DNA features evolve in a sequential manner, and if sequence composition is biased by mutation rate. We find out that genes are lost much more rapidly than they emerge, and genes with long ORFs preferentially arise in regions that are already transcribed. Our study not only answers some fundamental question on the topic of \textit{de novo} emergence, but also provides a modeling framework for future studies.
+New protein coding genes can emerge from genomic regions that previously did not contain any genes, via a process called \textit{de novo} gene emergence. To synthesize a protein, DNA must be transcribed as well as translated, both of which need certain DNA sequence features. Stable transcription requires promoters and polydenylation signal, while translation requires at least an open reading frame (ORF). We develop mathematical models based on mutation probabilities, and the assumption of neutral evolution, to find out how quickly genes emerge and are lost. We also investigate whether different DNA features evolve in a sequential manner, and if sequence composition is biased by mutation rate. We find out that genes are lost much more rapidly than they emerge, and genes with long ORFs preferentially arise in regions that are already transcribed. Our study not only answers some fundamental questions on the topic of \textit{de novo} emergence, but also provides a modeling framework for future studies.
 \end{abstract}
 
 \section{Introduction}
@@ -72,7 +72,7 @@ P_\textit{gene-gain} = P_\textit{ORF-stay}\times P_\textit{RNA-gain} + P_\textit
 \label{genegaineq}
 \end{equation}
 
-Likewise, the probability of gene loss, given the gene (transcription and ORF) is already present, is the sum of the probabilities that transcription ($P_\textit{RNA-loss}$, \autoref{eqrnaloss}) or the ORF is lost due to mutations ($P_\textit{ORF-loss}$, \autoref{eqorfloss}) due to mutations. Specifically:
+Likewise, the probability of gene loss, given the gene (transcription and ORF) is already present, is the sum of the probabilities that transcription ($P_\textit{RNA-loss}$, \autoref{eqrnaloss}) or the ORF is lost due to mutations ($P_\textit{ORF-loss}$, \autoref{eqorfloss}). Specifically:
 
 \begin{equation}
 P_\textit{gene-loss} = P_\textit{RNA-loss} + P_\textit{ORF-loss}
@@ -90,13 +90,13 @@ P_\textit{gene-loss} = P_\textit{RNA-loss} + P_\textit{ORF-loss}
 
 The probability that a gene is lost $n$ times independently, is $(P_\textit{gene-loss})^{n}$. To find out how many independent gene loss events are as likely as a single gene gain event, we calculate the ratio of logarithms of gene gain and gene loss: $\log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$. For example, the ratio value of 2 would indicate that two independent gene loss events are as likely as a single gene gain event. We calculated this ratio for genes with different ORF lengths, because ORF gain and loss probabilities depend on the length of the ORF. We found that for all ORF lengths, the gene can be lost at least two times independently, in the time required to gain it (\autoref{gainlossprob}). 
 
-We performed the same analysis to just the ORF (and not the whole genes). That is, we calculated the ratio of logarithms of ORF gain and ORF loss. We found that for ORFs longer than 143 codons, the likelihood of two independent ORF loss events is more than or equal to a single ORF gain event. 
+We performed the same analysis on just the ORFs (and not the whole genes). That is, we calculated the ratio of logarithms of ORF gain and ORF loss. We found that for ORFs longer than 143 codons, the likelihood of two independent ORF loss events is more than or equal to a single ORF gain event. 
 
-Overall, our analysis suggests that \textit{de novo} gene expressed in only one species may not necessarily mean that it emerged for the first time in this species. 
+Overall, our analysis suggests that a \textit{de novo} gene expressed in only one species may not necessarily mean that it emerged for the first time in this species. 
 
 \subsection{Does \textit{de novo} gene emergence have a preferred trajectory?}
 
-For a \textit{de novo} gene to emerge from a non-genic DNA sequence, both transcription and ORF need to emerge. That is, probability of gene emergence is equal to the product of probabilities of transcription gain and ORF gain. Thus it may appear that the order of the occurrence of these two events does not matter. However, gene emergence is much more likely when one of the two features already exist (\autoref{genegaineq}) and therefore it has two possible trajectories -- ORF emerges first (ORF-first) or transcription emerges first (RNA-first). To understand whether \textit{de novo} gene emergence has a preferred trajectory, we calculated two probabilities. First is the probability that ORF exists and  mutations cause gain of transcription but no disruption of the ORF. This probability denotes the trajectory where ORF emerges first ($P_\textit{ORF-first}$, \autoref{orffirsteq1}). 
+For a \textit{de novo} gene to emerge from a non-genic DNA sequence, both transcription and ORF need to emerge. That is, probability of gene emergence is equal to the product of probabilities of transcription gain and ORF gain. Thus it may appear that the order of the occurrence of these two events does not matter. However, gene emergence is much more likely when one of the two features already exist (\autoref{genegaineq}) and therefore it has two possible trajectories -- ORF emerges first (ORF-first) or transcription emerges first (RNA-first). To understand whether \textit{de novo} gene emergence has a preferred trajectory, we calculated two probabilities. First, the probability that ORF exists and  mutations cause gain of transcription but no disruption of the ORF. This probability denotes the trajectory where ORF emerges first ($P_\textit{ORF-first}$, \autoref{orffirsteq1}). 
 
 \begin{equation}
 P_\textit{ORF-first} = P_\textit{ORF-stay}\times P_\textit{RNA-gain}
@@ -122,12 +122,12 @@ P_\textit{RNA-first} = P_\textit{RNA-stay}\times P_\textit{ORF-gain}
 %\caption{Two-step}
 %\includegraphics[scale=0.6]{Figures/first_ORF_RNA2.pdf}
 %\end{subfigure}
-\caption{\textit{De novo} genes with shorter ORFs ($<$ 42 codons) preferentially emerge from existing ORFs (ORF-first) whereas \textit{de novo} genes with longer ORFs preferentially emerge from existing RNAs (RNA-first). The horizontal axis denotes the number of codons in the ORF. The vertical axis shows the log transformed ratio of single-step probabilities of ORF-first and RNA-first trajectories of \textit{de novo} emergence (Equations \ref{orffirsteq1} \& \ref{rnafirsteq1}). A positive value suggests a ORF-first trajectory and a negative value supports RNA-first trajectory. Similar analysis with two-step probabilities shows a smaller difference between the likelihood of the two trajectories (Equations \ref{orffirsteq2} \& \ref{rnafirsteq2}).}
+\caption{\textit{De novo} genes with shorter ORFs ($<$ 42 codons) preferentially emerge from existing ORFs (ORF-first) whereas \textit{de novo} genes with longer ORFs preferentially emerge from existing RNAs (RNA-first). The horizontal axis denotes the number of codons in the ORF. The vertical axis shows the log transformed ratio of single-step probabilities of ORF-first and RNA-first trajectories of \textit{de novo} emergence (Equations \ref{orffirsteq1} \& \ref{rnafirsteq1}). A positive value suggests an ORF-first trajectory and a negative value supports an RNA-first trajectory. Similar analysis with two-step probabilities shows a smaller difference between the likelihood of the two trajectories (Equations \ref{orffirsteq2} \& \ref{rnafirsteq2}).}
 \label{whoisfirst}
 \vspace{1ex}
 \hrule
 \end{figure}
-We calculated the log-transformed ratio of $P_\textit{ORF-first}$ and $P_\textit{RNA-first}$, such that a positive value of the ratio would mean that transcription gain for an untranscribed ORF (ORF-first) is more likely than ORF gain in an already transcribed DNA (RNA-first). In other words, ORF-first hypothesis is more feasible. Likewise, a negative value of the ratio would suggest that RNA-first hypothesis is more feasible. With the specific parameter values we used, it turns out that \textit{de novo} genes with up to 42 codons in their coding region, preferentially emerge ORF-first (\autoref{whoisfirst}). With a higher GC-content, ORF length above which RNA-first hypothesis is more feasible than ORF-first hypothesis, increases. For example, this number is 48 codons for a GC-content of 0.45 (data not shown).
+We calculated the log-transformed ratio of $P_\textit{ORF-first}$ and $P_\textit{RNA-first}$, such that a positive value of the ratio would mean that transcription gain for an untranscribed ORF (ORF-first) is more likely than ORF gain in an already transcribed DNA (RNA-first). In other words, the ORF-first hypothesis is more feasible. Likewise, a negative value of the ratio would suggest that the RNA-first hypothesis is more feasible. With the specific parameter values we used, it turns out that \textit{de novo} genes with up to 42 codons in their coding region, preferentially emerge ORF-first (\autoref{whoisfirst}). With a higher GC-content, ORF length above which RNA-first hypothesis is more feasible than ORF-first hypothesis, increases. For example, this number is 48 codons for a GC-content of 0.45 (data not shown).
 
 A more stringent definition of ORF-first hypothesis would describe a two-step process. In the first step, an ORF emerges in an untranscribed region of DNA, but transcription does not emerge. In the second step transcription emerges, while ORF stays intact (\autoref{orffirsteq2}). Likewise, RNA-first hypothesis can be defined by a two-step probability. In the first step transcription emerges in a non-genic DNA (that does not have an ORF), and in the second step an ORF emerges, while transcription remains intact (\autoref{rnafirsteq2}).
 
@@ -138,7 +138,7 @@ P_\textit{RNA-first}' & = \underbrace{P_\textit{RNA-gain} \times (1-P_\textit{OR
 
 With this stringent definition, the difference between the probabilities of the two trajectories becomes very small ($< 3\times10^{-5}\ \%$). However, we still find that \textit{de novo} genes with shorter ORFs ($<$ 34 codons) have a slightly higher chance of emerging ORF first.
 
-Overall, long ORFs are more likely to be lost before transcription emerges, than short ORFs, and hence they preferentially emerge in existing transcripts. Conversely, short ORFs are more likely to stay undisrupted until the emergence of transcription.
+Overall, long ORFs are more likely to be lost before transcription emerges than short ORFs, and hence they preferentially emerge in existing transcripts. Conversely, short ORFs are more likely to stay undisrupted until the emergence of transcription.
 
 \subsection{Would extensive transcription loss suggest negative selection of toxic proteins?}
 
@@ -150,12 +150,12 @@ To understand which is the most probable mechanism of gene loss, we compared the
 We made our analysis of gene loss more stringent by comparing the probabilities of two evolutionary scenarios, both of which begin with an intact \textit{de novo} gene. In the first scenario, the ORF remains intact whereas the transcription is lost. The probability of this scenario is described by: 
 $P_\textit{ORF-stay} \times P_\textit{RNA-loss}/P_\textit{ORF}$. The probability of the second scenario, where transcription stays intact while ORF is lost, is: $P_\textit{ORF-loss} \times P_\textit{RNA-stay}/P_\textit{RNA}$. We find that the first scenario is more plausible for ORFs that have less than 34 codons, which is in agreement with our previous analysis (\autoref{lossprob}). Also, the probability values of scenario one and two, obtained from this stringent analysis, were not significantly different from the transcription ($P_\textit{RNA-loss}$) and ORF loss ($P_\textit{ORF-loss}$) probabilities, respectively. 
 
-Thus widespread transcription loss can suggest a negative selection on protein expression.
+Thus, widespread transcription loss can suggest a negative selection on protein expression.
 
 \begin{figure}[!t]
 \centering
 \includegraphics[scale=0.6]{Figures/pLoss.pdf}
-\caption{ORF loss is more probable than transcription loss, for \textit{de novo} genes containing more than 33 codons. The horizontal axis denotes the number of codons in the ORF. The vertical axis shows the log transformed ratio of ORF loss and RNA loss probabilities, such that a positive value means ORF-loss is more probable than RNA loss, and \textit{vice versa}.}
+\caption{ORF loss is more probable than transcription loss for \textit{de novo} genes containing more than 33 codons. The horizontal axis denotes the number of codons in the ORF. The vertical axis shows the log transformed ratio of ORF loss and RNA loss probabilities, such that a positive value means ORF-loss is more probable than RNA loss, and \textit{vice versa}.}
 \label{lossprob}
 
 \vspace{1ex}
@@ -295,7 +295,7 @@ We calculated nucleotide substitution probabilities based on mutation rate and m
 \subsubsection{Probability of finding a DNA sequence}
 \label{methprob}
 
-We calculated the probability of finding a DNA sequence based on global nucleotide frequency distributions, given by the GC-content. We used a GC-content of 0.42 for our calculations. Specifically, the probability of finding either a \texttt{G} or a \texttt{C} is: $S = 0.5\times$GC-content. The probability of finding an \texttt{A} or a \texttt{T} is: $W = 1 - 0.5\times$GC-content. Using these values, we calculated the probability of finding a DNA sequence motif by chance. For example, the probability of finding the sequence \texttt{ATG} would be: $W\times W \times S$.
+We calculated the probability of finding a DNA sequence based on global nucleotide frequency distributions, given by the GC-content. We used a GC-content of 0.42 for our calculations. Specifically, the probability of finding either a \texttt{G} or a \texttt{C} is: $S = 0.5\times$GC-content. The probability of finding an \texttt{A} or a \texttt{T} is: $W = 0.5 - S$. Using these values, we calculated the probability of finding a DNA sequence motif by chance. For example, the probability of finding the sequence \texttt{ATG} would be: $W\times W \times S$.
 
 \subsubsection{Probability of gaining a DNA sequence}
 \label{methgain}
