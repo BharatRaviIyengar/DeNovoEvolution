@@ -44,7 +44,7 @@ function dfeframeX(cdn,frm)
 	return dfe1
 end
 
-gccontent = 0.42
+gccontent = 0.53942 # all CDS #
 nostopcodons = nostop(allcodons);
 
 f1cdn = permutedims(hcat(frameXcodons.(nostopcodons,1)...));
@@ -55,16 +55,18 @@ r2cdn = reverse.(comp.(f2cdn));
 
 
 
-stopneighborsR1 = unique(permutedims(hcat(frameXcodons.(stop,-1)...)));
-stopneighborsR2 = unique(permutedims(hcat(frameXcodons.(stop,-2)...)));
+stopneighborsR1 = unique(vcat(frameXcpairs.(stop,-1)...), dims = 1);
+stopneighborsR1 = stopneighborsR1[(stopneighborsR1[:,1].∉ Ref(stop)) .& (stopneighborsR1[:,2].∉ Ref(stop)),:];
+
+stopneighborsR2 = unique(vcat(frameXcpairs.(stop,-2)...), dims = 1);
+stopneighborsR2 = stopneighborsR2[(stopneighborsR2[:,1].∉ Ref(stop)) .& (stopneighborsR2[:,2].∉ Ref(stop)),:];
+
 stopneighborsR0 = reverse.(comp.(stop));
 
-stopneighborsR = unique(vcat(vcat(stopneighborsR1,stopneighborsR2,stopneighborsR0)...));
+probSNR1 = sum(nucprob.(stopneighborsR1[:,1],gccontent).*nucprob.(stopneighborsR1[:,2],gccontent));
+probSNR2 = sum(nucprob.(stopneighborsR2[:,1],gccontent).*nucprob.(stopneighborsR2[:,2],gccontent));
 
-probSNR1 = sum(nucprob.(stopneighborsR1,gccontent));
-probSNR2 = sum(nucprob.(stopneighborsR2,gccontent));
 probSNR0 = sum(nucprob.(stopneighborsR0,gccontent));
-probSNR = sum(nucprob.(stopneighborsR,gccontent));
 
 dfedist0 = combinedfe(dfedistgen(nostopcodons,allcodons))
 
