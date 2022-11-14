@@ -180,6 +180,10 @@ function numAT(x)
 end
 
 function featuregain(set1,set2,gccontent)
+    if(isempty(set1) || isempty(set2))
+        @warn "empty feature sets, returning 0"
+        return 0
+    end
     v1 = sum([nucprob(s1,gccontent)*sum([mprob(s1,s2) for s2 in set2])
                 for s1 in set1])
     return v1
