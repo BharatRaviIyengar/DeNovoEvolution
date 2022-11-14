@@ -165,10 +165,14 @@ function mprob(s1,s2)
 end
 
 function nucprob(x,gccontent)
+    if(isempty(x) || occursin(r"[^ATGC]",x))
+        @warn "non-nucleotide string input, returning 0"
+        return 0
+    end
     S = 0.5*gccontent
     W = 0.5 - S
     nw = count(r"[AT]", x)
-    return W^nw * S^(length(x)-nw)
+    return W^nw * S^(count(r"[GC]", x))
 end
 
 function numAT(x)
