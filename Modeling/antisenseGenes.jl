@@ -1,3 +1,4 @@
+using Plots
 cd(Base.source_dir())
 include("nucleotidefuncts.jl")
 stop = ["TAA","TAG","TGA"]
@@ -20,6 +21,9 @@ nostopcodons = nostop(allcodons);
 syncodons = Dict(x => gencode[(gencode[:,3].== transnucs(x)) .& (gencode[:,1] .!= x),1] for x in nostopcodons)
 
 PBMEC = 0 .+readdlm("PMBEC.txt")[2:21,2:21]
+PBMEC2 = PBMEC .- 0.3;
+setindex!.(Ref(PBMEC2), 0.0, 1:20, 1:20);
+
 aanames = Dict(aas[i] => i for i in 1:20)
 
 simcodons = Dict{String,Vector{AbstractString}}()
@@ -32,6 +36,7 @@ for x in keys(syncodons)
 end
 
 vjoin = (z) -> [join(x) for x in eachrow(z)]
+phcp = (x,y) -> permutedims(hcat(collect.(product(x,y))...))
 
 p_synsubs = [featuregain([x],syncodons[x],gccontent) for x in keys(syncodons)]
 p_simsubs = [featuregain([x],simcodons[x],gccontent) for x in keys(simcodons)]
@@ -40,87 +45,130 @@ p_simsubs = [featuregain([x],simcodons[x],gccontent) for x in keys(simcodons)]
 # Example: 
 # TTCACG
 #  AGT
-stopneighborsR2 = unique(vcat(frameXcpairs.(stop,-2)...), dims = 1);
-
-# Codon pairs inside an ORF, that have a stop codon in frame -2
-stopNbrR2within = stopneighborsR2[(stopneighborsR2[:,1] .∉ Ref(stop)) .& (stopneighborsR2[:,2] .∉ Ref(stop)),:];
-
-# Stop codon in frame -2, with a stop codon as an upstream codon in frame 0 #
-stopNbrR2stopUP = stopneighborsR2[(stopneighborsR2[:,1] .∈ Ref(stop)),:];
-
-# Stop codon in frame -2, with a stop codon as an downstream codon in frame 0 #
-stopNbrR2stopDN = stopneighborsR2[(stopneighborsR2[:,1] .∉ Ref(stop)) .& (stopneighborsR2[:,2] .∈ Ref(stop)),:];
-
-# # Stop codon in frame -2, with a start codon as an upstream codon in frame 0 #
-# stopNbrR2initUP = stopneighborsR2[(stopneighborsR2[:,1] .== "ATG"),:];
-
-# # Stop codon in frame -2, with a start codon as an downstream codon in frame 0 #
-# stopNbrR2initDN = stopneighborsR2[(stopneighborsR2[:,1] .== "ATG") .& (stopneighborsR2[:,2].∈ Ref(stop)),:];
-
+#
 # Codon pairs that have a stop codon in frame -1
 # Example: 
 # TCTCAG
 #   AGT
-stopneighborsR1 = unique(vcat(frameXcpairs.(stop,-1)...), dims = 1);
 
-# Stop codon in frame -1, with a stop codon as an upstream codon in frame 0 #
-stopNbrR1stopUP = stopneighborsR1[(stopneighborsR1[:,1] .∈ Ref(stop)),:];
 
-# Stop codon in frame -1, with a stop codon as an downstream codon in frame 0 #
-stopNbrR1stopDN = stopneighborsR1[(stopneighborsR1[:,1] .∉ Ref(stop)) .& (stopneighborsR1[:,2] .∈ Ref(stop)),:];
+stopneighborsR = [unique(vcat(frameXcpairs.(stop,-x)...), dims = 1) for x in 1:2];
 
-# Codon pairs inside an ORF, that have a stop codon in frame -1
-stopNbrR1within = stopneighborsR1[(stopneighborsR1[:,1] .∉ Ref(stop)) .& (stopneighborsR1[:,2] .∉ Ref(stop)),:];
+# Codon pairs inside an ORF, that have a stop codon in frame -2
+stopNbrWithin = [stopneighborsR[x][(stopneighborsR[x][:,1] .∉ Ref(stop)) .& (stopneighborsR[x][:,2] .∉ Ref(stop)),:] for x in 1:2];
 
-# # Stop codon in frame -1, with a start codon as an upstream codon in frame 0 #
-# stopNbrR2initUP = stopneighborsR2[(stopneighborsR1[:,1] .== "ATG"),:];
+# Stop codon in frame -2, with a stop codon as an upstream codon in frame 0 #
+stopNbrUPstop = [stopneighborsR[x][(stopneighborsR[x][:,1] .∈ Ref(stop)),:] for x in 1:2];
 
-# # Stop codon in frame -1, with a start codon as an downstream codon in frame 0 #
-# stopNbrR2initDN = stopneighborsR2[(stopneighborsR1[:,2] .== "ATG") .& (stopneighborsR2[:,2].∈ Ref(stop)),:];
+# Stop codon in frame -2, with a stop codon as an downstream codon in frame 0 #
+stopNbrDNstop = [stopneighborsR[x][(stopneighborsR[x][:,1] .∉ Ref(stop)) .& (stopneighborsR2[:,2] .∈ Ref(stop)),:] for x in 1:2];
 
 # Codons that encode a stop codon in the reverse frame
 stopneighborsR0 = reverse.(comp.(stop));
 
-p_stopR2within = sum(nucprob.(vjoin(stopNbrR2within),gccontent));
-p_stopR2stopUP = sum(nucprob.(vjoin(stopNbrR2stopUP),gccontent));
-p_stopR2stopDN = sum(nucprob.(vjoin(stopNbrR2stopDN),gccontent));
+p_stopWithin = [sum(nucprob.(vjoin(stopNbrWithin[x]),gccontent)) for x in 1:2];
+p_stopUPstop = [sum(nucprob.(vjoin(stopNbrUPstop[x]),gccontent)) for x in 1:2];
+p_stopDNstop = [sum(nucprob.(vjoin(stopNbrDNstop[x]),gccontent)) for x in 1:2];
 # p_stopR2initUP = sum(nucprob.(join.(stopNbrR2initUP),gccontent));
 # p_stopR2initDN = sum(nucprob.(join.(stopNbrR2initDN),gccontent));
 
-p_stopR1within = sum(nucprob.(vjoin(stopNbrR1within),gccontent));
-p_stopR1stopUP = sum(nucprob.(vjoin(stopNbrR1stopUP),gccontent));
-p_stopR1stopDN = sum(nucprob.(vjoin(stopNbrR1stopDN),gccontent));
-# p_stopR1initUP = sum(nucprob.(join.(stopNbrR1initUP);
-# p_stopR1initDN = sum(nucprob.(join.(stopNbrR1initDN);
-
 probstopR0 = sum(nucprob.(stopneighborsR0,gccontent));
 
-initneighborsR1 = unique(frameXcpairs("ATG",-1), dims = 1);
-initNbrR1within = initneighborsR1[(initneighborsR1[:,1] .∉ Ref(stop)) .& (initneighborsR1[:,2].∉ Ref(stop)),:];
+# initneighborsR1 = unique(frameXcpairs("ATG",-1), dims = 1);
+# initNbrR1Within = initneighborsR1[(initneighborsR1[:,1] .∉ Ref(stop)) .& (initneighborsR1[:,2].∉ Ref(stop)),:];
 
-initNbrR1stopUP = initneighborsR1[(initneighborsR1[:,1] .∈ Ref(stop)),:];
+# initNbrR1UPstop = initneighborsR1[(initneighborsR1[:,1] .∈ Ref(stop)),:];
 
-initNbrR1stopDN = initneighborsR1[(initneighborsR1[:,1] .∉ Ref(stop)) .& (initneighborsR1[:,2] .∈ Ref(stop)),:];
+# initNbrR1DNstop = initneighborsR1[(initneighborsR1[:,1] .∉ Ref(stop)) .& (initneighborsR1[:,2] .∈ Ref(stop)),:];
 
-initneighborsR2 = unique(frameXcpairs("ATG",-2), dims = 1);
-initNbrR2within = initneighborsR2[(initneighborsR2[:,1] .∉ Ref(stop)) .& (initneighborsR2[:,2].∉ Ref(stop)),:];
+# initneighborsR2 = unique(frameXcpairs("ATG",-2), dims = 1);
+# initNbrR2Within = initneighborsR2[(initneighborsR2[:,1] .∉ Ref(stop)) .& (initneighborsR2[:,2].∉ Ref(stop)),:];
 
-# initNbrR2stopUP = initneighborsR2[(initneighborsR2[:,1] .∈ Ref(stop)),:];
-# initNbrR2stopDN = initneighborsR2[(initneighborsR2[:,1] .∉ Ref(stop)) .& (initneighborsR2[:,2] .∈ Ref(stop)),:];
+# # initNbrR2UPstop = initneighborsR2[(initneighborsR2[:,1] .∈ Ref(stop)),:];
+# # initNbrR2DNstop = initneighborsR2[(initneighborsR2[:,1] .∉ Ref(stop)) .& (initneighborsR2[:,2] .∈ Ref(stop)),:];
 
-p_initR1 = sum(nucprob.(join.(initNbrR1within),gccontent));
-p_initR2 = sum(nucprob.(join.(initNbrR1within),gccontent));
+# p_initR1 = sum(nucprob.(join.(initNbrR1Within),gccontent));
+# p_initR2 = sum(nucprob.(join.(initNbrR1Within),gccontent));
 
-nostopneighborsR2 = unique(vcat(frameXcpairs.(nostopcodons,-2)...), dims = 1);
-nostopneighborsR1 = unique(vcat(frameXcpairs.(nostopcodons,-1)...), dims = 1);
-nostopNbrR1within = nostopneighborsR1[(nostopneighborsR1[:,1] .∉ Ref(stop)) .& (nostopneighborsR1[:,2] .∉ Ref(stop)),:];
-nostopNbrR2within = nostopneighborsR2[(nostopneighborsR2[:,1] .∉ Ref(stop)) .& (nostopneighborsR2[:,2] .∉ Ref(stop)),:];
+nostopneighbors = [unique(vcat(frameXcpairs.(nostopcodons,-x)...), dims = 1) for x in 1:2];
 
-g_stopR1within = featuregain(vjoin(nostopNbrR1within),vjoin(stopNbrR1within), gccontent)
-g_stopR2within = featuregain(vjoin(nostopNbrR2within),vjoin(stopNbrR2within), gccontent)
+nostopNbrWithin = [nostopneighbors[x][(nostopneighbors[x][:,1] .∉ Ref(stop)) .& (nostopneighbors[x][:,2] .∉ Ref(stop)),:] for x in 1:2];
 
-l_stopR1within = featuregain(vjoin(stopNbrR1within),vjoin(nostopNbrR1within), gccontent)
-l_stopR2within = featuregain(vjoin(stopNbrR2within),vjoin(nostopNbrR2within), gccontent)
+g_stopWithin = [featuregain(vjoin(nostopNbrWithin[x]),vjoin(stopNbrWithin[x]), gccontent) for x in 1:2]
+
+l_stopR1Within = [featuregain(vjoin(stopNbrWithin[x]),vjoin(nostopNbrWithin[x]), gccontent) for x in 1:2]
+
+# Effect of selection #
+
+function tprobsel(set1::Matrix{String},set2::Matrix{String},sdict::Dict,loss::Bool)
+    s = 0
+    for x in eachrow(set1)
+        feasible = phcp(sdict[x[1]],sdict[x[2]])
+        fset2 = set2[eachrow(set2) .∈ Ref(eachrow(feasible)),:]
+        if(loss)
+            s = s + featuregain([join(x)],vjoin(fset2),gccontent)
+        else
+            s = s + featuregain(vjoin(fset2),[join(x)],gccontent)
+        end
+    end
+    return s
+end
+
+# Strong purifying selection #
+
+# Stop loss #
+
+l_stop_PurSelMax = [tprobsel(stopNbrWithin[x],nostopNbrWithin[x],syncodons,true)/p_stopWithin[x] for x in 1:2]
+
+# Stop gain #
+
+g_stop_PurSelMax = [tprobsel(stopNbrWithin[x],nostopNbrWithin[x],syncodons,false)/sum(nucprob.(vjoin(nostopNbrWithin[x]),gccontent)) for x in 1:2]
+
+# Relaxed purifying selection #
+
+# Stop loss #
+
+l_stop_PurSelRel = [tprobsel(stopNbrWithin[x],nostopNbrWithin[x],simcodons,true)/p_stopWithin[x] for x in 1:2]
+
+# Stop gain #
+
+g_stop_PurSelRel = [tprobsel(stopNbrWithin[x],nostopNbrWithin[x],simcodons,false)/sum(nucprob.(vjoin(nostopNbrWithin[x]),gccontent)) for x in 1:2]
+# De novo sequence divergence #
+
+allaacodonpairs = phcp(nostopcodons,nostopcodons);
+
+csetR = [allaacodonpairs[eachrow(allaacodonpairs) .∉ Ref(eachrow(stopNbrWithin[x])),:] for x in 1:2];
+
+Rcodon = (codonpair,x) -> reverse(comp(join(codonpair)[3-x+1:6-x]))
+
+cdn2aanum = (cdn) -> aanames[transnucs(cdn)]
+
+function aadivframeR(frm::Int,sdict::Dict)
+    d = 0
+    p = 0
+    for Z in eachrow(csetR[frm])
+        stZ = phcp(vcat(Z[1],sdict[Z[1]]),vcat(Z[2],sdict[Z[2]]))
+        rcdn = Rcodon(Z,frm)
+        stZ2 = stZ[(eachrow(stZ) .!= Ref(Z)) .& ([Rcodon(y,frm) for y in eachrow(stZ)] .∉ Ref(stop)) ,:]
+        if(isempty(stZ2))
+            dZ=0
+        else
+            dZ = sum([PBMEC2[cdn2aanum(rcdn),cdn2aanum(Rcodon(y,frm))] for y in eachrow(stZ2)])
+        end
+        pZ = nucprob(join(Z),gccontent)
+        d += dZ*pZ
+        p += pZ
+    end
+    if p==0
+        return 0
+    else
+        return d/p
+    end
+end
+
+divergence_PurSel_Max = [aadivframeR(x,syncodons) for x in 1:2]
+divergence_PurSel_Rel = [aadivframeR(x,simcodons) for x in 1:2]
+
 
 # INTRONS #
 
