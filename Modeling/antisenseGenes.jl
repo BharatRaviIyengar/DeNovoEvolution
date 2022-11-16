@@ -69,26 +69,8 @@ stopneighborsR0 = reverse.(comp.(stop));
 p_stopWithin = [sum(nucprob.(vjoin(stopNbrWithin[x]),gccontent)) for x in 1:2];
 p_stopUPstop = [sum(nucprob.(vjoin(stopNbrUPstop[x]),gccontent)) for x in 1:2];
 p_stopDNstop = [sum(nucprob.(vjoin(stopNbrDNstop[x]),gccontent)) for x in 1:2];
-# p_stopR2initUP = sum(nucprob.(join.(stopNbrR2initUP),gccontent));
-# p_stopR2initDN = sum(nucprob.(join.(stopNbrR2initDN),gccontent));
 
 probstopR0 = sum(nucprob.(stopneighborsR0,gccontent));
-
-# initneighborsR1 = unique(frameXcpairs("ATG",-1), dims = 1);
-# initNbrR1Within = initneighborsR1[(initneighborsR1[:,1] .∉ Ref(stop)) .& (initneighborsR1[:,2].∉ Ref(stop)),:];
-
-# initNbrR1UPstop = initneighborsR1[(initneighborsR1[:,1] .∈ Ref(stop)),:];
-
-# initNbrR1DNstop = initneighborsR1[(initneighborsR1[:,1] .∉ Ref(stop)) .& (initneighborsR1[:,2] .∈ Ref(stop)),:];
-
-# initneighborsR2 = unique(frameXcpairs("ATG",-2), dims = 1);
-# initNbrR2Within = initneighborsR2[(initneighborsR2[:,1] .∉ Ref(stop)) .& (initneighborsR2[:,2].∉ Ref(stop)),:];
-
-# # initNbrR2UPstop = initneighborsR2[(initneighborsR2[:,1] .∈ Ref(stop)),:];
-# # initNbrR2DNstop = initneighborsR2[(initneighborsR2[:,1] .∉ Ref(stop)) .& (initneighborsR2[:,2] .∈ Ref(stop)),:];
-
-# p_initR1 = sum(nucprob.(join.(initNbrR1Within),gccontent));
-# p_initR2 = sum(nucprob.(join.(initNbrR1Within),gccontent));
 
 nostopneighbors = [unique(vcat(frameXcpairs.(nostopcodons,-x)...), dims = 1) for x in 1:2];
 
@@ -96,7 +78,7 @@ nostopNbrWithin = [nostopneighbors[x][(nostopneighbors[x][:,1] .∉ Ref(stop)) .
 
 g_stopWithin = [featuregain(vjoin(nostopNbrWithin[x]),vjoin(stopNbrWithin[x]), gccontent) for x in 1:2]
 
-l_stopR1Within = [featuregain(vjoin(stopNbrWithin[x]),vjoin(nostopNbrWithin[x]), gccontent) for x in 1:2]
+l_stopWithin = [featuregain(vjoin(stopNbrWithin[x]),vjoin(nostopNbrWithin[x]), gccontent) for x in 1:2]
 
 # Effect of selection #
 
@@ -139,6 +121,8 @@ allaacodonpairs = phcp(nostopcodons,nostopcodons);
 
 csetR = [allaacodonpairs[eachrow(allaacodonpairs) .∉ Ref(eachrow(stopNbrWithin[x])),:] for x in 1:2];
 
+cset0 = nostopcodons[nostopcodons .∉ Ref(stopneighborsR0)]
+
 Rcodon = (codonpair,x) -> reverse(comp(join(codonpair)[3-x+1:6-x]))
 
 cdn2aanum = (cdn) -> aanames[transnucs(cdn)]
@@ -170,30 +154,30 @@ divergence_PurSel_Max = [aadivframeR(x,syncodons) for x in 1:2]
 divergence_PurSel_Rel = [aadivframeR(x,simcodons) for x in 1:2]
 
 
-# INTRONS #
+# # INTRONS #
 
-# Intron frame frequency (dmel-6.46) #
+# # Intron frame frequency (dmel-6.46) #
 
-intfrm2 = 0.423237
-intfrm1 = 0.281180
-intfrm0 = 0.295583
+# intfrm2 = 0.423237
+# intfrm1 = 0.281180
+# intfrm0 = 0.295583
 
-# Intron nucleotide frequency (dmel-6.46) #
-first6 = [
-    0.000763	0.998862	0.000264	0.000083;
-    0.000403	0.000222	0.990159	0.009147;
-    0.601574	0.332121	0.052466	0.013755;
-    0.740860	0.097563	0.095633	0.065819;
-    0.087000	0.821628	0.065236	0.025997;
-    0.133678	0.066222	0.681662	0.118299;
-];
+# # Intron nucleotide frequency (dmel-6.46) #
+# first6 = [
+#     0.000763	0.998862	0.000264	0.000083;
+#     0.000403	0.000222	0.990159	0.009147;
+#     0.601574	0.332121	0.052466	0.013755;
+#     0.740860	0.097563	0.095633	0.065819;
+#     0.087000	0.821628	0.065236	0.025997;
+#     0.133678	0.066222	0.681662	0.118299;
+# ];
 
-last6 = [
-    0.000347	0.998612	0.000555	0.000444;
-    0.998820	0.000194	0.000472	0.000458;
-    0.062405	0.002637	0.252797	0.682106;
-    0.268023	0.281431	0.288274	0.162188;
-    0.126433	0.047942	0.621853	0.203689;
-    0.119868	0.063307	0.588166	0.228576;
-];
+# last6 = [
+#     0.000347	0.998612	0.000555	0.000444;
+#     0.998820	0.000194	0.000472	0.000458;
+#     0.062405	0.002637	0.252797	0.682106;
+#     0.268023	0.281431	0.288274	0.162188;
+#     0.126433	0.047942	0.621853	0.203689;
+#     0.119868	0.063307	0.588166	0.228576;
+# ];
 
