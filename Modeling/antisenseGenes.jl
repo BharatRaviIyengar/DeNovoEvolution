@@ -6,7 +6,8 @@ function nostop(codonset)
 	codonset[codonset .∉ Ref(stop)]
 end
 
-gccontent = 0.53942 # all CDS #
+gccontent = 0.493611; # all mRNA #
+# gccontent = 0.53942 # all CDS #
 
 p_T = 0.204217;
 p_A = 0.256362;
@@ -16,21 +17,21 @@ p_C = 0.271612;
 allcodons = kmers(3)
 nostopcodons = nostop(allcodons);
 
-codonpairprob = (cpair) -> sum(nucprob.(cpair[:,1],gccontent) .* nucprob.(cpair[:,2],gccontent))
-
 syncodons = Dict(x => gencode[(gencode[:,3].== transnucs(x)) .& (gencode[:,1] .!= x),1] for x in nostopcodons)
 
 PBMEC = 0 .+readdlm("PMBEC.txt")[2:21,2:21]
 aanames = Dict(aas[i] => i for i in 1:20)
 
-simcodons = syncodons
-for x in keys(simcodons)
+simcodons = Dict{String,Vector{AbstractString}}()
+for x in keys(syncodons)
     y = transnucs(x)
     simaas = aas[PBMEC[:,aanames[y]] .> 0.05]
     simaas = simaas[simaas .!= y]
     simcody = gencode[gencode[:,3] .∈ Ref(simaas),1]
-    simcodons[x] = vcat(simcodons[x],simcody)
+    simcodons[x] = vcat(syncodons[x],simcody)
 end
+
+vjoin = (z) -> [join(x) for x in eachrow(z)]
 
 p_synsubs = [featuregain([x],syncodons[x],gccontent) for x in keys(syncodons)]
 p_simsubs = [featuregain([x],simcodons[x],gccontent) for x in keys(simcodons)]
@@ -50,11 +51,11 @@ stopNbrR2stopUP = stopneighborsR2[(stopneighborsR2[:,1] .∈ Ref(stop)),:];
 # Stop codon in frame -2, with a stop codon as an downstream codon in frame 0 #
 stopNbrR2stopDN = stopneighborsR2[(stopneighborsR2[:,1] .∉ Ref(stop)) .& (stopneighborsR2[:,2] .∈ Ref(stop)),:];
 
-# Stop codon in frame -2, with a start codon as an upstream codon in frame 0 #
-stopNbrR2initUP = stopneighborsR2[(stopneighborsR2[:,1] .== "ATG"),:];
+# # Stop codon in frame -2, with a start codon as an upstream codon in frame 0 #
+# stopNbrR2initUP = stopneighborsR2[(stopneighborsR2[:,1] .== "ATG"),:];
 
-# Stop codon in frame -2, with a start codon as an downstream codon in frame 0 #
-stopNbrR2initDN = stopneighborsR2[(stopneighborsR2[:,1] .== "ATG") .& (stopneighborsR2[:,2].∈ Ref(stop)),:];
+# # Stop codon in frame -2, with a start codon as an downstream codon in frame 0 #
+# stopNbrR2initDN = stopneighborsR2[(stopneighborsR2[:,1] .== "ATG") .& (stopneighborsR2[:,2].∈ Ref(stop)),:];
 
 # Codon pairs that have a stop codon in frame -1
 # Example: 
@@ -71,26 +72,26 @@ stopNbrR1stopDN = stopneighborsR1[(stopneighborsR1[:,1] .∉ Ref(stop)) .& (stop
 # Codon pairs inside an ORF, that have a stop codon in frame -1
 stopNbrR1within = stopneighborsR1[(stopneighborsR1[:,1] .∉ Ref(stop)) .& (stopneighborsR1[:,2] .∉ Ref(stop)),:];
 
-# Stop codon in frame -1, with a start codon as an upstream codon in frame 0 #
-stopNbrR2initUP = stopneighborsR2[(stopneighborsR1[:,1] .== "ATG"),:];
+# # Stop codon in frame -1, with a start codon as an upstream codon in frame 0 #
+# stopNbrR2initUP = stopneighborsR2[(stopneighborsR1[:,1] .== "ATG"),:];
 
-# Stop codon in frame -1, with a start codon as an downstream codon in frame 0 #
-stopNbrR2initDN = stopneighborsR2[(stopneighborsR1[:,2] .== "ATG") .& (stopneighborsR2[:,2].∈ Ref(stop)),:];
+# # Stop codon in frame -1, with a start codon as an downstream codon in frame 0 #
+# stopNbrR2initDN = stopneighborsR2[(stopneighborsR1[:,2] .== "ATG") .& (stopneighborsR2[:,2].∈ Ref(stop)),:];
 
 # Codons that encode a stop codon in the reverse frame
 stopneighborsR0 = reverse.(comp.(stop));
 
-p_stopR2within = codonpairprob(stopNbrR2within);
-p_stopR2stopUP = codonpairprob(stopNbrR2stopUP);
-p_stopR2stopDN = codonpairprob(stopNbrR2stopDN);
-p_stopR2initUP = codonpairprob(stopNbrR2initUP);
-p_stopR2initDN = codonpairprob(stopNbrR2initDN);
+p_stopR2within = sum(nucprob.(vjoin(stopNbrR2within),gccontent));
+p_stopR2stopUP = sum(nucprob.(vjoin(stopNbrR2stopUP),gccontent));
+p_stopR2stopDN = sum(nucprob.(vjoin(stopNbrR2stopDN),gccontent));
+# p_stopR2initUP = sum(nucprob.(join.(stopNbrR2initUP),gccontent));
+# p_stopR2initDN = sum(nucprob.(join.(stopNbrR2initDN),gccontent));
 
-p_stopR1within = codonpairprob(stopNbrR1within);
-p_stopR1stopUP = codonpairprob(stopNbrR1stopUP);
-p_stopR1stopDN = codonpairprob(stopNbrR1stopDN);
-p_stopR1initUP = codonpairprob(stopNbrR1initUP);
-p_stopR1initDN = codonpairprob(stopNbrR1initDN);
+p_stopR1within = sum(nucprob.(vjoin(stopNbrR1within),gccontent));
+p_stopR1stopUP = sum(nucprob.(vjoin(stopNbrR1stopUP),gccontent));
+p_stopR1stopDN = sum(nucprob.(vjoin(stopNbrR1stopDN),gccontent));
+# p_stopR1initUP = sum(nucprob.(join.(stopNbrR1initUP);
+# p_stopR1initDN = sum(nucprob.(join.(stopNbrR1initDN);
 
 probstopR0 = sum(nucprob.(stopneighborsR0,gccontent));
 
@@ -104,13 +105,22 @@ initNbrR1stopDN = initneighborsR1[(initneighborsR1[:,1] .∉ Ref(stop)) .& (init
 initneighborsR2 = unique(frameXcpairs("ATG",-2), dims = 1);
 initNbrR2within = initneighborsR2[(initneighborsR2[:,1] .∉ Ref(stop)) .& (initneighborsR2[:,2].∉ Ref(stop)),:];
 
-initNbrR2stopUP = initneighborsR2[(initneighborsR2[:,1] .∈ Ref(stop)),:];
+# initNbrR2stopUP = initneighborsR2[(initneighborsR2[:,1] .∈ Ref(stop)),:];
+# initNbrR2stopDN = initneighborsR2[(initneighborsR2[:,1] .∉ Ref(stop)) .& (initneighborsR2[:,2] .∈ Ref(stop)),:];
 
-initNbrR2stopDN = initneighborsR2[(initneighborsR2[:,1] .∉ Ref(stop)) .& (initneighborsR2[:,2] .∈ Ref(stop)),:];
+p_initR1 = sum(nucprob.(join.(initNbrR1within),gccontent));
+p_initR2 = sum(nucprob.(join.(initNbrR1within),gccontent));
 
-probinitR1 = codonpairprob(initNbrR1within);
-probinitR2 = codonpairprob(initNbrR1within);
+nostopneighborsR2 = unique(vcat(frameXcpairs.(nostopcodons,-2)...), dims = 1);
+nostopneighborsR1 = unique(vcat(frameXcpairs.(nostopcodons,-1)...), dims = 1);
+nostopNbrR1within = nostopneighborsR1[(nostopneighborsR1[:,1] .∉ Ref(stop)) .& (nostopneighborsR1[:,2] .∉ Ref(stop)),:];
+nostopNbrR2within = nostopneighborsR2[(nostopneighborsR2[:,1] .∉ Ref(stop)) .& (nostopneighborsR2[:,2] .∉ Ref(stop)),:];
 
+g_stopR1within = featuregain(vjoin(nostopNbrR1within),vjoin(stopNbrR1within), gccontent)
+g_stopR2within = featuregain(vjoin(nostopNbrR2within),vjoin(stopNbrR2within), gccontent)
+
+l_stopR1within = featuregain(vjoin(stopNbrR1within),vjoin(nostopNbrR1within), gccontent)
+l_stopR2within = featuregain(vjoin(stopNbrR2within),vjoin(nostopNbrR2within), gccontent)
 
 # INTRONS #
 

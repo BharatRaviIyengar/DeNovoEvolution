@@ -148,6 +148,10 @@ function singlemutant(s)
 end
 
 function mprob(s1,s2)
+    if(isempty(s1) || isempty(s2))
+        @warn "non-nucleotide string input, returning 0"
+        return 0
+    end
     l = length(s1)
     if l != length(s2)
         error("length mismatch")
