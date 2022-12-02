@@ -203,13 +203,16 @@ onlyrnaloss = orfstay .*(rnaprob*rnaloss)
 
 aaprob = [sum(nucprob.(gencode[gencode[:,3] .== x,1],gccontent)) for x in aas];
 aaprob2 = aaprob./sum(aaprob);
-exp_hydropathy = sum(hydropathy.*aaprob2)
+exp_hydropathy = sum(hydropathy3.*aaprob2)
 
 acidic = indexin(["D","E"],aas);
 basic = indexin(["K","R"],aas);
-hydrophobic = hydropathy .>0;
+hydrophobic = hydropathy2 .<0;
 
-pHydrophobic = sum(aaprob[hydrophobic]);
+allcodons = kmers(3);
+nostopcodons = allcodons[allcodons .∉ Ref(["TAA","TAG","TGA"])]
+
+pHydrophobic = sum(aaprob[hydrophobic3]);
 
 plot_aafreq = bar(aas,aaprob2,
     xticks = (0.5:20, aas),
@@ -251,10 +254,31 @@ gainAA = Vector{Float64}(vec(sum(aasubprob, dims=1)'));
 lossAA = Vector{Float64}(vec(sum(aasubprob, dims=2)./aaprob2));
 stayAA = [sum(featurestay(gencode[gencode[:,3] .== x,1],gccontent)) for x in aas];
 
+getHP = (a) -> hydropathy3[aas .== a]
 
 codonshydrophobic = gencode[(in).(gencode[:,3],Ref(aas[hydrophobic])),1];
 
 codonshydrophilic = kmers(3)[(!in).(kmers(3),Ref(codonshydrophobic))];
+
+hmp = 0
+mp=0
+for i in nostopcodons
+    for j in nostopcodons
+        x = mprob(i,j)
+        yj = getHP(transnucs(j))[1]
+        yi = getHP(transnucs(i))[1]
+        if(sign(yi)!=sign(yj))
+            y = yj - yi
+        else
+            y = 0
+        end
+        z = nucprob(i,gccontent)
+        hmp += x*y*z
+        mp += x
+    end
+end
+MutΔHydrophobic = hmp/mp
+
 
 toHydrophobic = featuregain(codonshydrophilic,codonshydrophobic, gccontent);
 
