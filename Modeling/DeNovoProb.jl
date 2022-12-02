@@ -207,12 +207,12 @@ exp_hydropathy = sum(hydropathy3.*aaprob2)
 
 acidic = indexin(["D","E"],aas);
 basic = indexin(["K","R"],aas);
-hydrophobic = hydropathy2 .<0;
+hydrophobic = hydropathy3 .<0;
 
 allcodons = kmers(3);
 nostopcodons = allcodons[allcodons .∉ Ref(["TAA","TAG","TGA"])]
 
-pHydrophobic = sum(aaprob[hydrophobic3]);
+pHydrophobic = sum(aaprob[hydrophobic]);
 
 plot_aafreq = bar(aas,aaprob2,
     xticks = (0.5:20, aas),
