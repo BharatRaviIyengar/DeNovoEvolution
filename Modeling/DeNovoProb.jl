@@ -320,7 +320,7 @@ plot_aasymprob2 = heatmap(aaorder,aaorder,asymmetric_conditional[ixaaorder,ixaao
     xlabel = "Substituted amino acid",
     c = :bluesreds
 );
-savefig(plot_aasymprob2, figdir*"pAAsubSymCond.pdf")
+savefig(plot_aasymprob2, figdir*"pAAsubSymCond.svg")
 
 plot_toaa = bar(aaorder,gainAA[ixaaorder]./sum(gainAA),
     xticks = (0.5:20, aaorder),
