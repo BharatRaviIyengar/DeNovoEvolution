@@ -1,7 +1,7 @@
 using Combinatorics
 using Plots
 using Measures
-using HypothesisTests
+# using HypothesisTests
 
 include("nucleotidefuncts.jl")
 
@@ -11,7 +11,8 @@ figdir = joinpath(Base.source_dir(),"../Manuscripts/Figures/");
 default(linecolor = :black, linewidth = 2, tickfont = font(10,"Helvetica"), 
 guidefont = font(13,"Helvetica"),framestyle = :box, legend = false);
 
-
+aaorder = ["W","F","Y","I","V","L","M","C","D","E","G","A","P","H","K","R","S","T","N","Q"];
+ixaaorder = indexin(aaorder,aas);
 gccontent = 0.42
 
 function rnavals(gccontent)
@@ -214,8 +215,8 @@ nostopcodons = allcodons[allcodons .∉ Ref(["TAA","TAG","TGA"])]
 
 pHydrophobic = sum(aaprob[hydrophobic]);
 
-plot_aafreq = bar(aas,aaprob2,
-    xticks = (0.5:20, aas),
+plot_aafreq = bar(aaorder,aaprob2[ixaaorder],
+    xticks = (0.5:20, aaorder),
     yticks = (0:0.03:0.9),
     fill = :black,
     xlabel = "Amino acid",
@@ -286,9 +287,9 @@ frHydrophobic = featuregain(codonshydrophobic,codonshydrophilic, gccontent);
 
 stayHydrophobic = featurestay(codonshydrophobic, gccontent);
 
-plot_aasubprob = heatmap(aas[idx],aas[idx],log2.(aasubhighprob[idx,idx]),
-    xticks = (0.5:20, aas[idx]), 
-    yticks = (0.5:20,aas[idx]),
+plot_aasubprob = heatmap(aaorder,aaorder,log2.(aasubhighprob[ixaaorder,ixaaorder]),
+    xticks = (0.5:20, aaorder), 
+    yticks = (0.5:20, aaorder),
     size = (width = cm2pt(15), height = cm2pt(14)),
     colorbar_title = "Substitution Probability",
     legend = :bottom
@@ -296,9 +297,9 @@ plot_aasubprob = heatmap(aas[idx],aas[idx],log2.(aasubhighprob[idx,idx]),
 
 savefig(plot_aasubprob, figdir*"pAASub.pdf")
 
-plot_aasymprob = heatmap(aas,aas,asymmetric_transitions, 
-    xticks = (0.5:20, aas), 
-    yticks = (0.5:20,aas),
+plot_aasymprob = heatmap(aaorder,aaorder,asymmetric_transitions[ixaaorder,ixaaorder], 
+    xticks = (0.5:20, aaorder), 
+    yticks = (0.5:20,aaorder),
     size = (width = cm2pt(15), height = cm2pt(14)),
     colorbar_title = "Substitution likelihood",
     legend = :bottom,
@@ -309,9 +310,9 @@ plot_aasymprob = heatmap(aas,aas,asymmetric_transitions,
 
 savefig(plot_aasymprob, figdir*"pAAsubSym.pdf")
 
-plot_aasymprob2 = heatmap(aas,aas,asymmetric_conditional, 
-    xticks = (0.5:20, aas), 
-    yticks = (0.5:20,aas),
+plot_aasymprob2 = heatmap(aaorder,aaorder,asymmetric_conditional[ixaaorder,ixaaorder], 
+    xticks = (0.5:20, aaorder), 
+    yticks = (0.5:20,aaorder),
     size = (width = cm2pt(15), height = cm2pt(14)),
     colorbar_title = "Substitution likelihood",
     legend = :bottom,
@@ -321,8 +322,8 @@ plot_aasymprob2 = heatmap(aas,aas,asymmetric_conditional,
 );
 savefig(plot_aasymprob2, figdir*"pAAsubSymCond.pdf")
 
-plot_toaa = bar(aas,gainAA./sum(gainAA),
-    xticks = (0.5:20, aas),
+plot_toaa = bar(aaorder,gainAA[ixaaorder]./sum(gainAA),
+    xticks = (0.5:20, aaorder),
     yticks = (0:0.03:0.9),
     fill = :black,
     xlabel = "Amino acid",
@@ -332,8 +333,8 @@ plot_toaa = bar(aas,gainAA./sum(gainAA),
 
 savefig(plot_toaa, figdir*"pToAA.pdf")
 
-plot_fraa = bar(aas,lossAA./sum(lossAA),
-    xticks = (0.5:20, aas),
+plot_fraa = bar(aaorder,lossAA[ixaaorder]./sum(lossAA),
+    xticks = (0.5:20, aaorder),
     fill = :black,
     xlabel = "Amino acid",
     ylabel = "Loss Probability\n(Normalized)",
