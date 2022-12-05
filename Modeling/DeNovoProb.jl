@@ -144,6 +144,8 @@ ncodons = [30:300;];
 ATGvalues = ATGvals(gccontent);
 stopvalues = stopvals(gccontent);
 
+gcrange = [0.3:0.05:0.6;];
+ovalsgc = hcat([orfvals(x,ATGvals(x),stopvals(x),100) for x in gcrange]...)
 
 (rnaprob, rnagain, rnaloss, rnastay) = rnavals(gccontent)
 (orfprob, orfgain, orfloss, orfstay) = [zeros(size(ncodons)) for i = 1:4 ]
@@ -170,7 +172,22 @@ plot_genegain_geneloss = plot(ncodons,log.(genegain2)./log.(geneloss),
     ylabel = "# Gene Losses \n per Gene Gain",
     size = (width = cm2pt(12), height = cm2pt(11)),
 );
-savefig(plot_genegain_geneloss, figdir*"geneGainLoss.pdf")
+savefig(plot_genegain_geneloss, figdir*"geneGainLoss100GC.pdf")
+
+gcrange = [0.3:0.05:0.6;];
+rvalsgc = hcat([rnavals(x) for x in gcrange]);
+ovalsgc = [hcat([orfvals(x,ATGvals(x),stopvals(x),y) for x in gcrange]...) for y in ncodons];
+ovalsgc50 = ovalsgc[findfirst(ncodons .==50)];
+genegain50 = ((rvalsgc[2,:] + rvalsgc[4,:]) .* ovalsgc50[2,:] .+ ovalsgc50[4,:] .* rvalsgc[2,:]);
+genegain2_50 = genegain50./(1 .-rvalsgc[1,:] - ovalsgc50[1,:]);
+geneloss50 = ovalsgc50[3,:] .+ rvalsgc[3,:]
+
+plot_genegain_geneloss_50_gcrange = plot(gcrange,log.(genegain2_50)./log.(geneloss50),
+    xlabel = "GC-content",
+    ylabel = "# Gene Losses \n per Gene Gain",
+    size = (width = cm2pt(12), height = cm2pt(11)),
+);
+savefig(plot_genegain_geneloss_50_gcrange, figdir*"geneGainLoss50gcr.pdf")
 
 plot_rnafist_orffirst = plot(ncodons[1:50],log.(orffirst./rnafirst)[1:50],
     xlabel = "ORF length (codons)",
@@ -179,6 +196,23 @@ plot_rnafist_orffirst = plot(ncodons[1:50],log.(orffirst./rnafirst)[1:50],
     xticks = [35:7:80;]
 );
 savefig(plot_rnafist_orffirst, figdir*"first_ORF_RNA.pdf")
+
+rnafirstgcr = hcat([rvalsgc[4,:] .* ovalsgc[x][2,:] for x in eachindex(ovalsgc)]...);
+orffirstgcr =hcat([ovalsgc[x][4,:] .* rvalsgc[2,:] for x in eachindex(ovalsgc)]...);
+
+whichfirstgcr = [findlast(x.>0) for x in eachrow(log2.(orffirstgcr./rnafirstgcr))];
+
+whichfirstgcr[isnothing.(whichfirstgcr)] .= 1;
+
+plot_whichfirstgcr = bar(gcrange,ncodons[whichfirstgcr],
+    xlabel = "GC-content",
+    ylabel = "Minimum codons for \n RNA-first trajectory",
+    size = (width = cm2pt(12.5), height = cm2pt(11)),
+    fill = :black,
+    xticks = gcrange
+);
+
+savefig(plot_whichfirstgcr, figdir*"whichfirstgcr.pdf")
 
 plot_rnafist_orffirst2 = plot(ncodons[1:50],log.(orffirst2./rnafirst2)[1:50],
     xlabel = "ORF length (codons)",
