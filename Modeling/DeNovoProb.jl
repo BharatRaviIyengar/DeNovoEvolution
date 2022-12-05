@@ -234,6 +234,13 @@ plot_Loss = plot(ncodons[1:85],log.(orfloss./rnaloss)[1:85],
 
 savefig(plot_Loss, figdir*"pLoss.pdf")
 
+plot_loss_50_gcrange = plot(gcrange,log.(ovalsgc50[3,:]./rvalsgc[3,:]),
+    xlabel = "GC-content",
+    ylabel = "P_RNA-loss\nP_ORF-loss",
+    size = (width = cm2pt(12.5), height = cm2pt(11)),
+);
+savefig(plot_loss_50_gcrange, figdir*"pLoss50gcr.pdf")
+
 onlyrnaloss = orfstay .*(rnaprob*rnaloss)
 
 aaprob = [sum(nucprob.(gencode[gencode[:,3] .== x,1],gccontent)) for x in aas];
