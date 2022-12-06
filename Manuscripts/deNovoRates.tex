@@ -6,8 +6,8 @@
 \citestyle{egu}
 
 \captionsetup[figure]{labelfont=bf,textfont={small,normalfont}}
-\captionsetup[subfigure]{labelsep=quad, labelfont={bf,small}, textfont=small, singlelinecheck=off, justification=raggedright, position=top}
-\renewcommand{\thesubfigure}{\Alph{subfigure}}
+%\captionsetup[subfigure]{labelsep=quad, labelfont={bf,small}, textfont=small, singlelinecheck=off, justification=raggedright, position=top}
+%\renewcommand{\thesubfigure}{\Alph{subfigure}}
 
 \renewcommand{\subsectionautorefname}{Section}
 \renewcommand{\subsubsectionautorefname}{Section}
@@ -43,7 +43,7 @@ Organisms evolve new traits by expanding their functional genome. Evolution of n
 
 In this study we focus on the evolution of genes that encode new proteins. New protein coding genes frequently arise via duplication of existing protein coding genes. These duplicated genes then genetically and functionally diverge from their parent genes by accumulating mutations \citep{Long2003,IAD}. Recently it has been shown that new protein coding genes can arise independent of gene duplication, from genomic sequences that did not previously encode any protein. This phenomenon is called \textit{de novo} gene emergence \citep{EBB-F1000,vanOss}. \textit{De novo} protein coding genes can emerge from intergenic sequences, non-coding RNA genes, introns, and even regions that partially overlap with existing protein coding genes \citep{vanOss}. To express a protein, a genomic sequence should be transcribed as well as translated. Therefore, the gene needs sequence features that enable both these processes. 
 
-The primary requirement for transcription is recruitment of RNA polymerase at the gene's promoter \citep{Promoters}. A part of the promoter, called the core promoter is the region that determines the start of transcription \citep{corepromoters}. The second requirement for a productive transcription is its termination at appropriate sites. Even though pervasive transcription is widespread in eukaryotic genomes, most RNAs are quickly eliminated by RNA degrading enzymes \citep{RNAturnover}. Most eukaryotic mRNAs and long non-coding RNAs, are polyadenylated at their 3' termini, which makes them resistant to degradation. Polyadenylation, which also marks the end of transcription \citep{polyAterm}, is facilitated by sequences known as polyadenylation signals \cite{polyA}. In prokaryotes, the end of transcription is determined by sequences known as terminators \citep{ProkTerm}. Thus the synthesis of a stable RNA requires promoters, as well as termination or polyadenylation signal sequences.
+The primary requirement for transcription is recruitment of RNA polymerase at the gene's promoter \citep{Promoters}. A part of the promoter, called the core promoter is the region that determines the start of transcription \citep{corepromoters}. The second requirement for a productive transcription is its termination at appropriate sites. Even though pervasive transcription is widespread in eukaryotic genomes, most RNAs are quickly eliminated by RNA degrading enzymes \citep{RNAturnover}. Most eukaryotic mRNAs and long non-coding RNAs, are polyadenylated at their 3' termini, which makes them resistant to degradation. Polyadenylation, which also marks the end of transcription \citep{polyAterm}, is facilitated by sequences known as polyadenylation signals \citep{polyA}. In prokaryotes, the end of transcription is determined by sequences known as terminators \citep{ProkTerm}. Thus the synthesis of a stable RNA requires promoters, as well as termination or polyadenylation signal sequences.
 
 The second major requirement for protein expression is translation of the transcribed mRNA. The most fundamental requirement for translation is the presence of an open reading frame (ORF). Usually, an mRNA needs additional features to initiate protein synthesis. These features include ribosome binding sites in prokaryotes \citep{RBS}, and Kozak consensus sequences in eukaryotes \citep{kozak,kozakDroso,kozakHuman}. 
 
@@ -81,7 +81,7 @@ P_\textit{gene-loss} = P_\textit{RNA-loss} + P_\textit{ORF-loss}
 
 \begin{figure}[!t]
 \centering
-\includegraphics[scale=0.6]{Figures/geneGainLossComplete.pdf}
+\includegraphics[scale=0.5]{Figures/geneGainLossComplete.pdf}
 \caption{Genes are more likely to be independently lost twice, than being born once. The vertical axis in both panels shows the number of independent gene loss events (\autoref{genelosseq}) that can occur relative to one gene gain event (\autoref{genegaineq}) -- $\log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$. The horizontal axis shows the number of codons in the ORF \textbf{(A)}, and the GC-content \textbf{(B)}. \autoref{genegaineq} describes total gene gain probability. Gene gain probability conditioned on the gene being absent would be $P_\textit{gene-gain}/(1-P_\textit{ORF} - P_\textit{RNA})$. Using the conditional probability of gene gain does not change these results.}
 \label{gainlossprob}
 \vspace{1ex}
@@ -115,7 +115,7 @@ P_\textit{RNA-first} = P_\textit{RNA-stay}\times P_\textit{ORF-gain}
 %\begin{subfigure}{0.48\textwidth}
 %\centering
 %\caption{One-step}
-\includegraphics[scale=0.6]{Figures/whichfirstComplete.pdf}
+\includegraphics[scale=0.5]{Figures/whichfirstComplete.pdf}
 %\end{subfigure}\hfill%
 %\begin{subfigure}{0.48\textwidth}
 %\centering
@@ -147,7 +147,7 @@ Overall, long ORFs are more likely to be lost before transcription emerges than 
 \centering
 \hrule
 \vspace{1ex}
-\includegraphics[scale=0.6]{Figures/pLossComplete.pdf}
+\includegraphics[scale=0.5]{Figures/pLossComplete.pdf}
 \caption{ORF loss is more probable than transcription loss for proto-genes containing more than 33 codons. The horizontal axis denotes the number of codons in the ORF \textbf{(A)} and GC-content \textbf{(B)}. The vertical axis shows the log transformed ratio of ORF loss and RNA loss probabilities, such that a positive value means ORF-loss is more probable than RNA loss, and \textit{vice versa}.}
 \label{lossprob}
 \end{figure}
@@ -166,29 +166,7 @@ Thus, widespread transcription loss can suggest a negative selection on protein 
 
 \begin{figure}[!t]
 \centering
-\begin{subfigure}{0.47\textwidth}
-\caption{}
-\flushleft
-\includegraphics[scale=0.5]{Figures/pAAfreq.pdf}
-\end{subfigure}\hfill%
-\begin{subfigure}{0.47\textwidth}
-\caption{}
-\flushleft
-\includegraphics[scale=0.5]{Figures/pToAA.pdf}
-\end{subfigure}
-
-\vspace{1em}
-
-\begin{subfigure}[t]{0.47\textwidth}
-\caption{}
-\flushleft
-\includegraphics[scale=0.5]{Figures/pFrAA.pdf}
-\end{subfigure}\hfill%
-\begin{subfigure}[t]{0.47\textwidth}
-\caption{}
-\flushright
-\includegraphics[scale=0.5]{Figures/pAAsubSymCond.pdf}
-\end{subfigure}
+\includegraphics[scale=0.5]{Figures/proteinComposition.pdf}
 
 \caption{Mutation bias and GC-content shape protein composition. Panels \textbf{(A)}, \textbf{(B)} and \textbf{(C)} show expected frequency, gain probability (\autoref{aagaineq}), and loss probability (\autoref{aalosseq}) for different amino acids (horizontal axes). The vertical axis in all these three subplots show the normalized values of these measures such that their sum over all amino acids is equal to one. Panel \textbf{(D)} shows the directionality (colored tiles, $\textit{D}_{x\to y}$, \autoref{directionality}) of the substitution from an amino acid (vertical axis) to another (horizontal axis). Positive values of $\textit{D}_{x\to y}$ are shown in shades of red, whereas negative values are shown in shades of blue. We only show substitutions that can be realized by a single nucleotide mutation but we include all possible nucleotide mutations in the directionality calculations for these substitutions. In all panels, amino acids are ordered based on their chemical similarity \citep{PMBEC}.}
 \label{aafreq}
@@ -272,7 +250,7 @@ Although our model is based on the assumption of neutral evolution, one can spec
 
 We show that transcription loss is less likely than the loss of long ORFs. However, it may be difficult to find direct evidence for such a phenomenon. Specifically, it is difficult to infer from data if transcription was lost or never emerged. If the protein encoded by an ORF is indeed toxic, it would be silenced or purged rapidly in microevolutionary time scales. One way of inferring negative selection from transcription loss may involve correlation of ORF sequence variation and transcription status. Mutations within an ORF sequence are much more probable than mutations that disrupt transcription or an ORF. This is so because the entire ORF sequence can have a higher number of mutable sites than a promoter. If an ORF variant is untranscribed in many populations (species or taxa), it is possibly toxic.  
 
-A large volume of work exists on the likelihood of amino acid substitutions and many of these models are widely used for phylogenetics \citep{aasubOhta,PAM,blosum,submat92,submat92j,submat01,submat05,submat07,submat08}. However commonly used amino acid substitution models such as PAM and BLOSUM \citep{PAM,blosum} do not focus on directionality of mutations (the substitution matrices are symmetric). Our aim was to highlight how proteins can evolve under mutation pressure and that mutation bias causes some substitutions to occur more frequently than the others. Furthermore, we do not base our substitution probability calculations on known protein sequences but rather on random protein sequences that are more likely to to be encoded in proto-genes. Using our models, we show that for a pair of amino acids, one direction of substitution can be significantly more likely than the other. If a substitution occurs more frequently than it is expected to occur in our neutral model, then directional evolution can be a possible explanation for the observation. We also show that random mutations can lead to a small increase in a protein's hydrophobicity. Hydrophobic amino acids can facilitate folding \citep{Dill1985}, but can also cause proteins to aggregate \cite{hydrophobicRatchet}. Thus the effect of hydrophobicity increasing mutations on a protein's stability and toxicity, is dependent on where they occur in the protein structure.
+A large volume of work exists on the likelihood of amino acid substitutions and many of these models are widely used in phylogenetics studies \citep{aasubOhta,PAM,blosum,submat92,submat92j,submat01,submat05,submat07,submat08}. However, commonly used amino acid substitution models such as PAM and BLOSUM \citep{PAM,blosum} do not focus on directionality of mutations (the substitution matrices are symmetric). Our aim was to highlight how proteins can evolve under mutation pressure and that mutation bias causes some substitutions to occur more frequently than the others. Furthermore, we do not base our substitution probability calculations on known protein sequences but rather on random protein sequences that are more likely to to be encoded in proto-genes. Using our models, we show that for a pair of amino acids, one direction of substitution can be significantly more likely than the other. If a substitution occurs more frequently than it is expected to occur in our neutral model, then directional evolution can be a possible explanation for the observation. We also show that random mutations can lead to a small increase in a protein's hydrophobicity. Hydrophobic amino acids can facilitate folding \citep{Dill1985}, but can also cause proteins to aggregate \citep{hydrophobicRatchet}. Thus the effect of hydrophobicity increasing mutations on a protein's stability and toxicity, is dependent on where they occur in the protein structure.
 
 Like all theoretical models, our models are not without limitations. First, we assume that nucleotides are uniformly distributed according to GC-content. This is not true as nucleotide composition can vary significantly across the genome. Mutation rates are also not uniform across the genome and can vary significantly \citep{mutbiasArabidopsis}. However, our models can be adapted to investigate specific genomic loci, where information on the local GC-content and mutation rate can more accurately determine the \textit{de novo} gene evolution in these loci. Second, our models are based on parameters such as mutation rate and mutation bias, which we obtained from published data on human and \textit{D.melanogaster} genomes \citep{humanmutrate,drosophilamutrate}. The accuracy of the models' prediction will depend on the accuracy of parameters. However, mutation rate itself only determines the values of different probabilities. Our results, which are based on probability ratios, will not significantly change with a different value of mutation rate. More importantly, different species may have a different spectrum of mutations \citep{joshmutbias}, especially for species that are highly distant from each other. Thus our inferences based on our chosen parameters will not universally apply to all species. Third, we assume that all mutations are independent. This is not the case for tandem mutations, where multinucleotide mutations occur more frequently than their expected frequency under the assumption of mutational independence \citep{MNM}. Fourth, we did not model the effect of many regulatory sequence features such as enhancers, transcription factor binding sites, 5' and 3' untranslated regions, and Kozak consensus sequence, that can influence the evolution of proto-genes. For example \textit{de novo} emergence is very likely to occur near enhancers \citep{PacoEnhancers}. We instead focused on minimal requirements for transcription and translation. However, our modeling framework allows inclusion of any number of sequence features in the calculations as long as their sequences can be defined (\autoref{methfeatures}). Finally, we ignore insertions, deletions and transpositions as mechanisms of mutation. Insertions and deletions (indels) are reported to be less frequent than substitutions \citep{drosophilamutrate}, and both indels and transpositions cause larger sequence alterations than point mutations. Our modeling methodology also allows incorporation of these mechanisms as a source of mutations. 
 
@@ -435,7 +413,7 @@ P_\textit{RNA-gain} = (P_\textit{TATA-stay} + P_\textit{Inr-stay})\times P_\text
 
 It is also possible that both the promoter and the poly-A signal were initially absent, and emerge via mutations. However, this probability is very small and is negligible.
 
-Transcription is lost when either the promoter is lost or when the poly-A signal is lost. Since two kinds of promoters can initiate transcription, there can be three kinds of transcription units. First that contains only a TATA-box, second that contains only an Inr, and the third that contains both these promoters. All these three transcription units must also have a poly-A signal. To calculate the conditional probability of promoter loss, we calculated the fraction of transcription units ($Q$) that belong to each of these three classes. For example, the fraction of transcription units that are TATA-only is ($Q_\textit{TATA-only}$):
+Transcription is lost when either the promoter is lost or when the poly-A signal is lost. Since two kinds of promoters can initiate transcription, there can be three kinds of transcription units. First that contains only a TATA-box, second that contains only an Inr, and the third that contains both these promoters. All these three transcription units must also have a poly-A signal. To calculate the conditional probability of promoter loss, we calculated the fraction of transcription units ($Q$) that belong to each of these three classes. For example, the fraction of transcription units that are TATA-only ($Q_\textit{TATA-only}$) is:
 
 \begin{equation*}
 Q_\textit{TATA-only} = \frac{P_\textit{TATA}\times(1 - P_\textit{Inr})}{(P_\textit{TATA} + P_\textit{Inr} - P_\textit{TATA}\times P_\textit{Inr})}
