@@ -76,7 +76,10 @@ function rnavals(gccontent,orflen)
     # (Initiator or TATA) and polyA
 
     rnaprob = (tataprob*nopolyaprob^27 + inrprob)*polyaprob*nopolyaprob^n_nopolyaORF;
-    rnagain = (tatagain + inrgain)*polyastay + (tatastay + inrstay)*polyagain;
+    rnagain = (tatagain + inrgain)*polyastay*nopolyastay^n_nopolyaORF + 
+    (tatastay + inrstay)*polyagain*nopolyastay^n_nopolyaORF +
+    (n_nopolyaORF-1)*(tatastay + inrstay)*polyastay*polyaloss1*nopolyastay^(n_nopolyaORF-1);
+
     Qinr = inrprob*(1-tataprob)/(tataprob + inrprob - inrprob*tataprob);
     Qtata = tataprob*(1-inrprob)/(tataprob + inrprob - inrprob*tataprob);
     Qboth = 1 - Qtata - Qinr;
@@ -84,9 +87,9 @@ function rnavals(gccontent,orflen)
     rnaloss = (Qinr*inrloss2*notatastay +
       Qtata*tataloss2*noinrstay +
       Qboth*tataloss2*inrloss2 +
-      polyaloss2
+      polyaloss2 + n_nopolyaORF*polyagain
     );
-    rnastay = (inrstay + tatastay)*polyastay
+    rnastay = (inrstay + tatastay)*polyastay*nopolyastay^(n_nopolyaORF-1);
     return [rnaprob; rnagain; rnaloss; rnastay]
 end
 
