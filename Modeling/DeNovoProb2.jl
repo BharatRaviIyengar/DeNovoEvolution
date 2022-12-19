@@ -152,10 +152,13 @@ end
 
 
 
-function orfprobs(ATG,stop,k)
+function orfprobs(ATG,stop,k,ptype::Bool,polya)
 
+    if(!ptype)
+        stop[xProb] -= polya[xProb]
+        stop[xStay] -= polya[x]
+    end
     nostopstay = 1 - stop[xProb] - stop[xGain]
-
     orfprob = ATG[xProb]*stop[xProb]*(1 - stop[xProb])^(k-2)
 
     orfgain = nostopstay^(k-2)*(
