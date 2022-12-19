@@ -186,6 +186,7 @@ gcrange = [0.3:0.01:0.6;];
 (rnaprob, rnagain, rnaloss, rnastay) = [zeros(length(gcrange),length(ncodons)) for i = 1:4 ];
 (crnaprob, crnagain, crnaloss, crnastay) = [zeros(length(gcrange),length(ncodons)) for i = 1:4 ];
 (orfprob, orfgain, orfloss, orfstay) = [zeros(length(gcrange),length(ncodons)) for i = 1:4 ];
+(corfprob, corfgain, corfloss, corfstay) = [zeros(length(gcrange),length(ncodons)) for i = 1:4 ];
 
 for g in eachindex(gcrange)
     ATGvalsG = ATGprobs(gcrange[g]);
