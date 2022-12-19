@@ -157,11 +157,9 @@ function orfprobs(ATG,stop,k,ptype::Bool,polya)
     if(!ptype)
         stopgainc = stop[xGain] - polya[xGain]
         stopprobc = stop[xProb] - polya[xProb]
-        stoplossc = stop[xLoss] - polya[xLoss]
     else
         stopgainc = stop[xGain]
         stopprobc = stop[xProb]
-        stoplossc = stop[xLoss]
     end
 
     nostopstay = 1 - stopprobc - stopgainc
@@ -170,11 +168,12 @@ function orfprobs(ATG,stop,k,ptype::Bool,polya)
 
     gainmech1 = stop[xStay]*ATG[xGain]*nostopstay^(k-2);
     gainmech2 = ATG[xStay]*stop[xGain]*nostopstay^(k-2);
-    gainmech3 = (k-2)*stop[xStay]*ATG[xStay]*stop[xProb]*stoplossc*nostopstay^(k-1)
+    gainmech3 = (k-2)*stop[xStay]*ATG[xStay]*stopprobc*stop[xLoss]*nostopstay^(k-1)
 
     orfgain =  gainmech1 + gainmech2 + gainmech3
 
     orfloss = stop[xLoss] + ATG[xLoss] + (k-2)*stopgainc/(1-stopprobc)
+
     orfstay = ATG[xStay]*stop[xStay]*(nostopstay)^(k-2)
     return [orfprob; orfgain; orfloss; orfstay]
 end
@@ -203,19 +202,19 @@ for g in eachindex(gcrange)
     println("Done: ",g)
 end
 
-dGC = which(gcrange.==gccontent)
+dGC = findfirst(gcrange.==gccontent)
 
 genegain = rnastay[dGC,:] .* corfgain[dGC,:] + orfstay[dGC,:] .* crnagain[dGC,:] + orfgain[dGC,:].*rnagain[dGC,:];
 
 genegain2 = genegain./(1 .-rnaprob[dGC,:] .- orfprob[dGC,:]);
 
-geneloss = orfloss .+ rnaloss;
+geneloss = orfloss[dGC,:].+ rnaloss[dGC,:];
 
 rnafirst = rnastay[dGC,:] .* orfgain[dGC,:];
 orffirst = orfstay[dGC,:] .* crnagain[dGC,:];
 
-onlyrnagain = (1 .- orfprob[dGC,:] .- orfgain[dGC,:]).*rnagain;
-onlyorfgain = (1 .- rnaprob[dGC,:] .- rnagain[dGC,:]).*orfgain;
+onlyrnagain = (1 .- orfprob[dGC,:] .- orfgain[dGC,:]).*rnagain[dGC,:];
+onlyorfgain = (1 .- rnaprob[dGC,:] .- rnagain[dGC,:]).*orfgain[dGC,:];
 
 rnafirst2 = onlyrnagain.*(1 .- rnaloss[dGC,:]).*(corfgain[dGC,:]./(1 .-orfprob[dGC,:]));
 orffirst2 = onlyorfgain.*(1 .- orfloss[dGC,:]).*(crnagain[dGC,:]./(1 .-rnaprob[dGC,:]));
@@ -268,6 +267,7 @@ plot_whichfirstgcr = plot(gcrange,ncodons[whichfirstgcr],
     xlabel = "GC-content",
     ylabel = "Minimum codons for \n RNA-first trajectory",
     size = (width = cm2pt(13), height = cm2pt(11)),
+    yticks = [30:2:40;]
 );
 
 savefig(plot_whichfirstgcr, figdir*"whoisfirstgcr_new.pdf")
@@ -280,10 +280,10 @@ plot_rnafist_orffirst2 = plot(ncodons[1:50],log.(orffirst2./rnafirst2)[1:50],
 );
 savefig(plot_rnafist_orffirst2, figdir*"first_ORF_RNA2_new.pdf")
 
-tl = log10.(rnaloss./orfgain);
-ol = log10.(orfloss/rnagain);
+# tl = log10.(rnaloss./orfgain);
+# ol = log10.(orfloss/rnagain);
 
-plot_Loss = plot(ncodons,log2.(orfloss./rnaloss),
+plot_Loss = plot(ncodons,log2.(orfloss[dGC,:]./rnaloss[dGC,:]),
     xlabel = "ORF length (codons)",
     ylabel = "P_ORF-loss\nP_RNA-loss",
     size = (width = cm2pt(12), height = cm2pt(11)),
