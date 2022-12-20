@@ -266,17 +266,16 @@ whichfirstgcr[isnothing.(whichfirstgcr)] .= 1;
 plot_whichfirstgcr = plot(gcrange,ncodons[whichfirstgcr],
     xlabel = "GC-content",
     ylabel = "Minimum codons for \n RNA-first trajectory",
-    size = (width = cm2pt(13), height = cm2pt(11)),
+    size = (width = cm2pt(12.5), height = cm2pt(11)),
     yticks = [30:2:40;]
 );
 
 savefig(plot_whichfirstgcr, figdir*"whoisfirstgcr_new.pdf")
 
-plot_rnafist_orffirst2 = plot(ncodons[1:50],log.(orffirst2./rnafirst2)[1:50],
+plot_rnafist_orffirst2 = plot(ncodons,log.(orffirst2./rnafirst2),
     xlabel = "ORF length (codons)",
     ylabel = "P_{ORF-first}\nP_RNA-first",
-    size = (width = cm2pt(12), height = cm2pt(11)),
-    xticks = [35:7:80;]
+    size = (width = cm2pt(12.5), height = cm2pt(11)),
 );
 savefig(plot_rnafist_orffirst2, figdir*"first_ORF_RNA2_new.pdf")
 

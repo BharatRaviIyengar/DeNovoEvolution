@@ -88,9 +88,13 @@ P_\textit{gene-loss} = P_\textit{RNA-loss} + P_\textit{ORF-loss}
 \hrule
 \end{figure}
 
-The probability that a gene is lost $n$ times independently, is $(P_\textit{gene-loss})^{n}$. To find out how many independent gene loss events are as likely as a single gene gain event, we calculate the ratio of logarithms of gene gain and gene loss: $\log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$. For example, the ratio value of 2 would indicate that two independent gene loss events are as likely as a single gene gain event. We calculated this ratio for genes with different ORF lengths, because ORF gain and loss probabilities depend on the length of the ORF. We found that for all ORF lengths, at least two independent gene loss events can occur in the time frame of one gene gain event (\hyperref[gainlossprob]{\autoref{gainlossprob}A}). This was also the case for a proto-gene containing 50 codons in its ORF and having different amounts of GC-content (\hyperref[gainlossprob]{\autoref{gainlossprob}B}).
+The probability that a gene is lost $n$ times independently, is $(P_\textit{gene-loss})^{n}$. To find out how many independent gene loss events are as likely as a single gene gain event, we calculate the ratio of logarithms (log-log ratio) of gene gain and gene loss for proto-genes with an ORF ranging from 30 -- 300 codons in length.
 
-We performed the same analysis on just the ORFs (and not the whole genes). That is, we calculated the ratio of logarithms of ORF gain and ORF loss. We found that for ORFs longer than 143 codons, the likelihood of two independent ORF loss events is more than or equal to a single ORF gain event. 
+$$ \text{Gene losses per gene gain} = \log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$$
+
+For example, a log-log ratio value of 2 would indicate that two independent gene loss events are as likely as a single gene gain event. We calculated this ratio for genes with different ORF lengths, because ORF gain and loss probabilities depend on the length of the ORF. We found that for ORF longer than 44 codons, at least two independent gene loss events can occur in the time frame of one gene gain event (\hyperref[gainlossprob]{\autoref{gainlossprob}A}). To understand how GC-content determines the likelihood of gene gain relative to gene loss, we calculated the log-log ratio of the two probability values for a proto-gene containing an ORF with 50 codons, at different values of GC-content (\hyperref[gainlossprob]{\autoref{gainlossprob}B}).
+
+We performed an analogous analysis on just the ORFs (and not the whole genes). That is, we calculated the ratio of logarithms of ORF gain and ORF loss. We found that for ORFs longer than 142 codons, the likelihood of two independent ORF loss events is more than or equal to a single ORF gain event. 
 
 Overall, our analysis suggests that a proto-gene expressed in only one species may not necessarily mean that it emerged for the first time in this species. 
 
