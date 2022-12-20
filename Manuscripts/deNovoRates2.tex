@@ -65,14 +65,23 @@ Overall, our models define a null hypothesis under which protein coding DNA sequ
 
 \subsection{How likely is gene loss?}
 
-If a gene is found in one species but not in sister taxa, then the most common assumption is that this gene emerged only in one specific species. We asked what is the chance that the gene was present in a common ancestor but was lost in all lineages except one. To this end we calculated the probability of gene emergence and gene loss (\autoref{methfeatures}). Specifically, the probability of gene gain can be defined as the sum of three probabilities. First is the probability that an ORF already exists, and a mutation causes transcription to emerge ($P_\textit{RNA-gain}$, \autoref{methRNA}) but doesn't disrupt the ORF ($P_\textit{ORF-stay}$, \autoref{methORF}). Second is the probability that the DNA is transcribed, and an ORF emerges due to mutations ($P_\textit{ORF-gain}$, \autoref{methORF}) while transcription stays intact ($P_\textit{RNA-stay}$, \autoref{methRNA}). Third is the probability that neither of the two features already exist and both emerge at the same time due to mutations (this probability is very small and is negligible). The following equation describes the probability of gene gain:
+If a gene is found in one species but not in sister taxa, then the most common assumption is that this gene emerged only in one specific species. We asked what is the chance that the gene was present in a common ancestor but was lost in all lineages except one. To this end we calculated the probability of gene emergence and gene loss (\autoref{methfeatures}). Specifically, the probability of gene gain can be defined as the sum of three probabilities. First is the probability that an ORF already exists, and a mutation causes transcription to emerge ($P_\textit{RNA-gain}$, \autoref{methRNA}) but doesn't disrupt the ORF ($P_\textit{ORF-stay}$, \autoref{methORF}). Second is the probability that the DNA is transcribed, and an ORF emerges due to mutations ($P_\textit{ORF-gain}$, \autoref{methORF}) while transcription stays intact ($P_\textit{RNA-stay}$, \autoref{methRNA}). Third is the probability that neither of the two features already exist and both emerge at the same time due to mutations (this probability is very small and is negligible). We note that the probability of transcription gain is dependent on the existence of an ORF, such that it is higher when the ORF is already present. This dependence exists because an ORF does not have stop codons (\texttt{TAA}, \texttt{TAG} and \texttt{TGA}) in its sequence. This in turn, restricts the number of positions where a poly-A signal, that has a \texttt{TAA} in its sequence, can exist (\autoref{rnaorfindependence}). Because of the same reason, the probability of ORF gain is higher when the DNA is already transcribed. Therefore, we additionally calculated the conditional probabilities of transcription gain ($P_\textit{RNA-gain \vline\ ORF}$) and ORF gain ($P_\textit{ORF-gain \vline\ RNA}$) given the condition that an ORF and a transcript already exists, respectively. We thus define the total probability of gene gain ($P_\textit{gene-gain}^*$) as:
 
 \begin{equation}
-P_\textit{gene-gain} = P_\textit{RNA-gain} \times P_\textit{ORF-stay} + P_\textit{ORF-gain} \times P_\textit{RNA-stay} + P_\textit{RNA-gain}\times P_\textit{ORF-gain}
+P_\textit{gene-gain}^* = P_\textit{RNA-gain \vline\ ORF} \times P_\textit{ORF-stay} + P_\textit{ORF-gain \vline\ RNA} \times P_\textit{RNA-stay} + P_\textit{RNA-gain}\times P_\textit{ORF-gain}
 \label{genegaineq}
 \end{equation}
 
-Likewise, the probability of gene loss, given the gene (transcription and ORF) is already present, is the sum of the probabilities that transcription ($P_\textit{RNA-loss}$, \autoref{methRNA}) or the ORF is lost due to mutations ($P_\textit{ORF-loss}$, \autoref{methORF}). Specifically:
+\autoref{genegaineq} describes the total probability of gene gain that includes the probability that the gene was not previously present. To more precisely address the question of whether a gene that was absent in an ancestor but emerges in a descendant, we calculated the corresponding conditional probability of gene gain:
+
+\begin{equation}
+P_\textit{gene-gain} = P_\textit{gene-gain}/(1-P_\textit{ORF} - P_\textit{RNA})
+\label{genegaineq2}
+\end{equation}
+
+We note that the difference between the total probability ($P_\textit{gene-gain}^*$) and the conditional probability ($P_\textit{gene-gain}$) of gene gain, is very small.
+
+Next, we calculated the probability of gene loss, given the gene (transcription and ORF) is already present($P_\textit{gene-loss}$). It is the sum of the probabilities that transcription ($P_\textit{RNA-loss}$, \autoref{methRNA}) or the ORF is lost due to mutations ($P_\textit{ORF-loss}$, \autoref{methORF}). Specifically:
 
 \begin{equation}
 P_\textit{gene-loss} = P_\textit{RNA-loss} + P_\textit{ORF-loss}
@@ -82,7 +91,7 @@ P_\textit{gene-loss} = P_\textit{RNA-loss} + P_\textit{ORF-loss}
 \begin{figure}[!t]
 \centering
 \includegraphics[scale=0.5]{Figures/geneGainLossComplete_new.pdf}
-\caption{Genes are more likely to be independently lost twice, than being born once. The vertical axis in both panels shows the number of independent gene loss events (\autoref{genelosseq}) that can occur relative to one gene gain event (\autoref{genegaineq}) -- $\log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$. The horizontal axis shows the number of codons in the ORF \textbf{(A)}, and the GC-content \textbf{(B)}. \autoref{genegaineq} describes total gene gain probability. Gene gain probability conditioned on the gene being absent would be $P_\textit{gene-gain}/(1-P_\textit{ORF} - P_\textit{RNA})$. Using the conditional probability of gene gain does not change these results.}
+\caption{Genes are more likely to be independently lost twice, than being born once. The vertical axis in both panels shows the number of independent gene loss events (\autoref{genelosseq}) that can occur relative to one gene gain event (\autoref{genegaineq2}) -- $\log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$. The horizontal axis shows the number of codons in the ORF \textbf{(A)}, and the GC-content \textbf{(B)}. We note that \autoref{genegaineq} describes total gene gain probability.}
 \label{gainlossprob}
 \vspace{1ex}
 \hrule
@@ -92,7 +101,7 @@ The probability that a gene is lost $n$ times independently, is $(P_\textit{gene
 
 $$ \text{Gene losses per gene gain} = \log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$$
 
-For example, a log-log ratio value of 2 would indicate that two independent gene loss events are as likely as a single gene gain event. We calculated this ratio for genes with different ORF lengths, because ORF gain and loss probabilities depend on the length of the ORF. We found that for ORF longer than 44 codons, at least two independent gene loss events can occur in the time frame of one gene gain event (\hyperref[gainlossprob]{\autoref{gainlossprob}A}). To understand how GC-content determines the likelihood of gene gain relative to gene loss, we calculated the log-log ratio of the two probability values for a proto-gene containing an ORF with 50 codons, at different values of GC-content (\hyperref[gainlossprob]{\autoref{gainlossprob}B}).
+For example, a log-log ratio value of 2 would indicate that two independent gene loss events are as likely as a single gene gain event. We calculated this ratio for genes with different ORF lengths, because ORF gain and loss probabilities depend on the length of the ORF. We found that for ORF longer than 44 codons, at least two independent gene loss events can occur in the time frame of one gene gain event (\hyperref[gainlossprob]{\autoref{gainlossprob}A}). To understand how GC-content determines the likelihood of gene gain relative to gene loss, we calculated the log-log ratio of the two probability values for a proto-gene containing an ORF with 50 codons, at different values of GC-content (\hyperref[gainlossprob]{\autoref{gainlossprob}B}). For this proto-gene, we found that the log-log ratio initially decreases with GC-content. It is minimum at a GC-content of 0.41, above which it increases. More generally, the ratio remains above 2 for all GC-content values for this proto-gene.
 
 We performed an analogous analysis on just the ORFs (and not the whole genes). That is, we calculated the ratio of logarithms of ORF gain and ORF loss. We found that for ORFs longer than 142 codons, the likelihood of two independent ORF loss events is more than or equal to a single ORF gain event. 
 
@@ -116,16 +125,7 @@ P_\textit{RNA-first} = P_\textit{RNA-stay}\times P_\textit{ORF-gain}
 
 \begin{figure}[!t]
 \centering
-%\begin{subfigure}{0.48\textwidth}
-%\centering
-%\caption{One-step}
-\includegraphics[scale=0.5]{Figures/whichfirstComplete_new.pdf}
-%\end{subfigure}\hfill%
-%\begin{subfigure}{0.48\textwidth}
-%\centering
-%\caption{Two-step}
-%\includegraphics[scale=0.6]{Figures/first_ORF_RNA2.pdf}
-%\end{subfigure}
+\includegraphics[scale=0.5]{Figures/whichfirstComplete_with2step.pdf}
 \caption{Proto-genes with shorter ORFs preferentially emerge from existing ORFs (ORF-first) whereas proto-genes with longer ORFs preferentially emerge from existing RNAs (RNA-first). \textbf{(A)} The horizontal axis denotes the number of codons in the ORF. The vertical axis shows the log transformed ratio of single-step probabilities of ORF-first and RNA-first trajectories of \textit{de novo} emergence, with a GC-content of 0.42 (Equations \ref{orffirsteq1} \& \ref{rnafirsteq1}). A positive value suggests an ORF-first trajectory and a negative value supports an RNA-first trajectory. Similar analysis with two-step probabilities shows a smaller difference between the likelihood of the two trajectories (Equations \ref{orffirsteq2} \& \ref{rnafirsteq2}). \textbf{(B)} Minimum ORF length (codons) that makes RNA-first trajectory more feasible (vertical axis) for different GC-content (horizontal axis). For a GC-content of 0.3 and 0.35, proto-genes of every analysed ORF length ($\geq33$ codons) preferentially emerge RNA-first.}
 \label{whoisfirst}
 \vspace{1ex}
