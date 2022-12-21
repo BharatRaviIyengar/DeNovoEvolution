@@ -227,12 +227,14 @@ plot_genegain_geneloss = plot(ncodons,log.(genegain2)./log.(geneloss),
 );
 savefig(plot_genegain_geneloss, figdir*"geneGainLoss_new.pdf")
 
-k50 = findfirst(ncodons .==50)
+cxlen = [30:30:150;]
 
-genegain50 = rnastay[:,k50] .* corfgain[:,k50] + orfstay[:,k50] .* crnagain[:,k50] + orfgain[:,k50].*rnagain[:,k50];
+klen = ncodons .∈ Ref(cxlen)
 
-genegain2_50 = genegain50./(1 .-rnaprob[:,k50] .- orfprob[:,k50]);
-geneloss50 = orfloss[:,k50] .+ rnaloss[:,k50]
+genegainklen = rnastay[:,klen] .* corfgain[:,klen] + orfstay[:,klen] .* crnagain[:,klen] + orfgain[:,klen].*rnagain[:,klen];
+
+genegain2_klen = genegainklen./(1 .-rnaprob[:,klen] .- orfprob[:,klen]);
+genelossklen = orfloss[:,klen] .+ rnaloss[:,klen]
 
 # genegainX = ((rnagain .+ rnastay) .* orfgain .+ orfstay .* crnagain);
 # genegainX2 = genegainX./(1 .-rnaprob .- orfprob);
@@ -242,12 +244,13 @@ geneloss50 = orfloss[:,k50] .+ rnaloss[:,k50]
 
 # whichGCloss = [findfirst(x.>=2) for x in eachcol(genegainlossratio)];
 
-plot_genegain_geneloss_50_gcrange = plot(gcrange,log.(genegain2_50)./log.(geneloss50),
+plot_genegain_geneloss_klen_gcrange = plot(gcrange,log.(genegain2_klen)./log.(genelossklen),
     xlabel = "GC-content",
     ylabel = "# Gene Losses \n per Gene Gain",
-    size = (width = cm2pt(12.4), height = cm2pt(11)),
+    size = (width = cm2pt(12.5), height = cm2pt(11)),
+    xlims = [0.29,0.65]
 );
-savefig(plot_genegain_geneloss_50_gcrange, figdir*"geneGainLoss50gcr_new.pdf")
+savefig(plot_genegain_geneloss_klen_gcrange, figdir*"geneGainLoss_klengcr_new.pdf")
 
 plot_rnafist_orffirst = plot(ncodons,log2.(orffirst./rnafirst),
     xlabel = "ORF length (codons)",
@@ -256,18 +259,26 @@ plot_rnafist_orffirst = plot(ncodons,log2.(orffirst./rnafirst),
 );
 savefig(plot_rnafist_orffirst, figdir*"whoisfirst_new.pdf")
 
-rnafirstgcr = hcat([rnastay[x,:] .* orfgain[x,:] for x in eachindex(gcrange)]...);
+rnafirstgcr = hcat([rnastay[x,:] .* corfgain[x,:] for x in eachindex(gcrange)]...);
 orffirstgcr =  hcat([orfstay[x,:] .* crnagain[x,:] for x in eachindex(gcrange)]...);
 
-whichfirstgcr = [findfirst(x.<=0) for x in eachcol(log2.(orffirstgcr./rnafirstgcr))];
+whichfirstgcr = [findall(x.>=0) for x in eachcol(log2.(orffirstgcr./rnafirstgcr))];
 
-whichfirstgcr[isnothing.(whichfirstgcr)] .= 1;
+codonsorffirstgcr = [ncodons[x] for x in whichfirstgcr];
 
-plot_whichfirstgcr = plot(gcrange,ncodons[whichfirstgcr],
+aa = hcat([[minimum(x), maximum(x)] for x in codonsorffirstgcr[.!isempty.(codonsorffirstgcr)]]...)
+
+bb =gcrange[.!isempty.(codonsorffirstgcr)]
+
+ab1 = [(bb[x],aa[1,x]) for x in eachindex(bb)]
+ab2 = [(bb[x],aa[2,x]) for x in eachindex(bb)]
+
+plot_whichfirstgcr = plot(Shape([ab1;reverse(ab2)]),
     xlabel = "GC-content",
-    ylabel = "Minimum codons for \n RNA-first trajectory",
-    size = (width = cm2pt(12.5), height = cm2pt(11)),
-    yticks = [30:2:40;]
+    ylabel = "ORF-length (codons)",
+    size = (width = cm2pt(12), height = cm2pt(11)),
+    xlims = [0.29,0.61],
+    fill = :black
 );
 
 savefig(plot_whichfirstgcr, figdir*"whoisfirstgcr_new.pdf")
@@ -290,12 +301,14 @@ plot_Loss = plot(ncodons,log2.(orfloss[dGC,:]./rnaloss[dGC,:]),
 
 savefig(plot_Loss, figdir*"pLoss_new.pdf")
 
-plot_loss_50_gcrange = plot(gcrange,log2.(orfloss[:,k50]./rnaloss[:,k50]),
+plot_loss_klen_gcrange = plot(gcrange,log2.(orfloss[:,klen]./rnaloss[:,klen]),
     xlabel = "GC-content",
     ylabel = "P_ORF-loss\nP_RNA-loss",
-    size = (width = cm2pt(12), height = cm2pt(11)),
+    size = (width = cm2pt(12.5), height = cm2pt(11)),
+    ylims = [-0.3,2.1],
+    xlims = [0.29,0.65]
 );
-savefig(plot_loss_50_gcrange, figdir*"pLoss50gcr_new.pdf")
+savefig(plot_loss_klen_gcrange, figdir*"pLossklengcr_new.pdf")
 
 # onlyrnaloss = orfstay .*(rnaprob*rnaloss)
 
