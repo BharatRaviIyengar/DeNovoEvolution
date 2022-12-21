@@ -65,7 +65,7 @@ Overall, our models define a null hypothesis under which protein coding DNA sequ
 
 \subsection{How likely is gene loss?}
 
-If a gene is found in one species but not in sister taxa, then the most common assumption is that this gene emerged only in one specific species. We asked what is the chance that the gene was present in a common ancestor but was lost in all lineages except one. To this end we calculated the probability of gene emergence and gene loss (\autoref{methfeatures}). Specifically, the probability of gene gain can be defined as the sum of three probabilities. First is the probability that an ORF already exists, and a mutation causes transcription to emerge ($P_\textit{RNA-gain}$, \autoref{methRNA}) but doesn't disrupt the ORF ($P_\textit{ORF-stay}$, \autoref{methORF}). Second is the probability that the DNA is transcribed, and an ORF emerges due to mutations ($P_\textit{ORF-gain}$, \autoref{methORF}) while transcription stays intact ($P_\textit{RNA-stay}$, \autoref{methRNA}). Third is the probability that neither of the two features already exist and both emerge at the same time due to mutations (this probability is very small and is negligible). We note that the probability of transcription gain is dependent on the existence of an ORF, such that it is higher when the ORF is already present. This dependence exists because an ORF does not have stop codons (\texttt{TAA}, \texttt{TAG} and \texttt{TGA}) in its sequence. This in turn, restricts the number of positions where a poly-A signal, that has a \texttt{TAA} in its sequence, can exist (\autoref{rnaorfindependence}). Because of the same reason, the probability of ORF gain is higher when the DNA is already transcribed. Therefore, we additionally calculated the conditional probabilities of transcription gain ($P_\textit{RNA-gain \vline\ ORF}$) and ORF gain ($P_\textit{ORF-gain \vline\ RNA}$) given the condition that an ORF and a transcript already exists, respectively. We thus define the total probability of gene gain ($P_\textit{gene-gain}^*$) as:
+If a gene is found in one species but not in sister taxa, then the most common assumption is that this gene emerged only in one specific species. We asked what is the chance that the gene was present in a common ancestor but was lost in all lineages except one. To this end we calculated the probability of gene emergence and gene loss (\autoref{methfeatures}). Specifically, the probability of gene gain can be defined as the sum of three probabilities. First is the probability that an ORF already exists and is not lost due to mutations ($P_\textit{ORF-stay}$, \autoref{methORF}), while a mutation causes transcription to emerge ($P_\textit{RNA-gain}$, \autoref{methRNA}). Second is the probability that an ORF emerges ($P_\textit{ORF-gain}$, \autoref{methORF}) in a region of DNA that is already transcribed and continues to be transcribed ($P_\textit{RNA-stay}$, \autoref{methRNA}). Third is the probability that neither of the two features already exist and both emerge at the same time due to mutations (this probability is very small and is negligible). We note that the probability of transcription gain is dependent on the existence of an ORF, such that it is higher when the ORF is already present. This dependence exists because an ORF does not have stop codons (\texttt{TAA}, \texttt{TAG} and \texttt{TGA}) in its sequence. This in turn, restricts the number of positions where a poly-A signal, that has a \texttt{TAA} in its sequence, can exist (\autoref{rnaorfindependence}). Because of the same reason, the probability of ORF gain is higher when the DNA is already transcribed. Therefore, we additionally calculated the conditional probabilities of transcription gain ($P_\textit{RNA-gain \vline\ ORF}$) and ORF gain ($P_\textit{ORF-gain \vline\ RNA}$) given the condition that an ORF and a transcript already exists, respectively. We thus define the total probability of gene gain ($P_\textit{gene-gain}^*$) as:
 
 \begin{equation}
 P_\textit{gene-gain}^* = P_\textit{RNA-gain \vline\ ORF} \times P_\textit{ORF-stay} + P_\textit{ORF-gain \vline\ RNA} \times P_\textit{RNA-stay} + P_\textit{RNA-gain}\times P_\textit{ORF-gain}
@@ -101,7 +101,7 @@ The probability that a gene is lost $n$ times independently, is $(P_\textit{gene
 
 $$ \text{Gene losses per gene gain} = \log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$$
 
-For example, a log-log ratio value of 2 would indicate that two independent gene loss events are as likely as a single gene gain event. We calculated this ratio for genes with different ORF lengths, because ORF gain and loss probabilities depend on the length of the ORF. We found that for ORF longer than 44 codons, at least two independent gene loss events can occur in the time frame of one gene gain event (\hyperref[gainlossprob]{\autoref{gainlossprob}A}). To understand how GC-content determines the likelihood of gene gain relative to gene loss, we calculated the log-log ratio of the two probability values for proto-genes with different GC-content (\hyperref[gainlossprob]{\autoref{gainlossprob}B}), and that contain ORFs of different lengths (codons). We found that the effect of GC-content on the log-log ratio depends on the length of the ORF. Specifically, the log-log ratio steadily increases with GC-content ranging from 0.3 to 0.6, when the proto-gene contains an ORF with 30 codons. When the ORF has 60 -- 90 codons, the log-log ratio initially decreases with GC content and then increases. For ORFs containing more than 120 codons, the log-log ratio decreases with increasing GC-content (within the analysed range). Overall, beyond a certain ORF length, gene loss could occur at least two times independently in the time frame of one gene gain event, irrespective of the GC content.
+For example, a log-log ratio value of 2 would indicate that two independent gene loss events are as likely as a single gene gain event. We calculated this ratio for genes with different ORF lengths, because ORF gain and loss probabilities depend on the length of the ORF. We found that for ORF longer than 30 codons, at least two independent gene loss events can occur in the time frame of one gene gain event (\hyperref[gainlossprob]{\autoref{gainlossprob}A}). To understand how GC-content determines the likelihood of gene gain relative to gene loss, we calculated the log-log ratio of the two probability values for proto-genes with different GC-content (\hyperref[gainlossprob]{\autoref{gainlossprob}B}), and that contain ORFs of different lengths (codons). We found that the effect of GC-content on the log-log ratio depends on the length of the ORF. Specifically, the log-log ratio steadily increases with GC-content ranging from 0.3 to 0.6, when the proto-gene contains an ORF with 30 codons. When the ORF has 60 -- 90 codons, the log-log ratio initially decreases with GC content and then increases. For ORFs containing more than 120 codons, the log-log ratio decreases with increasing GC-content (within the analysed range). Overall, gene loss could occur at least two times independently in the time frame of one gene gain event, irrespective of the GC content.
 
 We performed an analogous analysis on just the ORFs (and not the whole genes). That is, we calculated the ratio of logarithms of ORF gain and ORF loss. We found that for ORFs longer than 142 codons, the likelihood of two independent ORF loss events is more than or equal to a single ORF gain event. 
 
@@ -126,23 +126,24 @@ P_\textit{RNA-first} = P_\textit{RNA-stay}\times P_\textit{ORF-gain \vline\ RNA}
 \begin{figure}[!t]
 \centering
 \includegraphics[scale=0.5]{Figures/whichfirstComplete2_new.pdf}
-\caption{Proto-genes with shorter ORFs preferentially emerge from existing ORFs (ORF-first) whereas proto-genes with longer ORFs preferentially emerge from existing RNAs (RNA-first). \textbf{(A)} The horizontal axis denotes the number of codons in the ORF. The vertical axis shows the log transformed ratio of single-step probabilities of ORF-first and RNA-first trajectories of \textit{de novo} emergence, with a GC-content of 0.42 (Equations \ref{orffirsteq1} \& \ref{rnafirsteq1}). A positive value suggests an ORF-first trajectory and a negative value supports an RNA-first trajectory. Similar analysis with two-step probabilities shows a smaller difference between the likelihood of the two trajectories (Equations \ref{orffirsteq2} \& \ref{rnafirsteq2}). \textbf{(B)} Minimum ORF length (codons) that makes RNA-first trajectory more feasible (vertical axis) for different GC-content (horizontal axis). For a GC-content of 0.3 and 0.35, proto-genes of every analysed ORF length ($\geq33$ codons) preferentially emerge RNA-first.}
+\caption{Proto-genes with ORFs longer than 59 codons, emerge RNA-first, whereas proto-gens with shorter ORFs emerge ORF-first. The vertical axis shows the $\log_2$ transformed ratio of the probabilities of the ORF-first and the RNA-first trajectories, described as \textbf{(A)} a single-step process (Equations \ref{orffirsteq1} \& \ref{rnafirsteq1}) and \textbf{(C)} a two-step process (Equations \ref{orffirsteq2} \& \ref{rnafirsteq2}). A negative value suggests that RNA-first trajectory is more likely than ORF-first trajectory, and \textit{vice versa}. In both panels, the horizontal axis denotes the number of codons in the ORF. \textbf{(B)} Filled area denotes the ORF length in codons (vertical axis) and GC-content values at which ORF-first trajectory is more likely than RNA-first trajectory.}
 \label{whoisfirst}
 \vspace{1ex}
 \hrule
 \end{figure}
-We calculated the log-transformed ratio of $P_\textit{ORF-first}$ and $P_\textit{RNA-first}$, such that a positive value of the ratio would mean that transcription gain for an untranscribed ORF (ORF-first) is more likely than ORF gain in an already transcribed DNA (RNA-first). In other words, the ORF-first hypothesis is more feasible. Likewise, a negative value of the ratio would suggest that the RNA-first hypothesis is more feasible. With the specific parameter values we used, it turns out that proto-genes with up to 42 codons in their coding region, preferentially emerge ORF-first (\hyperref[whoisfirst]{\autoref{whoisfirst}A}). This minimum ORF length above which the RNA-first hypothesis is more feasible than ORF-first hypothesis, increases with higher GC-content. For example, this number is 48 codons for a GC-content of 0.45 (\hyperref[whoisfirst]{\autoref{whoisfirst}B}).
 
-A more stringent definition of ORF-first hypothesis would describe a two-step process. In the first step, an ORF emerges in an untranscribed region of DNA but transcription does not emerge. In the second step transcription emerges, while ORF stays intact (\autoref{orffirsteq2}). Likewise, RNA-first hypothesis can be defined by a two-step probability. In the first step transcription emerges in a non-genic DNA (that does not have an ORF), and in the second step an ORF emerges, while transcription remains intact (\autoref{rnafirsteq2}).
+We calculated the log-transformed ratio of $P_\textit{ORF-first}$ and $P_\textit{RNA-first}$, such that a positive value of the ratio would mean that transcription gain for an untranscribed ORF (ORF-first) is more likely than ORF gain in an already transcribed DNA (RNA-first). In other words, the ORF-first hypothesis is more feasible. Likewise, a negative value of the ratio would suggest that the RNA-first hypothesis is more feasible. We found that proto-genes with an ORF containing 60 codons or more, preferentially emerge RNA-first, whereas proto-genes with shorter ORFs emerge ORF-first (\hyperref[whoisfirst]{\autoref{whoisfirst}A}). More specifically, the likelihood of the ORF-first trajectory relative to that of the RNA-first trajectory  decreases with increasing ORF length u a minimum value, and then increases. To understand if GC-content determines the evolutionary trajectory of \textit{de novo} emergence, we calculated the probabilities of the ORF-first and the RNA-first trajectory for different values of GC-content. We found that proto-genes with short ORF can emerge ORF-first at high GC-content. For example, the ORF-first trajectory is more likely at a GC-content of 0.6, for ORFs with 30 -- 36 codons (\hyperref[whoisfirst]{\autoref{whoisfirst}B}).
+
+A more stringent definition of the ORF-first hypothesis would describe a two-step process. In the first step, an ORF emerges in an untranscribed region of DNA but transcription does not emerge. In the second step transcription emerges, while ORF stays intact (\autoref{orffirsteq2}). Likewise, a RNA-first hypothesis can be defined by a two-step probability. In the first step transcription emerges in a non-genic DNA (that does not have an ORF), and in the second step an ORF emerges, while transcription remains intact (\autoref{rnafirsteq2}).
 
 \begin{align}
-P_\textit{ORF-first}' & = \underbrace{P_\textit{ORF-gain} \times (1-P_\textit{RNA} -P_\textit{RNA-gain})}_\textit{first step} \times \underbrace{P_\textit{ORF-stay}\times P_\textit{RNA-gain}/(1-P_\textit{RNA})}_\textit{second step} \label{orffirsteq2}\\[1em]
-P_\textit{RNA-first}' & = \underbrace{P_\textit{RNA-gain} \times (1-P_\textit{ORF} -P_\textit{ORF-gain})}_\textit{first step} \times \underbrace{P_\textit{RNA-stay}\times P_\textit{ORF-gain}/(1-P_\textit{ORF})}_\textit{second step}\label{rnafirsteq2}
+P_\textit{ORF-first}' & = \underbrace{P_\textit{ORF-gain} \times (1-P_\textit{RNA} -P_\textit{RNA-gain})}_\textit{first step} \times \underbrace{P_\textit{ORF-stay}\times P_\textit{RNA-gain \vline\ ORF}/(1-P_\textit{RNA})}_\textit{second step} \label{orffirsteq2}\\[1em]
+P_\textit{RNA-first}' & = \underbrace{P_\textit{RNA-gain} \times (1-P_\textit{ORF} -P_\textit{ORF-gain})}_\textit{first step} \times \underbrace{P_\textit{RNA-stay}\times P_\textit{ORF-gain \vline\ RNA}/(1-P_\textit{ORF})}_\textit{second step}\label{rnafirsteq2}
 \end{align}
 
-With this stringent definition, the difference between the probabilities of the two trajectories becomes very small ($< 3\times10^{-5}\ \%$). However, we still find that proto-genes with shorter ORFs ($<$ 34 codons) have a slightly higher chance of emerging ORF first.
+With this stringent definition, proto-genes with every analysed ORF length (30 -- 300) preferentially emerge via the RNA-first trajectory (\hyperref[whoisfirst]{\autoref{whoisfirst}C}). Furthermore, the two-step RNA-first trajectory becomes increasingly more probable than the two-step ORF-first trajectory, with increasing ORF length.
 
-Overall, long ORFs are more likely to be lost before transcription emerges than short ORFs, and hence they preferentially emerge in existing transcripts. Conversely, short ORFs are more likely to stay undisrupted until the emergence of transcription.
+Overall, long ORFs are likely to be lost before transcription emerges, and hence they preferentially emerge in existing transcripts. Conversely, short ORFs are more likely to stay undisrupted until the emergence of transcription.
 
 \subsection{Would extensive transcription loss suggest negative selection of toxic proteins?}
 
@@ -151,17 +152,17 @@ Overall, long ORFs are more likely to be lost before transcription emerges than 
 \centering
 \hrule
 \vspace{1ex}
-\includegraphics[scale=0.5]{Figures/pLossComplete_new.pdf}
-\caption{ORF loss is more probable than transcription loss for proto-genes containing more than 33 codons. The horizontal axis denotes the number of codons in the ORF \textbf{(A)} and GC-content \textbf{(B)}. The vertical axis shows the log transformed ratio of ORF loss and RNA loss probabilities, such that a positive value means ORF-loss is more probable than RNA loss, and \textit{vice versa}.}
+\includegraphics[scale=0.5]{Figures/pLossComplete2_new.pdf}
+\caption{ORF loss in proto-genes is more probable than transcription loss. The horizontal axis denotes the number of codons in the ORF \textbf{(A)} and GC-content \textbf{(B)}. The vertical axis shows the $\log_2$ transformed ratio of ORF loss and RNA loss probabilities, such that a positive value means ORF loss is more probable than RNA loss, and \textit{vice versa}.}
 \label{lossprob}
 \end{figure}
 
 Proto-genes that do not provide any fitness benefit to an organism may not be fixed in populations via natural selection. These genes may be lost due to mutation pressure. Some newborn proto-genes can also encode toxic proteins, that may aggregate or interfere with physiology in some other way. These genes would thus be eliminated from the population genomes via negative selection. We note that an ORF is lost if the start codon is mutated, the stop codon is mutated to an amino acid encoding codon (non-stop mutation), or if an amino acid encoding codon is mutated to a stop codon (premature stop/non-sense mutation). However, it is likely that a non-stop mutation or a non-sense mutation, can still result in translation of a protein (extended or truncated, respectively). Furthermore, non-stop mutations can also lead to cellular toxicity \citep{nonstop}. Thus ORF loss does not ensure elimination of toxic proteins, which in turn suggests that transcription loss may more effectively inactivate the associated genes.
 
-To understand which is the most probable mechanism of gene loss, we compared the probabilities of ORF loss ($P_\textit{ORF-loss}$) and transcription loss ($P_\textit{RNA-loss}$). We found that ORF loss is more probable than transcription loss, for all ORFs longer than 33 codons (\hyperref[lossprob]{\autoref{lossprob}A}). Loss of a longer ORF (50 codons) was more probable than transcription loss for a wide range of GC-content (\hyperref[lossprob]{\autoref{lossprob}B}).
+To understand which is the most probable mechanism of gene loss, we compared the probabilities of ORF loss ($P_\textit{ORF-loss}$) and transcription loss ($P_\textit{RNA-loss}$). We found that ORF loss is more probable than transcription loss, especially so when the ORFs are long (\hyperref[lossprob]{\autoref{lossprob}A}). At low GC-content (0.3 -- 0.34) ORF loss is less likely than RNA-loss, for short ORFs (30 codons; \hyperref[lossprob]{\autoref{lossprob}B}).
 
 We made our analysis of gene loss more stringent by comparing the probabilities of two evolutionary scenarios, both of which begin with an intact proto-gene. In the first scenario, the ORF remains intact whereas the transcription is lost. The probability of this scenario is described by: 
-$P_\textit{ORF-stay} \times P_\textit{RNA-loss}/P_\textit{ORF}$. The probability of the second scenario, where transcription stays intact while ORF is lost, is: $P_\textit{ORF-loss} \times P_\textit{RNA-stay}/P_\textit{RNA}$. We find that the first scenario is more plausible for ORFs that have fewer than 34 codons, which is in agreement with our previous analysis (\autoref{lossprob}). Also, the probability values of scenario one and two, obtained from this stringent analysis, were not significantly different from the transcription ($P_\textit{RNA-loss}$) and ORF loss ($P_\textit{ORF-loss}$) probabilities, respectively. 
+$P_\textit{ORF-stay \vline\ RNA} \times P_\textit{RNA-loss \vline\ ORF}/P_\textit{ORF}$. The probability of the second scenario, where transcription stays intact while ORF is lost, is: $P_\textit{ORF-loss} \times P_\textit{RNA-stay}/P_\textit{RNA}$. We find that the first scenario is more plausible for ORFs that have fewer than 34 codons, which is in agreement with our previous analysis (\autoref{lossprob}). Also, the probability values of scenario one and two, obtained from this stringent analysis, were not significantly different from the transcription ($P_\textit{RNA-loss}$) and ORF loss ($P_\textit{ORF-loss}$) probabilities, respectively. 
 
 Thus, widespread transcription loss can suggest a negative selection on protein expression.
 
@@ -248,7 +249,7 @@ In this work, we addressed some fundamental questions about \textit{de novo} eme
 
 We show that genes can be lost much more rapidly than they are gained, such that a gene can be independently lost two to three times in the time required for it to emerge. In a hypothetical case, a proto-gene may be present in a species (A) but is absent in two sister taxa (B and C). Two evolutionary scenarios could explain this observation. In the first scenario, the proto-gene simply emerged for the first time in species A. The second scenario posits that the proto-gene was present in the common ancestor of the three species but was lost in both species B and species C. Our models suggest that the second scenario is more likely. Future phylogenetic studies on proto-genes should consider this finding for making inferences on the dynamics of gene gain and loss.
 
-Within the limitations of our model assumptions, we answer the long standing question of which trajectory of mutational events leads to \textit{de novo} emergence. That is, whether ORF emerges first or transcription emerges first \citep{EBB-F1000}. We show that, in the absence of selection, long ORFs are likely to emerge in existing transcripts (transcription emerges first), whereas short ORFs are likely to emerge before transcription emerges in the genomic locus. Long non-coding RNAs may be a potential source of proto-genes with long ORFs but this evolutionary process may be constrained by a different set of factors. A previous study has shown that new transcripts frequently arise in regions overlapping existing genes. These new transcripts can harbor ORFs which in turn leads to \textit{de novo} gene emergence \citep{albaYeastdenovo}. This is an example of RNA-first trajectory. However, the ORFs present in these genes may be under indirect selection pressure that acts on the overlapping gene sequences. Therefore, they may be less frequently mutated or lost.
+Within the limitations of our model assumptions, we answer the long standing question of which trajectory of mutational events leads to \textit{de novo} emergence. That is, whether ORF emerges first or transcription emerges first \citep{EBB-F1000}. We show that, in the absence of selection, long ORFs ($\geq$60 codons) are likely to emerge in existing transcripts (transcription emerges first), whereas short ORFs are likely to emerge before transcription emerges in the genomic locus. Long non-coding RNAs may be a potential source of proto-genes with long ORFs but this evolutionary process may be constrained by a different set of factors. A previous study has shown that new transcripts frequently arise in regions overlapping existing genes. These new transcripts can harbor ORFs which in turn leads to \textit{de novo} gene emergence \citep{albaYeastdenovo}. This is an example of RNA-first trajectory. However, the ORFs present in these genes may be under indirect selection pressure that acts on the overlapping gene sequences. Therefore, they may be less frequently mutated or lost.
 
 Although our model is based on the assumption of neutral evolution, one can speculate the effects of positive selection on the proto-gene. For example, if the gene produces a protein that is beneficial to the organism, then selection would cause the fixation of the gene as soon as the ORF emerges via RNA-first trajectory. On the other hand, the selection would have no effect on an ORF that is not transcribed. This is based on the assumption that the ORF sequence has no other function (for example, regulation), or is not under indirect selection (for example, if it overlaps with an existing gene). Thus positive selection will intensify the preference for RNA-first trajectory.
 
@@ -276,7 +277,7 @@ A famous aphorism about theoretical models says ``all models are wrong but some 
 \texttt{G:C}$\to$\texttt{T:A} & 0.075 \\\midrule
 \texttt{G:C}$\to$\texttt{C:G} & 0.069 \\\bottomrule
 \end{tabular}
-\caption{Mutation bias probabilities.}
+\caption{Mutation bias probabilities for different nucleotide mutations. \texttt{A:T} denotes an \texttt{A}-\texttt{T} base pair in a double stranded DNA. Thus \texttt{A}$\to$\texttt{G} mutation on one DNA strand would cause a \texttt{T}$\to$\texttt{C} mutation on the complementary strand. We describe the other mutations in the same way.}
 \label{mutbias}
 \end{table}
 
@@ -361,6 +362,60 @@ Thus the probability that a sequence of length $k$, containing $m$ number of \te
 
 $$P_0 = (1-e^{-m\lambda_\texttt{AT}})\times(1-e^{-(k-m)\lambda_\texttt{GC}})$$
 
+
+\subsection{Probabilities of finding, gaining, and losing an ORF}
+
+\label{methORF}
+
+\subsubsection{Probability of finding an ORF}
+
+A reading frame is a nucleotide sequence with a length that is a multiple of three. A reading frame that begins with a start codon (\texttt{ATG}), and ends with one of the three stop codons (\texttt{TAG}, \texttt{TGA}, \texttt{TAA}) is an open reading frame (ORF). This necessarily means that there are no stop codons within the sequence. Thus the probability of finding an ORF containing $k$ codons including start and stop codons ($P_\textit{ORF}$) is: 
+
+\begin{equation}
+P_\textit{ORF}(k) = P_\textit{ATG} \times P_\textit{stop} \times (1 - P_\textit{stop})^{k-2}
+\label{eqorfprob}
+\end{equation}
+
+Here, $P_\textit{ATG}$ and $P_\textit{stop}$ are the probabilities of finding a start codon, and a stop codon by chance, respectively.
+
+\subsubsection{Probability of gaining an ORF}
+
+As we defined in the previous section, an ORF has three requirements (start codon, stop codon, and no premature stop codon in the sequence). Thus an ORF can emerge due to mutations via three mechanisms. In each of these mechanisms, one requirement is initially absent whereas the other two are present. Then mutations cause the missing requirement to emerge while not disrupting the other two requirements. More specifically, the ORF can be gained via the following three mechanisms:
+\begin{enumerate}
+\item Gain of a start codon ($P_\textit{ATG-gain}$) while a stop codon continues to exist at the end of a reading frame ($P_\textit{stop-stay}$), and there is no emergence of stop codon within the reading frame ($1- P_\textit{stop} - P_\textit{stop-gain}$).
+\item Gain of a stop codon ($P_\textit{stop-gain}$), while a start codon continues to exist at the beginning of a reading frame ($P_\textit{ATG-stay}$), and there is no emergence of stop codon within the reading frame.
+\item Loss of a premature stop codon, at any of the $k-2$ codon positions within the reading frame ($P_\textit{stop-gain}$). At the same time start and stop codons remain undisrupted by mutations, and no stop codon emerges at any of the other $k-3$ positions.
+\end{enumerate} 
+
+Thus we define the probability of ORF gain ($P_\textit{ORF-gain}$) as:
+
+\begin{align}
+P_\textit{ORF-gain}(k) & = \quad P_\textit{ATG-gain}\times P_\textit{stop-stay} \times (1- P_\textit{stop} - P_\textit{stop-gain})^{k-2} \nonumber \\[1pt]
+& \quad + P_\textit{ATG-stay}\times P_\textit{stop-gain} \times (1- P_\textit{stop} - P_\textit{stop-gain})^{k-2} \nonumber \\[1pt]
+& \quad + P_\textit{ATG-stay}\times P_\textit{stop-stay} \times P_\textit{stop-loss}\times(k-2) \times (1- P_\textit{stop} - P_\textit{stop-gain})^{k-3} 
+\label{eqorfgain}
+\end{align}
+
+\subsubsection{Probability of ORF loss}
+
+ORF can be lost when any of its three requirements are lost. We thus define the conditional probability of ORF loss as:
+
+\begin{equation}
+P_\textit{ORF-loss}(k) = P_\textit{ATG-loss} + P_\textit{stop-loss} + (k-2)\times \frac{P_\textit{stop-gain}}{1-P_\textit{stop}}
+\label{eqorfloss}
+\end{equation}
+
+The last term in this equation describes the conditional probability of stop-gain, given the assumption that no stop codon exists within the ORF.
+
+\subsubsection{Probability that ORF remains intact}
+
+We assumed that an ORF of a certain length remains intact if none of the necessary features are lost. However, the ORF sequence can mutate to cause non-synonymous changes in the translated protein sequence. This condition applies to all the three ORF probabilities described above. We define the probability that an ORF remains intact ($P_\textit{ORF-stay}$) as:
+
+\begin{equation}
+P_\textit{ORF-stay}(k) = P_\textit{ATG-stay} \times P_\textit{stop-stay} \times (1 - P_\textit{stop} - P_\textit{stop-gain})^{k-2}
+\label{eqorfstay}
+\end{equation}
+
 \subsection{Probabilities of finding, gaining, and losing transcription}
 
 \label{methRNA}
@@ -398,6 +453,7 @@ Position  & Accepted nucleotides \\ \midrule
 \vspace{1\baselineskip}
 
 We calculated probabilities of finding, gaining and losing these features as we described in the previous section.
+
 
 \subsubsection{Probability of transcription}
 
@@ -488,70 +544,17 @@ P_\textit{RNA-stay}(k) = (P_\textit{TATA-stay} + P_\textit{Inr-stay}) \times P_\
 \label{eqrnastay}
 \end{equation}
 
-\subsection{Probabilities of finding, gaining, and losing an ORF}
-
-\label{methORF}
-
-\subsubsection{Probability of finding an ORF}
-
-A reading frame is a nucleotide sequence with a length that is a multiple of three. A reading frame that begins with a start codon (\texttt{ATG}), and ends with one of the three stop codons (\texttt{TAG}, \texttt{TGA}, \texttt{TAA}) is an open reading frame (ORF). This necessarily means that there are no stop codons within the sequence. Thus the probability of finding an ORF containing $k$ codons including start and stop codons ($P_\textit{ORF}$) is: 
-
-\begin{equation}
-P_\textit{ORF}(k) = P_\textit{ATG} \times P_\textit{stop} \times (1 - P_\textit{stop})^{k-2}
-\label{eqorfprob}
-\end{equation}
-
-Here, $P_\textit{ATG}$ and $P_\textit{stop}$ are the probabilities of finding a start codon, and a stop codon by chance, respectively.
-
-\subsubsection{Probability of gaining an ORF}
-
-As we defined in the previous section, an ORF has three requirements (start codon, stop codon, and no premature stop codon in the sequence). Thus an ORF can emerge due to mutations via three mechanisms. In each of these mechanisms, one requirement is initially absent whereas the other two are present. Then mutations cause the missing requirement to emerge while not disrupting the other two requirements. More specifically, the ORF can be gained via the following three mechanisms:
-\begin{enumerate}
-\item Gain of a start codon ($P_\textit{ATG-gain}$) while a stop codon continues to exist at the end of a reading frame ($P_\textit{stop-stay}$), and there is no emergence of stop codon within the reading frame ($1- P_\textit{stop} - P_\textit{stop-gain}$).
-\item Gain of a stop codon ($P_\textit{stop-gain}$), while a start codon continues to exist at the beginning of a reading frame ($P_\textit{ATG-stay}$), and there is no emergence of stop codon within the reading frame.
-\item Loss of a premature stop codon, at any of the $k-2$ codon positions within the reading frame ($P_\textit{stop-gain}$). At the same time start and stop codons remain undisrupted by mutations, and no stop codon emerges at any of the other $k-3$ positions.
-\end{enumerate} 
-
-Thus we define the probability of ORF gain ($P_\textit{ORF-gain}$) as:
-
-\begin{align}
-P_\textit{ORF-gain}(k) & = \quad P_\textit{ATG-gain}\times P_\textit{stop-stay} \times (1- P_\textit{stop} - P_\textit{stop-gain})^{k-2} \nonumber \\[1pt]
-& \quad + P_\textit{ATG-stay}\times P_\textit{stop-gain} \times (1- P_\textit{stop} - P_\textit{stop-gain})^{k-2} \nonumber \\[1pt]
-& \quad + P_\textit{ATG-stay}\times P_\textit{stop-stay} \times P_\textit{stop-loss}\times(k-2) \times (1- P_\textit{stop} - P_\textit{stop-gain})^{k-3} 
-\label{eqorfgain}
-\end{align}
-
-\subsubsection{Probability of ORF loss}
-
-ORF can be lost when any of its three requirements are lost. We thus define the conditional probability of ORF loss as:
-
-\begin{equation}
-P_\textit{ORF-loss}(k) = P_\textit{ATG-loss} + P_\textit{stop-loss} + (k-2)\times \frac{P_\textit{stop-gain}}{1-P_\textit{stop}}
-\label{eqorfloss}
-\end{equation}
-
-The last term in this equation describes the conditional probability of stop-gain, given the assumption that no stop codon exists within the ORF.
-
-\subsubsection{Probability that ORF remains intact}
-
-We assumed that an ORF of a certain length remains intact if none of the necessary features are lost. However, the ORF sequence can mutate to cause non-synonymous changes in the translated protein sequence. This condition applies to all the three ORF probabilities described above. We define the probability that an ORF remains intact ($P_\textit{ORF-stay}$) as:
-
-\begin{equation}
-P_\textit{ORF-stay}(k) = P_\textit{ATG-stay} \times P_\textit{stop-stay} \times (1 - P_\textit{stop} - P_\textit{stop-stay})^{k-2}
-\label{eqorfstay}
-\end{equation}
-
 \subsection{Independence of transcription and ORF probabilities}
 
 \label{rnaorfindependence}
 
-All the four poly-A signal variant contain a \texttt{TAA} in their sequence (position 3 -- 5), which is also a stop codon. Since stop codons cannot exist inside an ORF, presence of an ORF reduces the possible number of poly-A signal sites in a DNA region. Specifically, a poly-A signal can exist in any of the three reading frames but it can overlap with the ORF only in one frame. Thus, out of $3k-5$ positions in an ORF with $k$ codons, $k-2$ positions cannot harbor a poly-A signal, which means that number of possible poly-A sites is $2k-3$.
+All the four poly-A signal variant contain a \texttt{TAA} in their sequence (position 3 -- 5), which is also a stop codon. Since stop codons cannot exist inside an ORF, presence of an ORF reduces the possible number of poly-A signal sites in a DNA region. Specifically, a poly-A signal can exist in any of the three reading frames but it can overlap with the ORF only in one frame. Thus, out of $3k-5$ positions in an ORF with $k$ codons, $k$ positions cannot harbor a poly-A signal (\autoref{eqrnaprob}). Furthermore a poly-A signal cannot overlap with the start codon, thus reducing two more positions from all sites where a poly-A signal can exist (one position is already counted -- if a poly-A signal overlaps with the first codon in the second frame, then the second codon becomes a stop codon). Overall, the possible number poly-A sites on an ORF with $k$ codons is $2k-5$. Thus for a gene to emerge via gain of transcription, then the DNA should not contain poly-A sites in these $2k-5$ positions. This probability is higher than the transcription gain probability for an RNA of equal length emerging from a DNA that does not contain an ORF (\autoref{eqrnagain}).
 
-Conversely, stop codons will be less probable in an existing transcript that does not contain any poly-A signal sequences within its sequence, than in an untranscribed DNA region. However, this difference is very small because poly-A signals are only 0.5\% of all 6-mer sequences that can harbor a stop codon. Thus presence of transcription has a negligible effect on ORF gain.
+Conversely, stop codons will be less probable in an existing transcript that does not contain any poly-A signal sequences within its sequence, than in an untranscribed DNA region. Specifically, the probability that a 6-mer contains a stop codon in the third position is same as the probability of finding a stop codon ($P_\textit{stop}$). If poly-A signals are excluded from these 6-mers, then the probability of finding a stop codon is $P_\textit{stop} - P_\textit{poly-A}$. Conversely, lack of poly-A signals will increase the probability of amino acid coding codons and thereby their probability of mutating into a stop codon. Furthermore, the likelihood that an ORF is undisrupted my premature nonsense mutations, is lower when the DNA is already transcribed. Specifically:
 
-Overall the evolutionary dynamics of transcription and ORF, are not independent of each other. The presence of an ORF has a significant effect on the gain of transcription especially if the ORF is long, whereas the presence of transcription does not affect ORF gain significantly.
+$$P_\textit{stop-gain \vline\ RNA} = \frac{P_\textit{stop-gain}\times(1- P_\textit{stop} - P_\textit{poly-A})}{1- P_\textit{stop}}$$
 
-
+Overall the evolutionary dynamics of transcription and ORF gain, are not independent of each other. That is, presence of one feature makes the gain of the other more likely. The dependence becomes more prominent with increasing number of codons in the ORF of the proto-gene.
 
 \subsection{Probability of amino acid substitutions}
 

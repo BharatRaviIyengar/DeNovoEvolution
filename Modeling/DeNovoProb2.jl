@@ -55,7 +55,7 @@ function inrprobs(gccontent)
     inrprob = sum([nucprob(x,gccontent) for x in inrvars]);
     inrgain = featuregain(noinrs,inrvars,gccontent);
     inrloss = featuregain(inrvars,noinrs,gccontent);
-    inrstay = featurestay(inrvars,gccontent)/inrprob;
+    inrstay = featurestay(inrvars,gccontent);
     return [inrprob,inrgain,inrloss,inrstay]
 end
 
@@ -155,8 +155,8 @@ end
 function orfprobs(ATG,stop,k,ptype::Bool,polya)
 
     if(!ptype)
-        stopgainc = stop[xGain] - polya[xGain]
         stopprobc = stop[xProb] - polya[xProb]
+        stopgainc = stop[xGain]*(1-stopprobc)/(1-stop[xProb])
     else
         stopgainc = stop[xGain]
         stopprobc = stop[xProb]
@@ -222,7 +222,6 @@ orffirst2 = onlyorfgain.*(1 .- orfloss[dGC,:]).*(crnagain[dGC,:]./(1 .-rnaprob[d
 plot_genegain_geneloss = plot(ncodons,log.(genegain2)./log.(geneloss),
     xlabel = "ORF length (codons)",
     ylabel = "# Gene Losses \n per Gene Gain",
-    yticks = [2:0.4:3.2;],
     size = (width = cm2pt(12), height = cm2pt(11)),
 );
 savefig(plot_genegain_geneloss, figdir*"geneGainLoss_new.pdf")
@@ -256,8 +255,17 @@ plot_rnafist_orffirst = plot(ncodons,log2.(orffirst./rnafirst),
     xlabel = "ORF length (codons)",
     ylabel = "P_{ORF-first}\nP_RNA-first",
     size = (width = cm2pt(12.5), height = cm2pt(11)),
+    yticks = [-0.2:0.2:0.4;]
 );
 savefig(plot_rnafist_orffirst, figdir*"whoisfirst_new.pdf")
+
+plot_rnafist_orffirst2 = plot(ncodons,log.(orffirst2./rnafirst2),
+    xlabel = "ORF length (codons)",
+    ylabel = "P_{ORF-first}\nP_RNA-first",
+    size = (width = cm2pt(12.5), height = cm2pt(11)),
+    yticks = [-0.18:0.04:-0.0;]
+);
+savefig(plot_rnafist_orffirst2, figdir*"whoisfirst2_new.pdf")
 
 rnafirstgcr = hcat([rnastay[x,:] .* corfgain[x,:] for x in eachindex(gcrange)]...);
 orffirstgcr =  hcat([orfstay[x,:] .* crnagain[x,:] for x in eachindex(gcrange)]...);
@@ -283,13 +291,6 @@ plot_whichfirstgcr = plot(Shape([ab1;reverse(ab2)]),
 
 savefig(plot_whichfirstgcr, figdir*"whoisfirstgcr_new.pdf")
 
-plot_rnafist_orffirst2 = plot(ncodons,log.(orffirst2./rnafirst2),
-    xlabel = "ORF length (codons)",
-    ylabel = "P_{ORF-first}\nP_RNA-first",
-    size = (width = cm2pt(12.5), height = cm2pt(11)),
-);
-savefig(plot_rnafist_orffirst2, figdir*"first_ORF_RNA2_new.pdf")
-
 # tl = log10.(rnaloss./orfgain);
 # ol = log10.(orfloss/rnagain);
 
@@ -310,7 +311,18 @@ plot_loss_klen_gcrange = plot(gcrange,log2.(orfloss[:,klen]./rnaloss[:,klen]),
 );
 savefig(plot_loss_klen_gcrange, figdir*"pLossklengcr_new.pdf")
 
-# onlyrnaloss = orfstay .*(rnaprob*rnaloss)
+onlyrnaloss = corfstay[dGC,:].*crnaloss[dGC,:]./corfprob[dGC,:];
+onlyorfloss = crnastay[dGC,:].*corfloss[dGC,:]./crnaprob[dGC,:];
+
+# plot_onlyLoss = plot(ncodons,log2.(onlyorfloss./onlyrnaloss),
+#     xlabel = "ORF length (codons)",
+#     ylabel = "P_onlyORF-loss\nP_onlyRNA-loss",
+#     size = (width = cm2pt(12), height = cm2pt(11)),
+# );
+
+# savefig(plot_Loss, figdir*"pOnlyLoss_new.pdf")
+
+## Protein properties ##
 
 aaprob = [sum(nucprob.(gencode[gencode[:,3] .== x,1],gccontent)) for x in aas];
 aaprob2 = aaprob./sum(aaprob);
