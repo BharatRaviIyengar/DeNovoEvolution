@@ -161,8 +161,24 @@ Proto-genes that do not provide any fitness benefit to an organism may not be fi
 
 To understand which is the most probable mechanism of gene loss, we compared the probabilities of ORF loss ($P_\textit{ORF-loss}$) and transcription loss ($P_\textit{RNA-loss}$). We found that ORF loss is more probable than transcription loss, especially so when the ORFs are long (\hyperref[lossprob]{\autoref{lossprob}A}). At low GC-content (0.3 -- 0.34) ORF loss is less likely than RNA-loss, for short ORFs (30 codons; \hyperref[lossprob]{\autoref{lossprob}B}).
 
-We made our analysis of gene loss more stringent by comparing the probabilities of two evolutionary scenarios, both of which begin with an intact proto-gene. In the first scenario, the ORF remains intact whereas the transcription is lost. The probability of this scenario is described by: 
-$P_\textit{ORF-stay \vline\ RNA} \times P_\textit{RNA-loss \vline\ ORF}/P_\textit{ORF}$. The probability of the second scenario, where transcription stays intact while ORF is lost, is: $P_\textit{ORF-loss} \times P_\textit{RNA-stay}/P_\textit{RNA}$. We find that the first scenario is more plausible for ORFs that have fewer than 34 codons, which is in agreement with our previous analysis (\autoref{lossprob}). Also, the probability values of scenario one and two, obtained from this stringent analysis, were not significantly different from the transcription ($P_\textit{RNA-loss}$) and ORF loss ($P_\textit{ORF-loss}$) probabilities, respectively. 
+We made our analysis of gene loss more stringent by comparing the probabilities of two evolutionary scenarios, both of which begin with an intact proto-gene. In the first scenario, the ORF remains intact whereas the transcription is lost. The probability of this scenario ($P_\textit{onlyORF-loss}$) is described by: 
+
+\vspace{-1ex}
+
+\begin{equation}
+P_\textit{onlyRNA-loss} = \frac{P_\textit{ORF-stay \vline\ RNA}}{P_\textit{ORF \vline \ RNA}} \times P_\textit{RNA-loss \vline\ ORF}
+\end{equation}
+
+We note that $P_\textit{ORF-stay \vline \ RNA}$ includes the probability that the ORF already exists ($P_\textit{ORF \vline \ RNA}$). To describe the conditional probability of ORF remaining undisrupted given that it already exists, we divide $P_\textit{ORF-stay \vline \ RNA}$ by $P_\textit{ORF \vline \ RNA}$.
+
+In the second scenario, transcription stays intact while ORF is lost. The probability of this scenario is: 
+
+\vspace{-1em}
+\begin{equation}
+P_\textit{onlyORF-loss} = \frac{P_\textit{RNA-stay \vline\ ORF}}{P_\textit{RNA \vline \ ORF}} \times P_\textit{ORF-loss \vline\ RNA}
+\end{equation}
+
+We find that the second scenario (only ORF loss) is more plausible for all the analysed ORFs lengths. Furthermore, the ratio of $P_\textit{onlyORF-loss}$ and $P_\textit{onlyRNA-loss}$ has nearly identical values and trend across different ORF lengths (data not shown), as the ratio of $P_\textit{ORF-loss}$ and $P_\textit{RNA-loss}$ shown in \autoref{lossprob}.
 
 Thus, widespread transcription loss can suggest a negative selection on protein expression.
 
