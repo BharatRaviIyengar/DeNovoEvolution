@@ -15,22 +15,26 @@ aaorder = ["W","F","Y","I","V","L","M","C","D","E","G","A","P","H","K","R","S","
 ixaaorder = indexin(aaorder,aas);
 gccontent = 0.42
 
-function rnavals(gccontent)
+(xProb, xGain, xLoss, xStay) = [i for i in 1:4];
+
+mers6 = kmers(6);
+allcodons = kmers(3)
+
+function tataprobs(gccontent)
     ## TATA box
     # Consensus sequence = TATAWAWR
     # is TSS - 25 - 8nt (transcript must be +33nt longer)
-
     tataboxes = vec(join.(product(("TATA" .* collect("TA") .* "A"), "TA", "GA")))
 
     tatavars = unique(reduce(vcat,
         reduce(vcat, [
-[degen(s,1,nucs) for s in tataboxes],
-[degen(s,2,"TA") for s in tataboxes],
-[degen(s,3,"TAC") for s in tataboxes],
-[degen(s,4,"AT") for s in tataboxes],
-[degen(s,6,nucs) for s in tataboxes],
-[degen(s,7,nucs) for s in tataboxes],
-[degen(s,8,nucs) for s in tataboxes],
+            [degen(s,1,nucs) for s in tataboxes],
+            [degen(s,2,"TA") for s in tataboxes],
+            [degen(s,3,"TAC") for s in tataboxes],
+            [degen(s,4,"AT") for s in tataboxes],
+            [degen(s,6,nucs) for s in tataboxes],
+            [degen(s,7,nucs) for s in tataboxes],
+            [degen(s,8,nucs) for s in tataboxes],
         ])
     ));
 
@@ -38,210 +42,287 @@ function rnavals(gccontent)
 
     tataprob = sum([nucprob(x,gccontent) for x in tatavars]);
     tatagain = featuregain(notata,tatavars,gccontent);
-    tataloss1 = featuregain(tatavars,notata,gccontent);
-    tataloss2 = tataloss1/tataprob;
+    tataloss = featuregain(tatavars,notata,gccontent)/tataprob;
     tatastay = featurestay(tatavars,gccontent);
-    notatastay = 1 - tatagain;
+    return [tataprob,tatagain,tataloss,tatastay]
+end
 
+function inrprobs(gccontent)
     ## Initiator element
     # Consensus sequence = "BBCABW";  DOI:10.1101/gad.295980.117
-
-    mers6 = kmers(6);
     inrvars = vec(join.(product("TGC","TGC","C", "A","TGC","TA")));
     noinrs = setdiff(mers6, inrvars);
     inrprob = sum([nucprob(x,gccontent) for x in inrvars]);
     inrgain = featuregain(noinrs,inrvars,gccontent);
-    inrloss1 = featuregain(inrvars,noinrs,gccontent);
-    inrloss2 = inrloss1/inrprob;
+    inrloss = featuregain(inrvars,noinrs,gccontent);
     inrstay = featurestay(inrvars,gccontent);
-    noinrstay = 1- inrgain;
+    return [inrprob,inrgain,inrloss,inrstay]
+end
 
+function polyaprobs(gccontent)
     ## PolyA signal
-
     polyavars = ["AATAAA";"ATTAAA"; "AGTAAA";"TATAAA"];
     nopolyas = setdiff(mers6, polyavars);
     polyaprob = sum([nucprob(x,gccontent) for x in polyavars]);
     polyagain = featuregain(nopolyas,polyavars,gccontent);
-    polyaloss1 = featuregain(polyavars,nopolyas,gccontent);
-    polyaloss2 = polyaloss1/polyaprob;
+    polyaloss = featuregain(polyavars,nopolyas,gccontent)/polyaprob;
     polyastay = featurestay(polyavars,gccontent);
+    return [polyaprob,polyagain,polyaloss,polyastay]
+end
+
+function rnaprobs(tata,inr,polya,orflen,ptype::Bool)
+    
+    # Number of possible polyA signals given ORF is present
+    # TAA within polyA signal cannot exist with intact ORF
+    if(ptype)
+        noPAsites = 3*orflen - 5 # total 6-mers
+    else
+        noPAsites = 2*orflen - 5 # 6-mers not in with ORF
+    end
+    nopolyaprob = 1 - polya[xProb]
+    nopolyastay = nopolyaprob - polya[xGain]
 
     ## Transcription
     # (Initiator or TATA) and polyA
 
-    rnaprob = (tataprob + inrprob)*polyaprob;
-    rnagain = (tatagain + inrgain)*polyastay + (tatastay + inrstay)*polyagain;
-    Qinr = inrprob*(1-tataprob)/(tataprob + inrprob - inrprob*tataprob);
-    Qtata = tataprob*(1-inrprob)/(tataprob + inrprob - inrprob*tataprob);
-    Qboth = 1 - Qtata - Qinr;
+    # Probability of finding a transcript of length ≥ orflen
+    rnaprob = (tata[xProb] + inr[xProb]) * polya[xProb] * nopolyaprob^noPAsites;
+    
+    # RNA gain mechanism 1
+    # Gain of any promoter
+    # polyA stays at the end of sequence
+    # no polyA present in the sequence 
+    gainmech1 = (tata[xGain] + inr[xGain]) * polya[xStay]*nopolyastay^noPAsites 
 
-    rnaloss = (Qinr*inrloss2*notatastay +
-      Qtata*tataloss2*noinrstay +
-      Qboth*tataloss2*inrloss2 +
-      polyaloss2
+    # RNA gain mechanism 2
+    # Any one promoter stays
+    # polyA gained at the end of sequence
+    # no polyA present in the sequence 
+    gainmech2 = (tata[xStay] + inr[xStay]) * polya[xGain] * nopolyastay^noPAsites
+
+    # RNA gain mechanism 3
+    # Any one promoter stays
+    # polyA stays at the end of sequence
+    # A polyA present in the sequence is lost (for every 6mer in the sequence)
+    gainmech3 = (noPAsites-1)*(tata[xStay] + inr[xStay]) * polya[xStay] * polya[xLoss] * polya[xProb] * nopolyastay^(noPAsites-1);
+
+
+    rnagain =  gainmech1 + gainmech2 + gainmech3
+    
+    # Fraction of Inr-only promoters
+    Qinr = inr[xProb]*(1-tata[xProb])/(tata[xProb] + inr[xProb] - inr[xProb]*tata[xProb]);
+
+    # Fraction of TATA-only promoters
+    Qtata = tata[xProb]*(1-inr[xProb])/(tata[xProb] + inr[xProb] - inr[xProb]*tata[xProb]);
+
+    # Fraction of promoters containing both TATA and Inr
+    Qboth = 1 - Qtata - Qinr;
+    notatastay  = 1 - tata[xGain] - tata[xProb];
+    noinrstay = 1 - inr[xGain] - inr[xProb]
+    rnaloss = (Qinr*inr[xLoss]*notatastay +
+      Qtata*tata[xLoss]*noinrstay +
+      Qboth*tata[xLoss]*inr[xLoss] +
+      polya[xLoss] + noPAsites*polya[xGain]
     );
-    rnastay = (inrstay + tatastay)*polyastay
+
+    rnastay = (inr[xStay] + tata[xStay])*polya[xStay]*nopolyastay^noPAsites;
     return [rnaprob; rnagain; rnaloss; rnastay]
 end
 
-function ATGvals(gccontent)
+function ATGprobs(gccontent)
     ## Start codon
-    noATG = setdiff(kmers(3), ["ATG"])
+    noATG = setdiff(allcodons, ["ATG"])
     ATGprob = nucprob("ATG",gccontent)
     ATGgain = featuregain(noATG,["ATG"],gccontent)
-    ATGloss1 = featuregain(["ATG"],noATG,gccontent)
-    ATGloss2 = ATGloss1/ATGprob
+    ATGloss = featuregain(["ATG"],noATG,gccontent)/ATGprob
     ATGstay = featurestay(["ATG"],gccontent)
-    return [ATGprob, ATGgain, ATGloss1, ATGloss2, ATGstay]
+    return [ATGprob, ATGgain, ATGloss, ATGstay]
 end
 
-function stopvals(gccontent)
+function stopprobs(gccontent)
     ## Stop codon
     stopvars = ["TAA","TAG","TGA"]
-    nostop = setdiff(kmers(3), stopvars)
+    nostop = setdiff(allcodons, stopvars)
     stopprob = sum([nucprob(x,gccontent) for x in stopvars])
     stopgain = featuregain(nostop,stopvars,gccontent)
-    stoploss1 = featuregain(stopvars,nostop,gccontent)
-    stoploss2 = stoploss1/stopprob
+    stoploss = featuregain(stopvars,nostop,gccontent)/stopprob
     stopstay = featurestay(stopvars,gccontent)
-    nostopstay = featurestay(nostop,gccontent)
-    return [stopprob, stopgain, stoploss1, stoploss2, stopstay, nostopstay]
+    return [stopprob, stopgain, stoploss, stopstay]
 end
 
 
 
-function orfvals(gccontent,ATGvalues,stopvalues,k)
-    ## Open reading frame
-    (ATGprob,ATGgain, ATGloss2, ATGstay) = ATGvalues[[1,2,4,5]]
-    (stopprob, stopgain, stoploss1, stoploss2, stopstay, nostopstay) = stopvalues
-    orfprob = ATGprob*stopprob*(1 - stopprob)^(k-2)
-    orfgain = nostopstay^(k-2)*(
-stopstay*ATGgain + ATGstay*stopgain +
-(k-2)*(stopstay*ATGstay*stoploss1/nostopstay)
-)
-    orfloss = stoploss2 + ATGloss2 + (k-2)*stopgain/(1-stopprob)
-    orfstay = ATGstay*stopstay*(nostopstay)^(k-2)
+function orfprobs(ATG,stop,k,ptype::Bool,polya)
+
+    if(!ptype)
+        stopprobc = stop[xProb] - polya[xProb]
+        stopgainc = stop[xGain]*(1-stopprobc)/(1-stop[xProb])
+    else
+        stopgainc = stop[xGain]
+        stopprobc = stop[xProb]
+    end
+
+    nostopstay = 1 - stopprobc - stopgainc
+
+    orfprob = ATG[xProb]*stop[xProb]*(1 - stopprobc)^(k-2)
+
+    gainmech1 = stop[xStay]*ATG[xGain]*nostopstay^(k-2);
+    gainmech2 = ATG[xStay]*stop[xGain]*nostopstay^(k-2);
+    gainmech3 = (k-2)*stop[xStay]*ATG[xStay]*stopprobc*stop[xLoss]*nostopstay^(k-1)
+
+    orfgain =  gainmech1 + gainmech2 + gainmech3
+
+    orfloss = stop[xLoss] + ATG[xLoss] + (k-2)*stopgainc/(1-stopprobc)
+
+    orfstay = ATG[xStay]*stop[xStay]*(nostopstay)^(k-2)
     return [orfprob; orfgain; orfloss; orfstay]
 end
 
-
-## Protogene
-# Has a length of x
-# Includes promoters and polyA signal
-# Can produce a RNA of length y ≤ x – 2 – 6 (–32; TATA)
-# Can have ORF of length 3k ≤ x (IGORF) or 3k ≤ y (protein coding)
-
-# z = 10000
-# nmer = (z,x) -> z - x + 1
-# yi = (x) -> x - 8
-# yt = (x) -> x - 40
-# nORF = (y,k) -> y - 4 - 3*k + 1
-# minRNAlen = (k) -> 3*k + 4
-
-
 ncodons = [30:300;];
 
-ATGvalues = ATGvals(gccontent);
-stopvalues = stopvals(gccontent);
+gcrange = [0.3:0.01:0.6;];
 
-gcrange = [0.3:0.05:0.6;];
-ovalsgc = hcat([orfvals(x,ATGvals(x),stopvals(x),100) for x in gcrange]...)
+(rnaprob, rnagain, rnaloss, rnastay) = [zeros(length(gcrange),length(ncodons)) for i = 1:4 ];
+(crnaprob, crnagain, crnaloss, crnastay) = [zeros(length(gcrange),length(ncodons)) for i = 1:4 ];
+(orfprob, orfgain, orfloss, orfstay) = [zeros(length(gcrange),length(ncodons)) for i = 1:4 ];
+(corfprob, corfgain, corfloss, corfstay) = [zeros(length(gcrange),length(ncodons)) for i = 1:4 ];
 
-(rnaprob, rnagain, rnaloss, rnastay) = rnavals(gccontent)
-(orfprob, orfgain, orfloss, orfstay) = [zeros(size(ncodons)) for i = 1:4 ]
-
-for k in eachindex(ncodons)
-    (orfprob[k], orfgain[k], orfloss[k], orfstay[k]) = orfvals(gccontent,ATGvalues,stopvalues,ncodons[k])
+for g in eachindex(gcrange)
+    ATGvalsG = ATGprobs(gcrange[g]);
+    stopvalsG = stopprobs(gcrange[g]);
+    tatavalsG = tataprobs(gcrange[g]);
+    inrvalsG = inrprobs(gcrange[g]);
+    polyavalsG = polyaprobs(gcrange[g]);
+    for k in eachindex(ncodons)
+        (orfprob[g,k], orfgain[g,k], orfloss[g,k], orfstay[g,k]) = orfprobs(ATGvalsG,stopvalsG,ncodons[k],true,polyavalsG);
+        (corfprob[g,k], corfgain[g,k], corfloss[g,k], corfstay[g,k]) = orfprobs(ATGvalsG,stopvalsG,ncodons[k],false,polyavalsG);
+        (rnaprob[g,k], rnagain[g,k], rnaloss[g,k], rnastay[g,k]) = rnaprobs(tatavalsG, inrvalsG, polyavalsG, ncodons[k],true)
+        (crnaprob[g,k], crnagain[g,k], crnaloss[g,k], crnastay[g,k]) = rnaprobs(tatavalsG, inrvalsG, polyavalsG, ncodons[k],false)
+    end
+    println("Done: ",g)
 end
 
-genegain = ((rnagain + rnastay) .* orfgain + orfstay .* rnagain);
-genegain2 = genegain./(1-rnaprob .- orfprob);
-geneloss = orfloss .+ rnaloss;
+dGC = findfirst(gcrange.==gccontent)
 
-rnafirst = rnastay .* orfgain;
-orffirst = orfstay .* rnagain;
+genegain = rnastay[dGC,:] .* corfgain[dGC,:] + orfstay[dGC,:] .* crnagain[dGC,:] + orfgain[dGC,:].*rnagain[dGC,:];
 
-onlyrnagain = (1 .- orfprob .- orfgain).*rnagain;
-onlyorfgain = (1 -rnaprob - rnagain).*orfgain;
+genegain2 = genegain./(1 .-rnaprob[dGC,:] .- orfprob[dGC,:]);
 
-rnafirst2 = onlyrnagain*(1 - rnaloss).*(orfgain./(1 .-orfprob));
-orffirst2 = onlyorfgain.*(1 .-orfloss).*(rnagain/(1-rnaprob));
+geneloss = orfloss[dGC,:].+ rnaloss[dGC,:];
+
+rnafirst = rnastay[dGC,:] .* orfgain[dGC,:];
+orffirst = orfstay[dGC,:] .* crnagain[dGC,:];
+
+onlyrnagain = (1 .- orfprob[dGC,:] .- orfgain[dGC,:]).*rnagain[dGC,:];
+onlyorfgain = (1 .- rnaprob[dGC,:] .- rnagain[dGC,:]).*orfgain[dGC,:];
+
+rnafirst2 = onlyrnagain.*(1 .- rnaloss[dGC,:]).*(corfgain[dGC,:]./(1 .-orfprob[dGC,:]));
+orffirst2 = onlyorfgain.*(1 .- orfloss[dGC,:]).*(crnagain[dGC,:]./(1 .-rnaprob[dGC,:]));
 
 plot_genegain_geneloss = plot(ncodons,log.(genegain2)./log.(geneloss),
     xlabel = "ORF length (codons)",
     ylabel = "# Gene Losses \n per Gene Gain",
     size = (width = cm2pt(12), height = cm2pt(11)),
 );
-savefig(plot_genegain_geneloss, figdir*"geneGainLoss100GC.pdf")
+savefig(plot_genegain_geneloss, figdir*"geneGainLoss_new.pdf")
 
-gcrange = [0.3:0.05:0.6;];
-rvalsgc = hcat([rnavals(x) for x in gcrange]);
-ovalsgc = [hcat([orfvals(x,ATGvals(x),stopvals(x),y) for x in gcrange]...) for y in ncodons];
-ovalsgc50 = ovalsgc[findfirst(ncodons .==50)];
-genegain50 = ((rvalsgc[2,:] + rvalsgc[4,:]) .* ovalsgc50[2,:] .+ ovalsgc50[4,:] .* rvalsgc[2,:]);
-genegain2_50 = genegain50./(1 .-rvalsgc[1,:] - ovalsgc50[1,:]);
-geneloss50 = ovalsgc50[3,:] .+ rvalsgc[3,:]
+cxlen = [30:30:150;]
 
-plot_genegain_geneloss_50_gcrange = plot(gcrange,log.(genegain2_50)./log.(geneloss50),
+klen = ncodons .∈ Ref(cxlen)
+
+genegainklen = rnastay[:,klen] .* corfgain[:,klen] + orfstay[:,klen] .* crnagain[:,klen] + orfgain[:,klen].*rnagain[:,klen];
+
+genegain2_klen = genegainklen./(1 .-rnaprob[:,klen] .- orfprob[:,klen]);
+genelossklen = orfloss[:,klen] .+ rnaloss[:,klen]
+
+# genegainX = ((rnagain .+ rnastay) .* orfgain .+ orfstay .* crnagain);
+# genegainX2 = genegainX./(1 .-rnaprob .- orfprob);
+# genelossX = orfloss .+ rnaloss
+
+# genegainlossratio = log.(genegainX2)./log.(genelossX)
+
+# whichGCloss = [findfirst(x.>=2) for x in eachcol(genegainlossratio)];
+
+plot_genegain_geneloss_klen_gcrange = plot(gcrange,log.(genegain2_klen)./log.(genelossklen),
     xlabel = "GC-content",
     ylabel = "# Gene Losses \n per Gene Gain",
-    size = (width = cm2pt(12), height = cm2pt(11)),
+    size = (width = cm2pt(12.5), height = cm2pt(11)),
+    xlims = [0.29,0.65]
 );
-savefig(plot_genegain_geneloss_50_gcrange, figdir*"geneGainLoss50gcr.pdf")
+savefig(plot_genegain_geneloss_klen_gcrange, figdir*"geneGainLoss_klengcr_new.pdf")
 
-plot_rnafist_orffirst = plot(ncodons[1:50],log.(orffirst./rnafirst)[1:50],
+plot_rnafist_orffirst = plot(ncodons,log2.(orffirst./rnafirst),
     xlabel = "ORF length (codons)",
     ylabel = "P_{ORF-first}\nP_RNA-first",
-    size = (width = cm2pt(12), height = cm2pt(11)),
-    xticks = [35:7:80;]
-);
-savefig(plot_rnafist_orffirst, figdir*"first_ORF_RNA.pdf")
-
-rnafirstgcr = hcat([rvalsgc[4,:] .* ovalsgc[x][2,:] for x in eachindex(ovalsgc)]...);
-orffirstgcr =hcat([ovalsgc[x][4,:] .* rvalsgc[2,:] for x in eachindex(ovalsgc)]...);
-
-whichfirstgcr = [findlast(x.>0) for x in eachrow(log2.(orffirstgcr./rnafirstgcr))];
-
-whichfirstgcr[isnothing.(whichfirstgcr)] .= 1;
-
-plot_whichfirstgcr = bar(gcrange,ncodons[whichfirstgcr],
-    xlabel = "GC-content",
-    ylabel = "Minimum codons for \n RNA-first trajectory",
     size = (width = cm2pt(12.5), height = cm2pt(11)),
-    fill = :black,
-    xticks = gcrange
+    yticks = [-0.2:0.2:0.4;]
 );
+savefig(plot_rnafist_orffirst, figdir*"whoisfirst_new.pdf")
 
-savefig(plot_whichfirstgcr, figdir*"whichfirstgcr.pdf")
-
-plot_rnafist_orffirst2 = plot(ncodons[1:50],log.(orffirst2./rnafirst2)[1:50],
+plot_rnafist_orffirst2 = plot(ncodons,log.(orffirst2./rnafirst2),
     xlabel = "ORF length (codons)",
     ylabel = "P_{ORF-first}\nP_RNA-first",
-    size = (width = cm2pt(12), height = cm2pt(11)),
-    xticks = [35:7:80;]
-);
-savefig(plot_rnafist_orffirst2, figdir*"first_ORF_RNA2.pdf")
-
-tl = log10.(rnaloss./orfgain);
-ol = log10.(orfloss/rnagain);
-
-plot_Loss = plot(ncodons[1:85],log.(orfloss./rnaloss)[1:85],
-    xlabel = "ORF length (codons)",
-    ylabel = "P_RNA-loss\nP_ORF-loss",
-    size = (width = cm2pt(12), height = cm2pt(11)),
-    xticks = [33:11:110;]
-);
-
-savefig(plot_Loss, figdir*"pLoss.pdf")
-
-plot_loss_50_gcrange = plot(gcrange,log.(ovalsgc50[3,:]./rvalsgc[3,:]),
-    xlabel = "GC-content",
-    ylabel = "P_RNA-loss\nP_ORF-loss",
     size = (width = cm2pt(12.5), height = cm2pt(11)),
+    yticks = [-0.18:0.04:-0.0;]
 );
-savefig(plot_loss_50_gcrange, figdir*"pLoss50gcr.pdf")
+savefig(plot_rnafist_orffirst2, figdir*"whoisfirst2_new.pdf")
 
-onlyrnaloss = orfstay .*(rnaprob*rnaloss)
+rnafirstgcr = hcat([rnastay[x,:] .* corfgain[x,:] for x in eachindex(gcrange)]...);
+orffirstgcr =  hcat([orfstay[x,:] .* crnagain[x,:] for x in eachindex(gcrange)]...);
+
+whichfirstgcr = [findall(x.>=0) for x in eachcol(log2.(orffirstgcr./rnafirstgcr))];
+
+codonsorffirstgcr = [ncodons[x] for x in whichfirstgcr];
+
+aa = hcat([[minimum(x), maximum(x)] for x in codonsorffirstgcr[.!isempty.(codonsorffirstgcr)]]...)
+
+bb =gcrange[.!isempty.(codonsorffirstgcr)]
+
+ab1 = [(bb[x],aa[1,x]) for x in eachindex(bb)]
+ab2 = [(bb[x],aa[2,x]) for x in eachindex(bb)]
+
+plot_whichfirstgcr = plot(Shape([ab1;reverse(ab2)]),
+    xlabel = "GC-content",
+    ylabel = "ORF-length (codons)",
+    size = (width = cm2pt(12), height = cm2pt(11)),
+    xlims = [0.29,0.61],
+    fill = :black
+);
+
+savefig(plot_whichfirstgcr, figdir*"whoisfirstgcr_new.pdf")
+
+# tl = log10.(rnaloss./orfgain);
+# ol = log10.(orfloss/rnagain);
+
+plot_Loss = plot(ncodons,log2.(orfloss[dGC,:]./rnaloss[dGC,:]),
+    xlabel = "ORF length (codons)",
+    ylabel = "P_ORF-loss\nP_RNA-loss",
+    size = (width = cm2pt(12), height = cm2pt(11)),
+);
+
+savefig(plot_Loss, figdir*"pLoss_new.pdf")
+
+plot_loss_klen_gcrange = plot(gcrange,log2.(orfloss[:,klen]./rnaloss[:,klen]),
+    xlabel = "GC-content",
+    ylabel = "P_ORF-loss\nP_RNA-loss",
+    size = (width = cm2pt(12.5), height = cm2pt(11)),
+    ylims = [-0.3,2.1],
+    xlims = [0.29,0.65]
+);
+savefig(plot_loss_klen_gcrange, figdir*"pLossklengcr_new.pdf")
+
+onlyrnaloss = corfstay[dGC,:].*crnaloss[dGC,:]./corfprob[dGC,:];
+onlyorfloss = crnastay[dGC,:].*corfloss[dGC,:]./crnaprob[dGC,:];
+
+# plot_onlyLoss = plot(ncodons,log2.(onlyorfloss./onlyrnaloss),
+#     xlabel = "ORF length (codons)",
+#     ylabel = "P_onlyORF-loss\nP_onlyRNA-loss",
+#     size = (width = cm2pt(12), height = cm2pt(11)),
+# );
+
+# savefig(plot_Loss, figdir*"pOnlyLoss_new.pdf")
+
+## Protein properties ##
 
 aaprob = [sum(nucprob.(gencode[gencode[:,3] .== x,1],gccontent)) for x in aas];
 aaprob2 = aaprob./sum(aaprob);
