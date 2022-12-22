@@ -552,7 +552,7 @@ All the four poly-A signal variants contain a \texttt{TAA} in their sequence (po
 
 Conversely to the effect of an existing ORF on transcription gain, stop codons are less probable in an existing transcript that does not contain any poly-A signal sequences within its sequence, than in an untranscribed DNA region. Specifically, the probability that a 6-mer contains a stop codon in the third position is same as the probability of finding a stop codon ($P_\textit{stop}$). If poly-A signals are excluded from these 6-mers, then the probability of finding a stop codon is $P_\textit{stop} - P_\textit{poly-A}$. Conversely, lack of poly-A signals will increase the probability of amino acid coding codons and thereby their probability of mutating into a stop codon. Furthermore, the likelihood that an ORF is undisrupted my premature nonsense mutations, is lower when the DNA is already transcribed. Specifically:
 
-$$P_\textit{stop-gain \vline\ RNA} = \frac{P_\textit{stop-gain}\times(1- P_\textit{stop} - P_\textit{poly-A})}{1- P_\textit{stop}}$$
+$$P_\textit{stop-gain \vline\ RNA} = \frac{P_\textit{stop-gain}\times(1- P_\textit{stop} + P_\textit{poly-A})}{1- P_\textit{stop}}$$
 
 Overall the evolutionary dynamics of transcription and ORF gain, are not independent of each other. That is, presence of one feature makes the gain of the other more likely. The dependence becomes more prominent with increasing number of codons in the ORF of the proto-gene.
 
