@@ -100,13 +100,13 @@ function rnaprobs(tata,inr,polya,orflen,ptype::Bool)
     # no polyA present in the sequence 
     gainmech2 = (tata[xStay] + inr[xStay]) * polya[xGain] * nopolyastay^noPAsites
 
+
     # RNA gain mechanism 3
     # Any one promoter stays
     # polyA stays at the end of sequence
     # A polyA present in the sequence is lost (for every 6mer in the sequence)
     gainmech3 = (noPAsites-1)*(tata[xStay] + inr[xStay]) * polya[xStay] * polya[xLoss] * polya[xProb] * nopolyastay^(noPAsites-1);
-
-
+   
     rnagain =  gainmech1 + gainmech2 + gainmech3
     
     # Fraction of Inr-only promoters
@@ -116,7 +116,7 @@ function rnaprobs(tata,inr,polya,orflen,ptype::Bool)
     Qtata = tata[xProb]*(1-inr[xProb])/(tata[xProb] + inr[xProb] - inr[xProb]*tata[xProb]);
 
     # Fraction of promoters containing both TATA and Inr
-    Qboth = 1 - Qtata - Qinr;
+    # Qboth = 1 - Qtata - Qinr;
     notatastay  = 1 - tata[xGain] - tata[xProb];
     noinrstay = 1 - inr[xGain] - inr[xProb]
     rnaloss = (Qinr*inr[xLoss]*notatastay +
@@ -125,8 +125,55 @@ function rnaprobs(tata,inr,polya,orflen,ptype::Bool)
       polya[xLoss] + noPAsites*polya[xGain]
     );
 
+    rnaloss = polya[xLoss] + noPAsites*polya[xGain];
+
     rnastay = (inr[xStay] + tata[xStay])*polya[xStay]*nopolyastay^noPAsites;
     return [rnaprob; rnagain; rnaloss; rnastay]
+end
+
+
+function rnaprobs_nopromoter(polya,orflen,ptype::Bool)
+    
+    # Number of possible polyA signals given ORF is present
+    # TAA within polyA signal cannot exist with intact ORF
+    if(ptype)
+        noPAsites = 3*orflen - 5 # total 6-mers
+    else
+        noPAsites = 2*orflen - 5 # 6-mers not in with ORF
+    end
+    nopolyaprob = 1 - polya[xProb]
+    nopolyastay = nopolyaprob - polya[xGain]
+
+    ## Transcription
+    # (Initiator or TATA) and polyA
+
+    # Probability of finding a transcript of length ≥ orflen
+    rnaprob = polya[xProb] * nopolyaprob^noPAsites;
+    
+    # RNA gain mechanism 1
+    # polyA gained at the end of sequence
+    # no polyA present in the sequence 
+
+    gainmech1 = polya[xGain] * nopolyastay^noPAsites
+
+    # RNA gain mechanism 2
+    # polyA stays at the end of sequence
+    # A polyA present in the sequence is lost (for every 6mer in the sequence)
+
+    gainmech2 = (noPAsites-1)* polya[xStay] * polya[xLoss] * polya[xProb] * nopolyastay^(noPAsites-1);
+
+    rnagain =  gainmech1 + gainmech2 
+    
+    rnaloss = polya[xLoss] + noPAsites*polya[xGain];
+
+    rnastay = polya[xStay]*nopolyastay^noPAsites;
+
+    return [rnaprob; rnagain; rnaloss; rnastay]
+end
+
+function kimura(s,ne)
+    fp = (1 - exp(-2*s))/(1-exp(-4*ne*s))
+    return fp
 end
 
 function ATGprobs(gccontent)
@@ -190,14 +237,19 @@ gcrange = [0.3:0.01:0.6;];
 for g in eachindex(gcrange)
     ATGvalsG = ATGprobs(gcrange[g]);
     stopvalsG = stopprobs(gcrange[g]);
-    tatavalsG = tataprobs(gcrange[g]);
-    inrvalsG = inrprobs(gcrange[g]);
+    # tatavalsG = tataprobs(gcrange[g]);
+    # inrvalsG = inrprobs(gcrange[g]);
     polyavalsG = polyaprobs(gcrange[g]);
     for k in eachindex(ncodons)
+
         (orfprob[g,k], orfgain[g,k], orfloss[g,k], orfstay[g,k]) = orfprobs(ATGvalsG,stopvalsG,ncodons[k],true,polyavalsG);
+
         (corfprob[g,k], corfgain[g,k], corfloss[g,k], corfstay[g,k]) = orfprobs(ATGvalsG,stopvalsG,ncodons[k],false,polyavalsG);
-        (rnaprob[g,k], rnagain[g,k], rnaloss[g,k], rnastay[g,k]) = rnaprobs(tatavalsG, inrvalsG, polyavalsG, ncodons[k],true)
-        (crnaprob[g,k], crnagain[g,k], crnaloss[g,k], crnastay[g,k]) = rnaprobs(tatavalsG, inrvalsG, polyavalsG, ncodons[k],false)
+
+        (rnaprob[g,k], rnagain[g,k], rnaloss[g,k], rnastay[g,k]) = rnaprobs_nopromoter(polyavalsG, ncodons[k],true)
+
+        (crnaprob[g,k], crnagain[g,k], crnaloss[g,k], crnastay[g,k]) = rnaprobs_nopromoter(polyavalsG, ncodons[k],false)
+    
     end
     println("Done: ",g)
 end
