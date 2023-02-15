@@ -1,0 +1,83 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,graphicx,setspace,palatino,float,subcaption, booktabs, titlesec}
+\usepackage[colorlinks, allcolors = blue]{hyperref}
+\usepackage{natbib}
+\citestyle{egu}
+
+\titlespacing*{\paragraph}{0pt}{1\baselineskip}{3pt}
+\setlength{\parindent}{0pt}
+
+
+\begin{document}
+
+\onehalfspacing 
+
+\section*{Reviewer: 1}
+
+{\itshape Comments to the Author
+
+One of the most valuable points of this paper is that it formalizes many principles that are intuitive, but which have not been explicitly discussed in the field of de novo gene emergence with theoretical rigor. The authors build a simple probabilistic model for the neutral evolution of de novo protein coding genes, which I think is important because it could inform about what to expect under a neutral scenario given the molecular knowledge we have gathered over the past 60 years.
+
+Because of its theoretical approach this paper is a good addition to the de novo gene literature, however, I think the paper will be more relevant if it would either:
+
+\begin{enumerate}
+\item offer a more exhaustive contextualization of the model and the field, emphasizing why the model is showing results that cannot be addressed with empirical data, or
+
+\item it would evaluate some of their results with empirical genetic diversity or experimental evolution datasets (such as https://academic.oup.com/mbe/article/39/2/msab368/6491261) to test whether the rates of ORF gain or loss within a population match their predictions. As it stands, although formalizing these probabilities theoretically has the potential to be an important contribution, given its simplifications, I believe the model is not too informative of the realistic potential of its predictions.
+\end{enumerate}
+}
+
+{\itshape When it comes to the model itself, I had a problem with some limitations concerning basic molecular biology processes and biases that are relevant for the origination of de novo genes. While some of these points were touched upon in the discussion, I still think that their model could easily incorporate ways of addressing them, which would make this model much more realistic and relevant. I specifically find four points to be discussed in more detail or incorporated into the model:
+
+\vspace{\baselineskip}
+
+\textbf{1) Basal transcription:} The authors repeatedly mention that in order for transcription to take place there is a need for a promoter to evolve. Much empirical work in the field of de novo gene emergence has shown how basal levels of transcription or expression due to chromatin rearrangements might prime the functionalization of de novo genes 
+
+\begin{itemize}\setlength{\itemsep}{-5pt}
+\item https://genome.cshlp.org/content/20/10/1313
+\item https://elifesciences.org/articles/47138
+\item https://academic.oup.com/mbe/article/37/4/1165/5679780
+\item https://genome.cshlp.org/content/28/11/1675.short
+\item https://elifesciences.org/articles/09977
+\end{itemize}
+
+Because the presence/absence of transcription is a fundamental aspect of the model in this paper, I think this paradigm needs to be integrated into it for this study to be relevant given the knowledge we now have.
+}
+
+\vspace{\baselineskip}
+
+\textbf{2) Non-neutral background:} de novo ORFs might emerge in non-coding regions that still encode for important cellular functions, such as introns or enhancers. This would mean that some mutations that lead to the functionalization of a de novo peptide might be unviable because they temper with the functions of the genomic regions where they arise. This might make some sequences harder or easier to evolve than others because some specific genomic positions will be locked in to a given nucleotide or arrangement of nucleotide. The way this could be integrated into the model is by considering what is the percentage of sites that tends to be strongly constrained or conserved between different species.
+
+\vspace{\baselineskip}
+
+{\itshape \textbf{3) Structured probabilities:} The authors rightly used empirical estimations of CG content to study the probability of functionalizing or defunctionalizing mutations. But It's not just CG content, it might be important to consider the frequency or presence/absence of genomic patterns like CpG islands or microsatellites. The existence of these features will strongly influence the likelihood of getting specific kinds of mutations, which will be important for the biases in evolution as well as the propensities in protein evolution that the authors tried to study with their model. Not to mention that these features will have different probabilities of evolving transcription on top of the coding sequence.}
+
+\vspace{\baselineskip}
+
+We thank the reviewer for this valuable suggestion. We agree with them that nucleotide distribution is not uniform and therefore the probabilities of different DNA sequences cannot be estimated accurately from GC content alone. We also note that sequence composition can be highly variable between different species, as well as between different genomic regions in the same species. Thus the most accurate way to estimate the rate of gene evolutionary dynamics would be to analyse each genomic locus individually. Although such an analysis would be accurate, it would be difficult to generalize. To keep a balance between accuracy and generalizability of our results, we repeated our original calculations of various probability using nucleotide distribution estimates from intergenic regions of \textit{Drosophila melanogaster}  (flybase release 6.49). Specifically, we estimated the frequencies of all hexamers in the intergenic sequences using a sliding window. We ignored the hexamers that contained an ambiguous nucleotide character (non ATGC). From the frequency distribution of all the 4096 hexamers, we estimated the probability of finding (also gaining and losing) the polyadenylation signal sequences (that are 6 nucleotides long). Similarly, we estimated the probabilities of start and stop codons using a distribution of trimers estimated from the \textit{D.melanogaster} intergenic regions. With these probabilities, we repeated the analyses shown in the original figures 1A, 2A, 2C and 3A. 
+
+We found that the the results from actual nucleotide distributions indeed differed from the ones obtained using total GC content of \textit{D.melanogaster} intergenic genome (0.403). We now include these results in the main manuscript along with the old figures. We also explain the details of the re-analysis and its rationale (as described in this response), in the main text.
+
+\vspace{\baselineskip}
+
+\textbf{4) Population genetics:} Ultimately a de novo gene needs to increase in frequency in a population if it is going to be maintained in the genome. The probability of fixation of a neutral allele is 1/2N, but how is the birth/death mutational dynamics of de novo genes that the authors are exploring affected by the demography of species? I believe that drift might be the primary source of loss of de novo neutral genes, much more than mutational defunctionalization. Or do the authors want to disregard this and just focus on the macroevolutionary retention of de novo genes in phylogenies? If that is the case, this could be discussed, maybe not necessarily incorporated into the model.
+
+\vspace{\baselineskip}
+
+I think that if the authors would follow at least some of these recommendations then they would be walking on much more solid ground and they would not need to use the ``all models are wrong'' quote, in favor of a more grounded implications of their findings. This would also mean that we would count with a much more solid point of argument for the discussion of the likelihood of de novo gene emergence, a field which tends to be too empirical and with little theory, which is why this paper would be a good addition to the literature if improvements are made.
+
+\section*{Reviewer: 2}
+
+Comments to the Author
+This paper describes a model to calculate the mutational probabilities of de novo gene origin and loss. Its conclusions are that certain modes of gene origin are more probable than others. I am no expert in these kinds of models or in de novo gene emergence, but I found these arguments interesting and valuable.
+
+I have two major comments about the paper. The first is that I was surprised to see no arguments or formalism rooted in population genetics in this paper. The authors only calculate mutational probabilities, but no fixation probabilities. They state several times that they work under the assumption of total neutrality, so I guess an informed reader can put two and two together, knowing that in Kimura's model neutral fixation probabilities only depend on the mutation rate of neutral alleles. I think the paper would benefit from making this explicit -- the assumption of neutrality justifies only caring about mutational probabilities. Of course, the neutral model comes with its own assumptions (diploid organisms  etc). Perhaps this could be acknowledged somewhere. And while fixation probabilities only depend on the mutation rate, I think the time to fixation under neutrality does depend on the effective population size. So the authors' model as it stands does not make predictions about how long it takes for de novo genes to fix or be lost (though this extension may be easy to carry out).
+
+Another difficulty for me was the argument about whether the existence of a lineage specific gene really implies it evolved only in that lineage. The alternative being an earlier gain with losses in all lineages but one. The paper justifies this by deriving that the probability of losing a de novo gene is much larger than gaining it. I struggle to see how that comparison alone is sufficient to make this argument. It seems to me one would have to tally up all relevant probabilities of gaining, losing, and keeping the gene along the relevant internal and terminal branches of the species tree. The length of these branches also seems like it might matter a lot. A gain-with-2-losses trajectory, like the authors suggest may be likely, requires the new gene to be gained and then kept along one internal and one terminal branch. It would seem to me that this is vastly less likely under strict neutrality than a lineage specific gain. I may of course be wrong, but I think a very simplistic argument based on only two probabilities with no treatment of the actual phylogeny is not sufficient to convince me of the authors' argument.
+
+Another minor comment from me is that in the discussion it might be valuable to address that at least some de novo genes become essential quickly (I would for example point to work by the Long lab, which is cited already). This would allow purifying selection to quickly preserve such genes against losses.
+
+Lastly, I couldn't find the actual parameter values used for the various probabilities in the paper. I know the authors will make the code available, but for the casual reader a table would be valuable.
+
+\end{document}
