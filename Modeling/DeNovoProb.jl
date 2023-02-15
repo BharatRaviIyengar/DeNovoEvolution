@@ -469,11 +469,16 @@ gainfix = hcat([genegain2X/(2*x) for x in popsizes]...);
 lossfix = hcat([genelossX/(2*x) for x in popsizes]...);
 fixprobs = log.(gainfix)./log.(lossfix);
 
-heatmap(ncodons,popsizes,fixprobs,
-    yaxis = :log
-)
 
-plot(ncodons,fixprobs)
+plot_fix = plot(ncodons,fixprobs[:,2:2:10],
+    xlabel = "ORF length (codons)",
+    ylabel = "#Gene loss with extinction \n per Gene gain with fixation",
+    size = (width = cm2pt(12.5), height = cm2pt(11)),
+    xlim = [25,350]
+);
+
+savefig(plot_fix, figdir*"pFix_dmel.pdf")
+
 ## Protein properties ##
 
 aaprob = [sum(nucprob.(gencode[gencode[:,3] .== x,1],gccontent)) for x in aas];
