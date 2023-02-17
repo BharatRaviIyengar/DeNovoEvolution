@@ -13,7 +13,7 @@ guidefont = font(13,"Helvetica"),framestyle = :box, legend = false);
 
 aaorder = ["W","F","Y","I","V","L","M","C","D","E","G","A","P","H","K","R","S","T","N","Q"];
 ixaaorder = indexin(aaorder,aas);
-gccontent = 0.42
+gccontent = 0.41
 
 (xProb, xGain, xLoss, xStay) = [i for i in 1:4];
 
@@ -117,7 +117,7 @@ function rnaprobs(tata,inr,polya,orflen,ptype::Bool)
     Qtata = tata[xProb]*(1-inr[xProb])/(tata[xProb] + inr[xProb] - inr[xProb]*tata[xProb]);
 
     # Fraction of promoters containing both TATA and Inr
-    # Qboth = 1 - Qtata - Qinr;
+    Qboth = 1 - Qtata - Qinr;
     notatastay  = 1 - tata[xGain] - tata[xProb];
     noinrstay = 1 - inr[xGain] - inr[xProb]
     rnaloss = (Qinr*inr[xLoss]*notatastay +
@@ -257,6 +257,11 @@ for g in eachindex(gcrange)
     println("Done: ",g)
 end
 
+rnaprob = rnaprob*promprob;
+rnagain = rnagain*promprob;
+crnaprob = crnaprob*promprob;
+crnagain = crnagain*promprob;
+
 dGC = findfirst(gcrange.==gccontent)
 
 genegain = rnastay[dGC,:] .* corfgain[dGC,:] + orfstay[dGC,:] .* crnagain[dGC,:] + orfgain[dGC,:].*rnagain[dGC,:];
@@ -310,7 +315,7 @@ plot_rnafist_orffirst = plot(ncodons,log2.(orffirst./rnafirst),
     xlabel = "ORF length (codons)",
     ylabel = "P_{ORF-first}\nP_RNA-first",
     size = (width = cm2pt(12.5), height = cm2pt(11)),
-    yticks = [-0.2:0.2:0.4;]
+   # yticks = [-0.2:0.2:0.4;]
 );
 savefig(plot_rnafist_orffirst, figdir*"whoisfirst_new.pdf")
 
@@ -318,7 +323,7 @@ plot_rnafist_orffirst2 = plot(ncodons,log.(orffirst2./rnafirst2),
     xlabel = "ORF length (codons)",
     ylabel = "P_{ORF-first}\nP_RNA-first",
     size = (width = cm2pt(12.5), height = cm2pt(11)),
-    yticks = [-0.18:0.04:-0.0;]
+    #yticks = [-0.18:0.04:-0.0;]
 );
 savefig(plot_rnafist_orffirst2, figdir*"whoisfirst2_new.pdf")
 
@@ -380,6 +385,8 @@ onlyorfloss = crnastay[dGC,:].*corfloss[dGC,:]./crnaprob[dGC,:];
 
 # Estimate from D.mel data #
 
+promprob = 5331240/43164203; # CRMs in open chromatin / Total intergenic region
+
 polyavalsX = [
     sum(nprob6.(polyavars)),
     featuregain6(nopolyas,polyavars),
@@ -417,6 +424,11 @@ for k in eachindex(ncodons)
     (corfprobX[k], corfgainX[k], corflossX[k], corfstayX[k]) = orfprobs(ATGvalsX,stopvalsX,ncodons[k],false,polyavalsX);
 end
 
+rnaprobX = rnaprobX*promprob;
+rnagainX = rnagainX*promprob;
+crnaprobX = crnaprobX*promprob;
+crnagainX = crnagainX*promprob;
+
 genegainX = rnastayX .* corfgainX + orfstayX .* crnagainX + orfgainX.*rnagainX;
 
 genegain2X = genegainX./(1 .-rnaprobX .- orfprobX);
@@ -436,6 +448,7 @@ plotX_genegain_geneloss = plot(ncodons,log.(genegain2X)./log.(genelossX),
     xlabel = "ORF length (codons)",
     ylabel = "# Gene Losses \n per Gene Gain",
     size = (width = cm2pt(12), height = cm2pt(11)),
+    yticks = [2,2.5,3]
 );
 savefig(plotX_genegain_geneloss, figdir*"geneGainLoss_dmel.pdf")
 
@@ -443,13 +456,15 @@ plotX_rnafist_orffirst = plot(ncodons,log2.(orffirstX./rnafirstX),
     xlabel = "ORF length (codons)",
     ylabel = "P_{ORF-first}\nP_RNA-first",
     size = (width = cm2pt(12.5), height = cm2pt(11)),
+    yticks = [-3.5,-3,-2.5]
 );
 savefig(plotX_rnafist_orffirst, figdir*"whoisfirst_dmel.pdf")
 
-plotX_rnafist_orffirst2 = plot(ncodons,log.(orffirst2X./rnafirst2X),
+plotX_rnafist_orffirst2 = plot(ncodons,log2.(orffirst2X./rnafirst2X),
     xlabel = "ORF length (codons)",
     ylabel = "P_{ORF-first}\nP_RNA-first",
     size = (width = cm2pt(12.5), height = cm2pt(11)),
+    yticks = [-0.4,-0.3,-0.2]
 );
 savefig(plotX_rnafist_orffirst2, figdir*"whoisfirst2_dmel.pdf")
 
@@ -460,6 +475,28 @@ plotX_Loss = plot(ncodons,log2.(orflossX./rnalossX),
 );
 
 savefig(plotX_Loss, figdir*"pLoss_dmel.pdf")
+
+freegenome = readdlm("freegenome_lendist_knownchr.txt", Int32);
+
+nsites = 4 .*[sum(freegenome[:,2].*(freegenome[:,1] .- (x + 1))) for x in (10 .+ncodons.*3)];
+
+plot_nsites = plot(ncodons,nsites/1e7,
+xlabel = "ORF length (codons)",
+ylabel = "Number of feasible sites\n (x 10^7)",
+size = (width = cm2pt(12), height = cm2pt(11)),
+yticks = [2.6:0.4:3.8;]
+);
+
+plot_tGG = plot(ncodons,genegainX.*nsites*2,
+    xlabel = "ORF length (codons)",
+    ylabel = "Gene gain rate\n across multiple sites",
+    size = (width = cm2pt(12.5), height = cm2pt(11)), 
+    yaxis =:log, 
+    yticks = [1e-12,1e-10,1e-8,1e-6]
+);
+
+savefig(plot_tGG,figdir*"pTotalGain_dmel.pdf")
+savefig(plot_nsites,figdir*"pTotalSites_dmel.pdf")
 
 
 # Fixation probabilities #
