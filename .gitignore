@@ -4,7 +4,6 @@
 *.aux
 *.out
 *.bbl
-*.svg
 *.png
 .vscode/settings.json
 *.blg
