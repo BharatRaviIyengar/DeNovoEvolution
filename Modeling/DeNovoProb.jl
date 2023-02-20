@@ -392,23 +392,38 @@ plot_whichfirstgcr2 = plot(100*gcrange,log2.(rnafirst2./orffirst2)[:,klen],
 
 savefig(plot_whichfirstgcr2, figdir*"whoisfirstgcr2_promoterless.pdf")
 
+# Plot ORF loss versus RNA loss
 
-plot_Loss = plot(ncodons,log2.(orfloss[dGC,:]./rnaloss[dGC,:]),
+plot_Loss = plot(ncodons,log2.(orfloss./rnaloss)[dGC[1],:],
     xlabel = "ORF length (codons)",
-    ylabel = "P_ORF-loss\nP_RNA-loss",
-    size = (width = cm2pt(12), height = cm2pt(11)),
+    ylabel = "P_{ORF-first}\nP_RNA-first",
+    size = (width = cm2pt(12.5), height = cm2pt(11)),
+    linestyle = :dash,
+    legend = :bottom,
+    label = Int(100*gcrange[dGC[1]])
+);
+    
+
+plot!(plot_Loss, ncodons,log2.(orfloss./rnaloss)[dGC[2],:],
+    linestyle = :solid,
+    label = Int(100*gcrange[dGC[2]])
 );
 
-savefig(plot_Loss, figdir*"pLoss_new.pdf")
 
-plot_loss_klen_gcrange = plot(gcrange,log2.(orfloss[:,klen]./rnaloss[:,klen]),
-    xlabel = "GC-content",
+plot!(plot_Loss, ncodons,log2.(orfloss./rnaloss)[dGC[3],:],
+    linestyle = :dot,
+    label = Int(100*gcrange[dGC[3]])
+);
+
+savefig(plot_Loss, figdir*"pLoss_promoterless.pdf")
+
+plot_loss_klen_gcrange = plot(100*gcrange,log2.(orfloss[:,klen]./rnaloss[:,klen]),
+    xlabel = "GC %",
     ylabel = "P_ORF-loss\nP_RNA-loss",
     size = (width = cm2pt(12.5), height = cm2pt(11)),
-    ylims = [-0.3,2.1],
-    xlims = [0.29,0.65]
+    xlims = [29,65]
 );
-savefig(plot_loss_klen_gcrange, figdir*"pLossklengcr_new.pdf")
+savefig(plot_loss_klen_gcrange, figdir*"pLossgcr_promoterless.pdf")
 
 onlyrnaloss = corfstay[dGC,:].*crnaloss[dGC,:]./corfprob[dGC,:];
 onlyorfloss = crnastay[dGC,:].*corfloss[dGC,:]./crnaprob[dGC,:];
@@ -474,7 +489,7 @@ genegain2X = genegainX./(1 .-rnaprobX .- orfprobX);
 
 genelossX = orflossX.+ rnalossX;
 
-rnafirstX = rnastayX .* orfgainX;
+rnafirstX = rnastayX .* corfgainX;
 orffirstX = orfstayX .* crnagainX;
 
 onlyrnagainX = (1 .- orfprobX .- orfgainX).*rnagainX;
@@ -499,6 +514,13 @@ plotX_rnafist_orffirst = plot(ncodons,log2.(rnafirstX./orffirstX),
 );
 savefig(plotX_rnafist_orffirst, figdir*"whoisfirst_dmel.pdf")
 
+plot!(plot_rnafist_orffirst, ncodons,log2.(rnafirstX./orffirstX),
+    linestyle = :solid,
+    linecolor = :blue,
+    label = "D.mel"
+);
+savefig(plotX_rnafist_orffirst, figdir*"whoisfirst_promoterlessX.pdf")
+
 plotX_rnafist_orffirst2 = plot(ncodons,log2.(rnafirst2X./orffirst2X),
     xlabel = "ORF length (codons)",
     ylabel = "P_{ORF-first}\nP_RNA-first",
@@ -506,6 +528,13 @@ plotX_rnafist_orffirst2 = plot(ncodons,log2.(rnafirst2X./orffirst2X),
     yticks = [0.2,0.3,0.4]
 );
 savefig(plotX_rnafist_orffirst2, figdir*"whoisfirst2_dmel.pdf")
+
+plot!(plot_rnafist_orffirst2, ncodons,log2.(rnafirst2X./orffirst2X),
+    linestyle = :solid,
+    linecolor = :blue,
+    label = "D.mel"
+);
+savefig(plot_rnafist_orffirst2, figdir*"whoisfirst2_promoterlessX.pdf")
 
 plotX_Loss = plot(ncodons,log2.(orflossX./rnalossX),
     xlabel = "ORF length (codons)",
