@@ -257,102 +257,141 @@ for g in eachindex(gcrange)
     println("Done: ",g)
 end
 
+promprob = 5331240/43164203; # CRMs in open chromatin / Total intergenic region
+
 rnaprob = rnaprob*promprob;
 rnagain = rnagain*promprob;
 crnaprob = crnaprob*promprob;
 crnagain = crnagain*promprob;
 
-dGC = findfirst(gcrange.==gccontent)
-
-genegain = rnastay[dGC,:] .* corfgain[dGC,:] + orfstay[dGC,:] .* crnagain[dGC,:] + orfgain[dGC,:].*rnagain[dGC,:];
-
-genegain2 = genegain./(1 .-rnaprob[dGC,:] .- orfprob[dGC,:]);
-
-geneloss = orfloss[dGC,:].+ rnaloss[dGC,:];
-
-rnafirst = rnastay[dGC,:] .* orfgain[dGC,:];
-orffirst = orfstay[dGC,:] .* crnagain[dGC,:];
-
-onlyrnagain = (1 .- orfprob[dGC,:] .- orfgain[dGC,:]).*rnagain[dGC,:];
-onlyorfgain = (1 .- rnaprob[dGC,:] .- rnagain[dGC,:]).*orfgain[dGC,:];
-
-rnafirst2 = onlyrnagain.*(1 .- rnaloss[dGC,:]).*(corfgain[dGC,:]./(1 .-orfprob[dGC,:]));
-orffirst2 = onlyorfgain.*(1 .- orfloss[dGC,:]).*(crnagain[dGC,:]./(1 .-rnaprob[dGC,:]));
-
-plot_genegain_geneloss = plot(ncodons,log.(genegain2)./log.(geneloss),
-    xlabel = "ORF length (codons)",
-    ylabel = "# Gene Losses \n per Gene Gain",
-    size = (width = cm2pt(12), height = cm2pt(11)),
-);
-savefig(plot_genegain_geneloss, figdir*"geneGainLoss_new.pdf")
-
+dGC = findall(gcrange .∈ Ref([0.34:0.08:0.5;]));
 cxlen = [30:30:150;]
-
 klen = ncodons .∈ Ref(cxlen)
 
-genegainklen = rnastay[:,klen] .* corfgain[:,klen] + orfstay[:,klen] .* crnagain[:,klen] + orfgain[:,klen].*rnagain[:,klen];
+# Gene gain/loss probabilities
 
-genegain2_klen = genegainklen./(1 .-rnaprob[:,klen] .- orfprob[:,klen]);
-genelossklen = orfloss[:,klen] .+ rnaloss[:,klen]
+genegain = rnastay .* corfgain + orfstay .* crnagain + orfgain.*rnagain;
 
-# genegainX = ((rnagain .+ rnastay) .* orfgain .+ orfstay .* crnagain);
-# genegainX2 = genegainX./(1 .-rnaprob .- orfprob);
-# genelossX = orfloss .+ rnaloss
+genegain2 = genegain./(1 .-rnaprob .- orfprob);
 
-# genegainlossratio = log.(genegainX2)./log.(genelossX)
+geneloss = orfloss.+ rnaloss;
 
-# whichGCloss = [findfirst(x.>=2) for x in eachcol(genegainlossratio)];
+# Plot gene gain/loss probabilities versus ORF length
 
-plot_genegain_geneloss_klen_gcrange = plot(gcrange,log.(genegain2_klen)./log.(genelossklen),
-    xlabel = "GC-content",
+plot_genegain_geneloss = plot(ncodons,(log.(genegain2)./log.(geneloss))[dGC[1],:],
+    xlabel = "ORF length (codons)",
+    ylabel = "# Gene Losses \n per Gene Gain",
+    size = (width = cm2pt(12), height = cm2pt(11)),
+    linestyle = :dash,
+    legend = :bottom,
+    label = Int(100*gcrange[dGC[1]])
+);
+
+plot!(plot_genegain_geneloss,ncodons,(log.(genegain2)./log.(geneloss))[dGC[2],:],
+    linestyle = :solid, 
+    label = Int(100*gcrange[dGC[2]])
+);
+
+plot!(plot_genegain_geneloss,ncodons,(log.(genegain2)./log.(geneloss))[dGC[3],:],
+    linestyle = :dot,
+    label = Int(100*gcrange[dGC[3]])
+);
+
+savefig(plot_genegain_geneloss, figdir*"geneGainLoss_promoterless.pdf")
+
+# Plot gene gain/loss probabilities versus GC content
+
+plot_genegain_geneloss_klen_gcrange = plot(100*gcrange,(log.(genegain2)./log.(geneloss))[:,klen],
+    xlabel = "GC %",
     ylabel = "# Gene Losses \n per Gene Gain",
     size = (width = cm2pt(12.5), height = cm2pt(11)),
-    xlims = [0.29,0.65]
+    xlims = [29,65]
 );
-savefig(plot_genegain_geneloss_klen_gcrange, figdir*"geneGainLoss_klengcr_new.pdf")
+savefig(plot_genegain_geneloss_klen_gcrange, figdir*"geneGainLoss_klengcr_promoterless.pdf")
 
-plot_rnafist_orffirst = plot(ncodons,log2.(orffirst./rnafirst),
+# Single step trajectory probability
+
+rnafirst = rnastay .* corfgain;
+orffirst = orfstay .* crnagain;
+
+# Two step trajectory probability
+
+onlyrnagain = (1 .- orfprob .- orfgain).*rnagain;
+onlyorfgain = (1 .- rnaprob .- rnagain).*orfgain;
+
+rnafirst2 = onlyrnagain.*(1 .- rnaloss).*(corfgain./(1 .-orfprob));
+orffirst2 = onlyorfgain.*(1 .- orfloss).*(crnagain./(1 .-rnaprob));
+
+# Plot single step trajectory probability versus ORF length
+
+plot_rnafist_orffirst = plot(ncodons,log2.(rnafirst./orffirst)[dGC[1],:],
     xlabel = "ORF length (codons)",
     ylabel = "P_{ORF-first}\nP_RNA-first",
     size = (width = cm2pt(12.5), height = cm2pt(11)),
-   # yticks = [-0.2:0.2:0.4;]
+    linestyle = :dash,
+    legend = :bottom,
+    label = Int(100*gcrange[dGC[1]])
 );
-savefig(plot_rnafist_orffirst, figdir*"whoisfirst_new.pdf")
+    
 
-plot_rnafist_orffirst2 = plot(ncodons,log.(orffirst2./rnafirst2),
+plot!(plot_rnafist_orffirst, ncodons,log2.(rnafirst./orffirst)[dGC[2],:],
+    linestyle = :solid,
+    label = Int(100*gcrange[dGC[2]])
+);
+
+
+plot!(plot_rnafist_orffirst, ncodons,log2.(rnafirst./orffirst)[dGC[3],:],
+    linestyle = :dot,
+    label = Int(100*gcrange[dGC[3]])
+);
+
+savefig(plot_rnafist_orffirst, figdir*"whoisfirst_promoterless.pdf")
+
+# Plot two step trajectory probability versus ORF length
+
+plot_rnafist_orffirst2 = plot(ncodons,log2.(rnafirst2./orffirst2)[dGC[1],:],
     xlabel = "ORF length (codons)",
     ylabel = "P_{ORF-first}\nP_RNA-first",
     size = (width = cm2pt(12.5), height = cm2pt(11)),
-    #yticks = [-0.18:0.04:-0.0;]
-);
-savefig(plot_rnafist_orffirst2, figdir*"whoisfirst2_new.pdf")
-
-rnafirstgcr = hcat([rnastay[x,:] .* corfgain[x,:] for x in eachindex(gcrange)]...);
-orffirstgcr =  hcat([orfstay[x,:] .* crnagain[x,:] for x in eachindex(gcrange)]...);
-
-whichfirstgcr = [findall(x.>=0) for x in eachcol(log2.(orffirstgcr./rnafirstgcr))];
-
-codonsorffirstgcr = [ncodons[x] for x in whichfirstgcr];
-
-aa = hcat([[minimum(x), maximum(x)] for x in codonsorffirstgcr[.!isempty.(codonsorffirstgcr)]]...)
-
-bb =gcrange[.!isempty.(codonsorffirstgcr)]
-
-ab1 = [(bb[x],aa[1,x]) for x in eachindex(bb)]
-ab2 = [(bb[x],aa[2,x]) for x in eachindex(bb)]
-
-plot_whichfirstgcr = plot(Shape([ab1;reverse(ab2)]),
-    xlabel = "GC-content",
-    ylabel = "ORF-length (codons)",
-    size = (width = cm2pt(12), height = cm2pt(11)),
-    xlims = [0.29,0.61],
-    fill = :black
+    linestyle = :dash,
+    legend = :bottom,
+    label = Int(100*gcrange[dGC[1]])
 );
 
-savefig(plot_whichfirstgcr, figdir*"whoisfirstgcr_new.pdf")
+plot!(plot_rnafist_orffirst2, ncodons,log2.(rnafirst2./orffirst2)[dGC[2],:],
+    linestyle = :solid,
+    label = Int(100*gcrange[dGC[2]])
+);
 
-# tl = log10.(rnaloss./orfgain);
-# ol = log10.(orfloss/rnagain);
+plot!(plot_rnafist_orffirst2, ncodons,log2.(rnafirst2./orffirst2)[dGC[3],:],
+    linestyle = :dot,
+    label = Int(100*gcrange[dGC[3]])
+);
+
+savefig(plot_rnafist_orffirst2, figdir*"whoisfirst2_promoterless.pdf")
+
+# Plot single step trajectory probability versus GC content
+
+plot_whichfirstgcr = plot(gcrange*100,log2.(rnafirst./orffirst)[:,klen],
+    xlabel = "GC %",
+    ylabel = "P_{ORF-first}\nP_RNA-first",
+    size = (width = cm2pt(12.5), height = cm2pt(11)),
+    xlim = [28,65]
+);
+
+savefig(plot_whichfirstgcr, figdir*"whoisfirstgcr_promoterless.pdf")
+
+# Plot two step trajectory probability versus GC content
+
+plot_whichfirstgcr2 = plot(100*gcrange,log2.(rnafirst2./orffirst2)[:,klen],
+    xlabel = "GC %",
+    ylabel = "P_{ORF-first}\nP_RNA-first",
+    size = (width = cm2pt(12.5), height = cm2pt(11)),
+    xlim = [25,62]
+);
+
+savefig(plot_whichfirstgcr2, figdir*"whoisfirstgcr2_promoterless.pdf")
+
 
 plot_Loss = plot(ncodons,log2.(orfloss[dGC,:]./rnaloss[dGC,:]),
     xlabel = "ORF length (codons)",
@@ -452,19 +491,19 @@ plotX_genegain_geneloss = plot(ncodons,log.(genegain2X)./log.(genelossX),
 );
 savefig(plotX_genegain_geneloss, figdir*"geneGainLoss_dmel.pdf")
 
-plotX_rnafist_orffirst = plot(ncodons,log2.(orffirstX./rnafirstX),
+plotX_rnafist_orffirst = plot(ncodons,log2.(rnafirstX./orffirstX),
     xlabel = "ORF length (codons)",
     ylabel = "P_{ORF-first}\nP_RNA-first",
     size = (width = cm2pt(12.5), height = cm2pt(11)),
-    yticks = [-3.5,-3,-2.5]
+    yticks = [3.5,3,2.5]
 );
 savefig(plotX_rnafist_orffirst, figdir*"whoisfirst_dmel.pdf")
 
-plotX_rnafist_orffirst2 = plot(ncodons,log2.(orffirst2X./rnafirst2X),
+plotX_rnafist_orffirst2 = plot(ncodons,log2.(rnafirst2X./orffirst2X),
     xlabel = "ORF length (codons)",
     ylabel = "P_{ORF-first}\nP_RNA-first",
     size = (width = cm2pt(12.5), height = cm2pt(11)),
-    yticks = [-0.4,-0.3,-0.2]
+    yticks = [0.2,0.3,0.4]
 );
 savefig(plotX_rnafist_orffirst2, figdir*"whoisfirst2_dmel.pdf")
 
@@ -504,7 +543,18 @@ savefig(plot_nsites,figdir*"pTotalSites_dmel.pdf")
 popsizes = 100 .* 2 .^ [1:10;];
 gainfix = hcat([genegain2X/(2*x) for x in popsizes]...);
 lossfix = hcat([genelossX/(2*x) for x in popsizes]...);
+
+selcoef = 0.001
+
+gainfixPS = hcat([genegain2X.*kimura(selcoef,2*x) for x in popsizes]...);
+gainfixNS = hcat([genegain2X.*kimura(-selcoef,2*x) for x in popsizes]...);
+
+lossfixPS = hcat([genelossX.*kimura(-selcoef,2*x) for x in popsizes]...);
+lossfixNS = hcat([genelossX.*kimura(selcoef,2*x) for x in popsizes]...);
+
 fixprobs = log.(gainfix)./log.(lossfix);
+fixprobsPS = log.(gainfixPS)./log.(lossfixPS);
+fixprobsNS = log.(gainfixNS)./log.(lossfixNS);
 
 
 plot_fix = plot(ncodons,fixprobs[:,2:2:10],
@@ -515,6 +565,24 @@ plot_fix = plot(ncodons,fixprobs[:,2:2:10],
 );
 
 savefig(plot_fix, figdir*"pFix_dmel.pdf")
+
+plot_fix = plot(ncodons,fixprobsPS[:,2:2:10],
+    xlabel = "ORF length (codons)",
+    ylabel = "#Gene loss with extinction \n per Gene gain with fixation",
+    size = (width = cm2pt(12.5), height = cm2pt(11)),
+    xlim = [25,350]
+);
+
+savefig(plot_fix, figdir*"pFix_dmel_PS.pdf")
+
+plot_fix = plot(ncodons,fixprobsNS[:,2:2:10],
+    xlabel = "ORF length (codons)",
+    ylabel = "#Gene loss with extinction \n per Gene gain with fixation",
+    size = (width = cm2pt(12.5), height = cm2pt(11)),
+    xlim = [25,350]
+);
+
+savefig(plot_fix, figdir*"pFix_dmel_NS.pdf")
 
 ## Protein properties ##
 
