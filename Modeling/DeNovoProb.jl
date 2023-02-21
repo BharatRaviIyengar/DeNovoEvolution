@@ -506,6 +506,13 @@ plotX_genegain_geneloss = plot(ncodons,log.(genegain2X)./log.(genelossX),
 );
 savefig(plotX_genegain_geneloss, figdir*"geneGainLoss_dmel.pdf")
 
+plot!(plot_genegain_geneloss, ncodons,log.(genegain2X)./log.(genelossX),
+    linestyle = :solid,
+    linecolor = :blue,
+    label = "D.mel"
+);
+savefig(plot_genegain_geneloss, figdir*"geneGainLoss_promoterlessX.pdf")
+
 plotX_rnafist_orffirst = plot(ncodons,log2.(rnafirstX./orffirstX),
     xlabel = "ORF length (codons)",
     ylabel = "P_{ORF-first}\nP_RNA-first",
@@ -543,6 +550,13 @@ plotX_Loss = plot(ncodons,log2.(orflossX./rnalossX),
 );
 
 savefig(plotX_Loss, figdir*"pLoss_dmel.pdf")
+
+plot!(plot_Loss, ncodons,log2.(orflossX./rnalossX),
+    linestyle = :solid,
+    linecolor = :blue,
+    label = "D.mel"
+);
+savefig(plot_Loss, figdir*"pLoss_promoterlessX.pdf")
 
 freegenome = readdlm("freegenome_lendist_knownchr.txt", Int32);
 
@@ -619,6 +633,10 @@ aaprob = [sum(nucprob.(gencode[gencode[:,3] .== x,1],gccontent)) for x in aas];
 aaprob2 = aaprob./sum(aaprob);
 exp_hydropathy = sum(hydropathy3.*aaprob2)
 
+aaprob_dme = [sum(nprob3.(gencode[gencode[:,3] .== x,1])) for x in aas];
+aaprob2_dme = aaprob_dme./sum(aaprob_dme);
+exp_hydropathy_dme = sum(hydropathy3.*aaprob2)
+
 acidic = indexin(["D","E"],aas);
 basic = indexin(["K","R"],aas);
 hydrophobic = hydropathy3 .<0;
@@ -628,15 +646,28 @@ nostopvars = allcodons[allcodons .∉ Ref(["TAA","TAG","TGA"])]
 
 pHydrophobic = sum(aaprob[hydrophobic]);
 
-plot_aafreq = bar(aaorder,aaprob2[ixaaorder],
-    xticks = (0.5:20, aaorder),
+plot_aafreq = bar(0:2:38,aaprob2[ixaaorder],
+    xticks = (0.5:2:40, aaorder),
     yticks = (0:0.03:0.9),
-    fill = :black,
     xlabel = "Amino acid",
+    fill = :black,
+    linecolor=nothing,
+    bar_width = 0.72,
     ylabel = "Expected frequency\n(Normalized)",
-    size = (width = cm2pt(15), height = cm2pt(11))
+    size = (width = cm2pt(15), height = cm2pt(11)),
+    legend = :bottom,
+    label = "GC% = 42",
+    xlim = [-1.5,40]
 );
-savefig(plot_aafreq, figdir*"pAAfreq.pdf")
+
+bar!(plot_aafreq,0.72:2:40,aaprob2_dme[ixaaorder],
+    fill = "#FF6600",
+    bar_width = 0.72,
+    linecolor=nothing,
+    label = "D.mel"
+);
+
+savefig(plot_aafreq, figdir*"pAAfreqX.pdf")
 
 
 aasubprob = zeros(20,20);
@@ -659,14 +690,33 @@ aasubprob_conditional = aasubhighprob./aaprob2;
 asymmetric_transitions = log2.(aasubhighprob./aasubhighprob');
 asymmetric_conditional = log2.(aasubprob_conditional./aasubprob_conditional');
 
-# c = kmeans(asymmetric_transitions,3);
-# idx = sortperm(assignments(c));
-# hcl = hclust(aasubhighprob .+ aasubhighprob');
-# idx = hcl.order;
+
+aasubprobX = zeros(20,20);
+
+for i = 1:20
+        for j = 1:20
+                if(i==j)
+                        continue
+                end
+                set1 = gencode[gencode[:,3] .== aas[i],1];
+                set2 = gencode[gencode[:,3] .== aas[j],1];
+                aasubprobX[i,j] = featuregain3(set1,set2);
+        end
+end
+
+aasubhighprobX = aasubprobX.*(aasubprobX .>mutrate^2)
+
+aasubprob_conditionalX = aasubhighprobX./aaprob2_dme;
+
+asymmetric_transitionsX = log2.(aasubhighprobX./aasubhighprobX');
+asymmetric_conditionalX = log2.(aasubprob_conditionalX./aasubprob_conditionalX');
 
 gainAA = Vector{Float64}(vec(sum(aasubprob, dims=1)'));
 lossAA = Vector{Float64}(vec(sum(aasubprob, dims=2)./aaprob2));
-stayAA = [sum(featurestay(gencode[gencode[:,3] .== x,1],gccontent)) for x in aas];
+# stayAA = [sum(featurestay(gencode[gencode[:,3] .== x,1],gccontent)) for x in aas];
+
+gainAAX = Vector{Float64}(vec(sum(aasubprobX, dims=1)'));
+lossAAX = Vector{Float64}(vec(sum(aasubprobX, dims=2)./aaprob2_dme));
 
 getHP = (a) -> hydropathy3[aas .== a]
 
@@ -676,8 +726,8 @@ codonshydrophilic = kmers(3)[(!in).(kmers(3),Ref(codonshydrophobic))];
 
 hmp = 0
 mp=0
-for i in nostopvars
-    for j in nostopvars
+for i in nostop
+    for j in nostop
         x = mprob(i,j)
         yj = getHP(transnucs(j))[1]
         yi = getHP(transnucs(i))[1]
@@ -695,33 +745,31 @@ MutΔHydrophobic = hmp/mp
 
 
 toHydrophobic = featuregain(codonshydrophilic,codonshydrophobic, gccontent);
-
 frHydrophobic = featuregain(codonshydrophobic,codonshydrophilic, gccontent);
-
 stayHydrophobic = featurestay(codonshydrophobic, gccontent);
 
-plot_aasubprob = heatmap(aaorder,aaorder,log2.(aasubhighprob[ixaaorder,ixaaorder]),
-    xticks = (0.5:20, aaorder), 
-    yticks = (0.5:20, aaorder),
-    size = (width = cm2pt(15), height = cm2pt(14)),
-    colorbar_title = "Substitution Probability",
-    legend = :bottom
-);
+# plot_aasubprob = heatmap(aaorder,aaorder,log2.(aasubhighprob[ixaaorder,ixaaorder]),
+#     xticks = (0.5:20, aaorder), 
+#     yticks = (0.5:20, aaorder),
+#     size = (width = cm2pt(15), height = cm2pt(14)),
+#     colorbar_title = "Substitution Probability",
+#     legend = :bottom
+# );
 
-savefig(plot_aasubprob, figdir*"pAASub.pdf")
+# savefig(plot_aasubprob, figdir*"pAASub.pdf")
 
-plot_aasymprob = heatmap(aaorder,aaorder,asymmetric_transitions[ixaaorder,ixaaorder], 
-    xticks = (0.5:20, aaorder), 
-    yticks = (0.5:20,aaorder),
-    size = (width = cm2pt(15), height = cm2pt(14)),
-    colorbar_title = "Substitution likelihood",
-    legend = :bottom,
-    ylabel = "Original amino acid",
-    xlabel = "Substituted amino acid",
-    c = :bluesreds
-);
+# plot_aasymprob = heatmap(aaorder,aaorder,asymmetric_transitions[ixaaorder,ixaaorder], 
+#     xticks = (0.5:20, aaorder), 
+#     yticks = (0.5:20,aaorder),
+#     size = (width = cm2pt(15), height = cm2pt(14)),
+#     colorbar_title = "Substitution likelihood",
+#     legend = :bottom,
+#     ylabel = "Original amino acid",
+#     xlabel = "Substituted amino acid",
+#     c = :bluesreds
+# );
 
-savefig(plot_aasymprob, figdir*"pAAsubSym.pdf")
+# savefig(plot_aasymprob, figdir*"pAAsubSym.pdf")
 
 plot_aasymprob2 = heatmap(aaorder,aaorder,asymmetric_conditional[ixaaorder,ixaaorder], 
     xticks = (0.5:20, aaorder), 
@@ -735,24 +783,49 @@ plot_aasymprob2 = heatmap(aaorder,aaorder,asymmetric_conditional[ixaaorder,ixaao
 );
 savefig(plot_aasymprob2, figdir*"pAAsubSymCond.svg")
 
-plot_toaa = bar(aaorder,gainAA[ixaaorder]./sum(gainAA),
-    xticks = (0.5:20, aaorder),
+
+plot_toaa = bar(0:2:38,gainAA[ixaaorder]./sum(gainAA),
+    xticks = (0.5:2:40, aaorder),
     yticks = (0:0.03:0.9),
-    fill = :black,
     xlabel = "Amino acid",
+    fill = :black,
+    linecolor=nothing,
+    bar_width = 0.72,
     ylabel = "Gain Probability\n(Normalized)",
-    size = (width = cm2pt(15), height = cm2pt(11))
+    size = (width = cm2pt(15), height = cm2pt(11)),
+    #legend = :bottom,
+    label = "GC% = 42",
+    xlim = [-1.5,40]
 );
 
+bar!(plot_toaa,0.72:2:40,gainAAX[ixaaorder]./sum(gainAAX),
+    fill = "#FF6600",
+    bar_width = 0.72,
+    linecolor=nothing,
+    label = "D.mel"
+)
 savefig(plot_toaa, figdir*"pToAA.pdf")
 
-plot_fraa = bar(aaorder,lossAA[ixaaorder]./sum(lossAA),
-    xticks = (0.5:20, aaorder),
-    fill = :black,
+plot_fraa = bar(0:2:38,lossAA[ixaaorder]./sum(lossAA),
+    xticks = (0.5:2:40, aaorder),
+    yticks = (0:0.03:0.9),
     xlabel = "Amino acid",
+    fill = :black,
+    linecolor=nothing,
+    bar_width = 0.72,
     ylabel = "Loss Probability\n(Normalized)",
-    size = (width = cm2pt(15), height = cm2pt(11))
+    size = (width = cm2pt(15), height = cm2pt(11)),
+    #legend = :bottom,
+    label = "GC% = 42",
+    xlim = [-1.5,40]
 );
+
+bar!(plot_fraa,0.72:2:40,lossAAX[ixaaorder]./sum(lossAAX),
+    fill = "#FF6600",
+    bar_width = 0.72,
+    linecolor=nothing,
+    label = "D.mel"
+)
 
 savefig(plot_fraa, figdir*"pFrAA.pdf")
 
