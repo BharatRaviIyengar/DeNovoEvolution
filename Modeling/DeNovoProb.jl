@@ -498,13 +498,13 @@ onlyorfgainX = (1 .- rnaprobX .- rnagainX).*orfgainX;
 rnafirst2X = onlyrnagainX.*(1 .- rnalossX).*(corfgainX./(1 .-orfprobX));
 orffirst2X = onlyorfgainX.*(1 .- orflossX).*(crnagainX./(1 .-rnaprobX));
 
-plotX_genegain_geneloss = plot(ncodons,log.(genegain2X)./log.(genelossX),
-    xlabel = "ORF length (codons)",
-    ylabel = "# Gene Losses \n per Gene Gain",
-    size = (width = cm2pt(12), height = cm2pt(11)),
-    yticks = [2,2.5,3]
-);
-savefig(plotX_genegain_geneloss, figdir*"geneGainLoss_dmel.pdf")
+# plotX_genegain_geneloss = plot(ncodons,log.(genegain2X)./log.(genelossX),
+#     xlabel = "ORF length (codons)",
+#     ylabel = "# Gene Losses \n per Gene Gain",
+#     size = (width = cm2pt(12), height = cm2pt(11)),
+#     yticks = [2,2.5,3]
+# );
+# savefig(plotX_genegain_geneloss, figdir*"geneGainLoss_dmel.pdf")
 
 plot!(plot_genegain_geneloss, ncodons,log.(genegain2X)./log.(genelossX),
     linestyle = :solid,
@@ -513,13 +513,13 @@ plot!(plot_genegain_geneloss, ncodons,log.(genegain2X)./log.(genelossX),
 );
 savefig(plot_genegain_geneloss, figdir*"geneGainLoss_promoterlessX.pdf")
 
-plotX_rnafist_orffirst = plot(ncodons,log2.(rnafirstX./orffirstX),
-    xlabel = "ORF length (codons)",
-    ylabel = "P_{ORF-first}\nP_RNA-first",
-    size = (width = cm2pt(12.5), height = cm2pt(11)),
-    yticks = [3.5,3,2.5]
-);
-savefig(plotX_rnafist_orffirst, figdir*"whoisfirst_dmel.pdf")
+# plotX_rnafist_orffirst = plot(ncodons,log2.(rnafirstX./orffirstX),
+#     xlabel = "ORF length (codons)",
+#     ylabel = "P_{ORF-first}\nP_RNA-first",
+#     size = (width = cm2pt(12.5), height = cm2pt(11)),
+#     yticks = [3.5,3,2.5]
+# );
+# savefig(plotX_rnafist_orffirst, figdir*"whoisfirst_dmel.pdf")
 
 plot!(plot_rnafist_orffirst, ncodons,log2.(rnafirstX./orffirstX),
     linestyle = :solid,
@@ -543,13 +543,13 @@ plot!(plot_rnafist_orffirst2, ncodons,log2.(rnafirst2X./orffirst2X),
 );
 savefig(plot_rnafist_orffirst2, figdir*"whoisfirst2_promoterlessX.pdf")
 
-plotX_Loss = plot(ncodons,log2.(orflossX./rnalossX),
-    xlabel = "ORF length (codons)",
-    ylabel = "P_ORF-loss\nP_RNA-loss",
-    size = (width = cm2pt(12), height = cm2pt(11)),
-);
+# plotX_Loss = plot(ncodons,log2.(orflossX./rnalossX),
+#     xlabel = "ORF length (codons)",
+#     ylabel = "P_ORF-loss\nP_RNA-loss",
+#     size = (width = cm2pt(12), height = cm2pt(11)),
+# );
 
-savefig(plotX_Loss, figdir*"pLoss_dmel.pdf")
+# savefig(plotX_Loss, figdir*"pLoss_dmel.pdf")
 
 plot!(plot_Loss, ncodons,log2.(orflossX./rnalossX),
     linestyle = :solid,
