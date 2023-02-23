@@ -322,6 +322,12 @@ onlyorfgain = (1 .- rnaprob .- rnagain).*orfgain;
 rnafirst2 = onlyrnagain.*(1 .- rnaloss).*(corfgain./(1 .-orfprob));
 orffirst2 = onlyorfgain.*(1 .- orfloss).*(crnagain./(1 .-rnaprob));
 
+# Exclusive RNA/ORF loss
+
+onlyrnaloss = crnaloss.*corfstay./corfprob;
+onlyorfloss = corfloss.*crnastay./crnaprob;
+
+
 # Plot single step trajectory probability versus ORF length
 
 plot_rnafist_orffirst = plot(ncodons,log2.(rnafirst./orffirst)[dGC[1],:],
@@ -589,13 +595,12 @@ lossfix = hcat([genelossX/(2*x) for x in popsizes]...);
 
 selcoef = 0.001
 
-gainfixPS = hcat([genegain2X.*kimura(selcoef,2*x) for x in popsizes]...);
-gainfixNS = hcat([genegain2X.*kimura(-selcoef,2*x) for x in popsizes]...);
+gainfixPS = hcat([2*x*genegain2X.*kimura(selcoef,2*x) for x in popsizes]...);
+gainfixNS = hcat([2*x*genegain2X.*kimura(-selcoef,2*x) for x in popsizes]...);
 
-lossfixPS = hcat([genelossX.*kimura(-selcoef,2*x) for x in popsizes]...);
-lossfixNS = hcat([genelossX.*kimura(selcoef,2*x) for x in popsizes]...);
+lossfixPS = hcat([2*x*genelossX.*kimura(-selcoef,2*x) for x in popsizes]...);
+lossfixNS = hcat([2*x*genelossX.*kimura(selcoef,2*x) for x in popsizes]...);
 
-fixprobs = log.(gainfix)./log.(lossfix);
 fixprobsPS = log.(gainfixPS)./log.(lossfixPS);
 fixprobsNS = log.(gainfixNS)./log.(lossfixNS);
 
@@ -635,7 +640,7 @@ exp_hydropathy = sum(hydropathy3.*aaprob2)
 
 aaprob_dme = [sum(nprob3.(gencode[gencode[:,3] .== x,1])) for x in aas];
 aaprob2_dme = aaprob_dme./sum(aaprob_dme);
-exp_hydropathy_dme = sum(hydropathy3.*aaprob2)
+exp_hydropathy_dme = sum(hydropathy3.*aaprob2_dme)
 
 acidic = indexin(["D","E"],aas);
 basic = indexin(["K","R"],aas);
@@ -736,8 +741,9 @@ for i in nostop
         else
             y = 0
         end
+        # z = nprob3(i)
         z = nucprob(i,gccontent)
-        hmp += x*y*z
+        hmp += x*y
         mp += x
     end
 end
@@ -746,7 +752,9 @@ MutΔHydrophobic = hmp/mp
 
 toHydrophobic = featuregain(codonshydrophilic,codonshydrophobic, gccontent);
 frHydrophobic = featuregain(codonshydrophobic,codonshydrophilic, gccontent);
-stayHydrophobic = featurestay(codonshydrophobic, gccontent);
+
+toHydrophobicX = featuregain3(codonshydrophilic,codonshydrophobic);
+frHydrophobicX = featuregain3(codonshydrophobic,codonshydrophilic);
 
 # plot_aasubprob = heatmap(aaorder,aaorder,log2.(aasubhighprob[ixaaorder,ixaaorder]),
 #     xticks = (0.5:20, aaorder), 
@@ -758,18 +766,18 @@ stayHydrophobic = featurestay(codonshydrophobic, gccontent);
 
 # savefig(plot_aasubprob, figdir*"pAASub.pdf")
 
-# plot_aasymprob = heatmap(aaorder,aaorder,asymmetric_transitions[ixaaorder,ixaaorder], 
-#     xticks = (0.5:20, aaorder), 
-#     yticks = (0.5:20,aaorder),
-#     size = (width = cm2pt(15), height = cm2pt(14)),
-#     colorbar_title = "Substitution likelihood",
-#     legend = :bottom,
-#     ylabel = "Original amino acid",
-#     xlabel = "Substituted amino acid",
-#     c = :bluesreds
-# );
+plot_aasymprob = heatmap(aaorder,aaorder,asymmetric_transitionsX[ixaaorder,ixaaorder], 
+    xticks = (0.5:20, aaorder), 
+    yticks = (0.5:20,aaorder),
+    size = (width = cm2pt(15), height = cm2pt(14)),
+    colorbar_title = "Substitution likelihood",
+    legend = :bottom,
+    ylabel = "Original amino acid",
+    xlabel = "Substituted amino acid",
+    c = :bluesreds
+);
 
-# savefig(plot_aasymprob, figdir*"pAAsubSym.pdf")
+savefig(plot_aasymprob, figdir*"pAAsubSymX.pdf")
 
 plot_aasymprob2 = heatmap(aaorder,aaorder,asymmetric_conditional[ixaaorder,ixaaorder], 
     xticks = (0.5:20, aaorder), 
