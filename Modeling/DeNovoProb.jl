@@ -266,7 +266,7 @@ crnagain = crnagain*promprob;
 
 dGC = findall(gcrange .∈ Ref([0.34:0.08:0.5;]));
 cxlen = [30:30:150;]
-klen = ncodons .∈ Ref(cxlen)
+klen = ncodons .∈ Ref(cxlen);
 
 # Gene gain/loss probabilities
 
@@ -321,11 +321,6 @@ onlyorfgain = (1 .- rnaprob .- rnagain).*orfgain;
 
 rnafirst2 = onlyrnagain.*(1 .- rnaloss).*(corfgain./(1 .-orfprob));
 orffirst2 = onlyorfgain.*(1 .- orfloss).*(crnagain./(1 .-rnaprob));
-
-# Exclusive RNA/ORF loss
-
-onlyrnaloss = crnaloss.*corfstay./corfprob;
-onlyorfloss = corfloss.*crnastay./crnaprob;
 
 
 # Plot single step trajectory probability versus ORF length
@@ -397,6 +392,12 @@ plot_whichfirstgcr2 = plot(100*gcrange,log2.(rnafirst2./orffirst2)[:,klen],
 );
 
 savefig(plot_whichfirstgcr2, figdir*"whoisfirstgcr2_promoterless.pdf")
+
+
+# Exclusive RNA/ORF loss
+
+onlyrnaloss = crnaloss.*corfstay./corfprob;
+onlyorfloss = corfloss.*crnastay./crnaprob;
 
 # Plot ORF loss versus RNA loss
 
@@ -590,8 +591,8 @@ savefig(plot_nsites,figdir*"pTotalSites_dmel.pdf")
 # Fixation probabilities #
 
 popsizes = 100 .* 2 .^ [1:10;];
-gainfix = hcat([genegain2X/(2*x) for x in popsizes]...);
-lossfix = hcat([genelossX/(2*x) for x in popsizes]...);
+# gainfix = hcat([genegain2X/(2*x) for x in popsizes]...);
+# lossfix = hcat([genelossX/(2*x) for x in popsizes]...);
 
 selcoef = 0.001
 
@@ -605,14 +606,14 @@ fixprobsPS = log.(gainfixPS)./log.(lossfixPS);
 fixprobsNS = log.(gainfixNS)./log.(lossfixNS);
 
 
-plot_fix = plot(ncodons,fixprobs[:,2:2:10],
-    xlabel = "ORF length (codons)",
-    ylabel = "#Gene loss with extinction \n per Gene gain with fixation",
-    size = (width = cm2pt(12.5), height = cm2pt(11)),
-    xlim = [25,350]
-);
+# plot_fix = plot(ncodons,fixprobs[:,2:2:10],
+#     xlabel = "ORF length (codons)",
+#     ylabel = "#Gene loss with extinction \n per Gene gain with fixation",
+#     size = (width = cm2pt(12.5), height = cm2pt(11)),
+#     xlim = [25,350]
+# );
 
-savefig(plot_fix, figdir*"pFix_dmel.pdf")
+# savefig(plot_fix, figdir*"pFix_dmel.pdf")
 
 plot_fix = plot(ncodons,fixprobsPS[:,2:2:10],
     xlabel = "ORF length (codons)",

@@ -63,7 +63,7 @@ In this work, we developed mathematical models to estimate the rates and probabi
 
 Using simple probability models, we calculate the likelihood of finding the sequence features that facilitate \textit{de novo} gene emergence by random chance, and the rate at which these features are gained and lost due to random mutations. These probability models are essentially described by two kinds of probability. First is the probability of finding a DNA sequence feature (such as the poly-A signal or an ORF; \autoref{methprob}). This probability depends on the nucleotide distribution \cmnt{that can be roughly approximated by the GC-content}. The second kind of probability is the transition probability, that is the probability of a DNA sequence mutating to another (\autoref{methgain}). Transition probabilities that describe the gain and loss of DNA sequence features, depend on mutation rate, mutation bias, and \cmnt{nucleotide composition}. Our model of DNA sequence evolution is in principle similar to a theoretical model described in a previous study \citep{promoterWaiting}. In this study, the authors have calculated the time required for different transcription factor binding sites to emerge in gene promoters. We extend this principle to calculate not only the probability of sequence emergence but also the likelihood that an emerged sequence will remain intact or be lost (\autoref{methfeatures}).
 
-\cmnt{In our model we primarily focus on \textit{de novo} gene emergence at one genomic locus. We assume that transcription is initiated at this locus with a probability of 0.12. We based this estimate on the fraction of intergenic open chromatin in \textit{Drosophila melanogaster} that is occupied by \textit{cis}-regulatory elements \cite{RedFly2022} (XX cite method)}. We used a default GC-content of 42\% in our calculations which is reasonably close to the total genomic GC-content of human \citep[41\%,][]{Merchant2007}, \textit{Drosophila melanogaster} \citep[41.6\%,][]{flybase}, and \textit{Saccharomyces cerevisiae} \citep[38\%,][]{yeastGC}. Because GC content can vary between different genomic loci, we also performed of our calculations with other values of GC-content. \cmnt{We note that nucleotide composition in any DNA region may not be uniformly distributed. Therefore, we also included calculations using a more realistic approximation of nucleotide distribution, using frequencies of short DNA sequences in the intergenic genome of \textit{D.melanogaster}. Specifically, we calculated the frequency of all DNA trimers (for codon probabilites), and of all DNA hexamers (for poly-A signal probabilities) (XX cite method).} 
+\cmnt{In our model we primarily focus on \textit{de novo} gene emergence at one genomic locus. We assume that transcription is initiated at this locus with a probability of 0.12. We based this estimate on the fraction of intergenic open chromatin in \textit{Drosophila melanogaster} that is occupied by \textit{cis}-regulatory elements (\autoref{methRNA})}. We used a default GC-content of 42\% in our calculations which is reasonably close to the total genomic GC-content of human \citep[41\%,][]{Merchant2007}, \textit{Drosophila melanogaster} \citep[41.6\%,][]{flybase}, and \textit{Saccharomyces cerevisiae} \citep[38\%,][]{yeastGC}. Because GC content can vary between different genomic loci, we also performed of our calculations with other values of GC-content. \cmnt{We note that nucleotide composition in any DNA region may not be uniformly distributed. Therefore, we also included calculations using a more realistic approximation of nucleotide distribution, using frequencies of short DNA sequences in the intergenic genome of \textit{D.melanogaster}. Specifically, we calculated the frequency of all DNA trimers for codon probabilites, and of all DNA hexamers for poly-A signal probabilities (\autoref{methRNA}).} 
 
 We used a mutation rate of $7.8\times10^{-9}$ mutations per nucleotide position per generation, which corresponds to spontaneous mutation rate estimated in a \textit{D. melanogaster} population that was subjected to periodic population bottlenecks \cite[mutation accumulation line,][]{drosophilamutrate}. We used mutation bias data (\autoref{mutbias}) from the same study \citep{drosophilamutrate} which was in agreement with another previous study on human pseudogenes \citep{humanmutrate}.
 
@@ -100,20 +100,22 @@ The probability that a gene is lost $n$ times independently, is $(P_\textit{gene
 
 $$ \text{Gene losses per gene gain} = \log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$$
 
-For example, a log-log ratio value of 2 would indicate that two independent gene loss events are as likely as a single gene gain event. We calculated this ratio for genes with different ORF lengths, because ORF gain and loss probabilities depend on the length of the ORF. We found that proto-genes with a GC-content of 42\% and ORFs longer than 40 codons, can be lost two times independently in the time frame of one gene gain event (log-log ratio = 2, \hyperref[gainlossprob]{\autoref{gainlossprob}A}). For proto-genes with GC-contents of 34\% and 50\%, the minimum number of codons required for a log-log ratio of 2, are 42 and 33 respectively. To better understand how GC-content determines the likelihood of gene gain relative to gene loss, we calculated the log-log ratio of the two probability values for proto-genes with different GC-content ({\color{blue} Fig SXX}), and that contain ORFs of different lengths (codons). We found that the effect of GC-content on the log-log ratio depends on the length of the ORF. Specifically, the log-log ratio steadily increases with GC-content ranging from 30\% to 60\%, when the proto-gene contains an ORF with 30 codons. When the ORF has 60 -- 90 codons, the log-log ratio initially decreases with GC content and then increases. For ORFs containing more than 120 codons, the log-log ratio decreases with increasing GC-content (within the analysed range). \cmnt{Because GC-content may not accurately describe the nucleotide composition of a locus, we calculated gene gain and loss probabilities using frequencies of DNA trimers and hexamers from the intergenic genome of \textit{D. melanogaster}. Specifically, we used the frequencies of hexamers to estimate the stationary, gain and loss probabilities of poly-A signals (which is also a hexamer) and the RNA. Likewise, we used the frequencies of trimers to estimate the stationary, gain and loss probabilities of different codons and the ORF. Using these values, we found that protogenes with more than 49 codons can be independently lost twice, in the time frame of one gene gain event (orange line, \hyperref[gainlossprob]{\autoref{gainlossprob}A}).} 
+For example, a log-log ratio value of 2 would indicate that two independent gene loss events are as likely as a single gene gain event. We calculated this ratio for genes with different ORF lengths, because ORF gain and loss probabilities depend on the length of the ORF. We found that proto-genes with a GC-content of 42\% and ORFs longer than 40 codons, can be lost two times independently in the time frame of one gene gain event (log-log ratio = 2, \hyperref[gainlossprob]{\autoref{gainlossprob}A}). For proto-genes with GC-contents of 34\% and 50\%, the minimum number of codons required for a log-log ratio of 2, are 42 and 33 respectively. To better understand how GC-content determines the likelihood of gene gain relative to gene loss, we calculated the log-log ratio of the two probability values for proto-genes with different GC-content ({\color{blue} Figure S4}), and that contain ORFs of different lengths (codons). We found that the effect of GC-content on the log-log ratio depends on the length of the ORF. Specifically, the log-log ratio steadily increases with GC-content ranging from 30\% to 60\%, when the proto-gene contains an ORF with 30 codons. When the ORF has 60 -- 90 codons, the log-log ratio initially decreases with GC content and then increases. For ORFs containing more than 120 codons, the log-log ratio decreases with increasing GC-content (within the analysed range). \cmnt{Because GC-content may not accurately describe the nucleotide composition of a locus, we calculated gene gain and loss probabilities using frequencies of DNA trimers and hexamers from the intergenic genome of \textit{D. melanogaster}. Specifically, we used the frequencies of hexamers to estimate the stationary, gain and loss probabilities of poly-A signals (which is also a hexamer) and the RNA. Likewise, we used the frequencies of trimers to estimate the stationary, gain and loss probabilities of different codons and the ORF. Using these values, we found that protogenes with more than 49 codons can be independently lost twice, in the time frame of one gene gain event (orange line, \hyperref[gainlossprob]{\autoref{gainlossprob}A}).} 
 
 \begin{figure}[!t]
 \centering
 \includegraphics[scale=0.5]{Figures/pGainLossFix2.pdf}
-\caption{Genes are more likely to be independently lost twice, than being born once. The vertical axis in both panels shows the number of independent gene loss events (\autoref{genelosseq}) that can occur relative to one gene gain event (\autoref{genegaineq2}) -- $\log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$. The horizontal axis shows the number of codons in the ORF \textbf{(A)}, and the GC-content \textbf{(B)}.}
+\caption{Genes are more likely to be independently lost twice, than being born once. The vertical axis in both panels shows the number of independent gene loss events (\autoref{genelosseq}) that can occur relative to one gene gain event (\autoref{genegaineq2}) -- $\log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$. The horizontal axis shows the number of codons in the ORF \textbf{(A)}, and the GC-content \textbf{(B)}. lack lines denote the probability values estimated from overall GC content and the orange lined denotes the probability values estimated from trimer and hexamer frequencies in \textit{D. melanogaster} intergenic genome.}
 \label{gainlossprob}
 \vspace{1ex}
 \hrule
 \end{figure}
 
-\cmnt{Natural selection and effective population size ($N_e$) determine the rate at which new genes spread in a population. To understand the combined effect of mutations, and selection we calculated two fixation probabilities for populations consisting different number of diploid individuals. First is the probability that any any one individual in a population gains a gene ($2N_e \times P_\textit{gene-gain}$), and this gene eventually spreads in entire the population via selection and population dynamics ($P_\textit{fix}$). The second probability describes the event that all individuals in a population have two copies of a gene, one copy of the gene is lost in an individual ($2N_e \times P_\textit{gene-loss}$), and the gene eventually goes extinct from the entire population due to population dynamics ($P_\textit{ext}$). We calculated the log-log ratio of the two probabilities under three scenarios, wherein the gene provides no fitness advantage (neutral, $s=0$), the gene is marginally beneficial (positive, $s = 0.001$), and the gene is marginally deleterious (negative, $s = -0.001$). We note that gene gain and loss probabilities due to mutation are so small that it is unlikely that two or more individuals gain or lose a gene simultaneously. Under the neutral scenario, the probability of fixation of an allele is same as the probability of the mutation that gives rise to that allele. Extinction of a marginally beneficial gene is more likely than its fixation only when populations are small or when the gene has a long ORF. For example, a gene of any length is less likely to go extinct than it is fixed, in populations with at least 6400 individuals. Furthermore, a beneficial gene can be independently lost in more than two small populations with 400 individuals, only when it has more than 133 codons. When a gene is mildly deleterious, its is very likely to go extinct such that independent loss in more than two populations is more likely than its fixation in one population.}
+\cmnt{Natural selection and effective population size ($N_e$) determine the rate at which new genes spread in a population \citep{KimuraFix}. To understand the combined effect of mutations, and selection we calculated two fixation probabilities for populations consisting different number of diploid individuals. First is the probability that any one individual in a population gains a gene ($2N_e \times P_\textit{gene-gain}$), and this gene eventually spreads in entire the population via selection and population dynamics ($P_\textit{fix}$). The second probability describes the event that all individuals in a population have two copies of the proto-gene, one copy of the gene is lost in an individual ($2N_e \times P_\textit{gene-loss}$), and the gene eventually goes extinct from the entire population due to population dynamics ($P_\textit{ext}$). We calculated the log-log ratio of the two probabilities under three scenarios (\autoref{pFix}), wherein the gene provides no fitness advantage (neutral, $s=0$), the gene is marginally beneficial (positive, $s = 0.001$), and the gene is marginally deleterious (negative, $s = -0.001$). We note that gene gain and loss probabilities due to mutation are so small that it is unlikely that two or more individuals gain or lose a gene simultaneously. Under the neutral scenario, the probability of fixation of an allele is same as the probability of the mutation that gives rise to that allele. Extinction of a marginally beneficial gene is more likely than its fixation only when populations are small or when the gene has a long ORF. For example, a gene of any length is less likely to go extinct than it is fixed, in populations with at least 6400 individuals. Furthermore, a beneficial gene can be independently lost in more than two small populations with 400 individuals, only when it has more than 133 codons. When a gene is mildly deleterious, its is very likely to go extinct such that independent loss in more than two populations is more likely than its fixation in one population.}
 
 Overall, our analysis suggests that a proto-gene expressed in only one population may not necessarily mean that it emerged for the first time in this population. 
+
+Despite low probability of gene gain at one particular locus ($\sim 10^{-15}$ per generation), the overall rate of gene gain throughout the genome could be much higher. To this end we calculated the total gain rate of genes of any length, at any locus in \textit{D. melanogaster} intergenic genome. We found this rate to be $2.8\times 10^{-5}$ new genes per generation, that corresponds to approximately $7.5\times 10^{-5}$ new genes per year \citep[assuming \textit{D. melanogaster} generation time of two weeks;][]{drosophilaModelOrg}. We performed an analogous analysis on the rate of gain of new transcripts and found this rate to be 1.53 transcripts per year. This estimate is slightly higher than the rate of transcript gain predicted from \textit{D. melanogaster} population transcriptomics data \citep[0.13 -- 0.34;][]{AnnaPeteTranscripts}. 
 
 \subsection{Does \textit{de novo} gene emergence follow a preferred trajectory of events?}
 
@@ -135,13 +137,13 @@ P_\textit{ORF-first} = P_\textit{ORF-stay}\times P_\textit{RNA-gain \vline\ ORF}
 \begin{figure}[!t]
 \centering
 \includegraphics[scale=0.5]{Figures/whoisfirstX.pdf}
-\caption{Proto-genes preferentially emerge RNA-first. The vertical axis shows the $\log_2$ transformed ratio of the probabilities of the RNA-first and the ORF-first trajectories, described as \textbf{(A)} a single-step process (Equations \ref{rnafirsteq1} \& \ref{orffirsteq1}) and \textbf{(C)} a two-step process (Equations \ref{rnafirsteq2} \& \ref{orffirsteq2}). A positive value suggests that RNA-first trajectory is more likely than ORF-first trajectory, and \textit{vice versa}. In both panels, the horizontal axis denotes the number of codons in the ORF.}
+\caption{Proto-genes preferentially emerge RNA-first. The vertical axis shows the $\log_2$ transformed ratio of the probabilities of the RNA-first and the ORF-first trajectories, described as \textbf{(A)} a single-step process (Equations \ref{rnafirsteq1} \& \ref{orffirsteq1}) and \textbf{(B)} a two-step process (Equations \ref{rnafirsteq2} \& \ref{orffirsteq2}). A positive value suggests that RNA-first trajectory is more likely than ORF-first trajectory, and \textit{vice versa}. In both panels, the horizontal axis denotes the number of codons in the ORF.}
 \label{whoisfirst}
 \vspace{1ex}
 \hrule
 \end{figure}
 
-\cmnt{We calculated the log-transformed ratio of $P_\textit{RNA-first}$ and $P_\textit{ORF-first}$, such that a positive value of the ratio would mean that ORF gain in an already transcribed DNA (RNA-first) is more likely than transcription gain for an untranscribed ORF (ORF-first). In other words, the RNA-first trajectory is more feasible. Likewise, a negative value of the ratio would suggest that the ORF-first trajectory is more feasible. We found that proto-genes with ORFs of all the investigated lengths, preferentially emerge RNA-first (\hyperref[whoisfirst]{\autoref{whoisfirst}A}). In a more stringent scenario of \textit{de novo} emergence, where a core promoter (TATA box or Initiator element) is necessary for transcription, proto-genes containing short ORFs can emerge ORF-first (Fig SXXX). More specifically, the likelihood of the RNA-first trajectory relative to that of the ORF-first trajectory  increases with increasing ORF length. This is true for loci with three different values of GC content (34\%, 42\%, 50\%). However, our complementary analysis using DNA oligomer frequencies from \textit{D. melanogaster} intergenic genome shows that the likelihood of RNA-first trajectory relative to that of ORF-first trajectory, reduces with increasing ORF length. Nonetheless, RNA-first trajectory is still the more feasible trajectory of \textit{de novo} gene emergence.} 
+\cmnt{We calculated the log-transformed ratio of $P_\textit{RNA-first}$ and $P_\textit{ORF-first}$, such that a positive value of the ratio would mean that ORF gain in an already transcribed DNA (RNA-first) is more likely than transcription gain for an untranscribed ORF (ORF-first). In other words, the RNA-first trajectory is more feasible. Likewise, a negative value of the ratio would suggest that the ORF-first trajectory is more feasible. We found that proto-genes with ORFs of all the investigated lengths, preferentially emerge RNA-first (\hyperref[whoisfirst]{\autoref{whoisfirst}A}). In a more stringent scenario of \textit{de novo} emergence, where a core promoter (TATA box or Initiator element) is necessary for transcription, proto-genes containing short ORFs can emerge ORF-first ({\color{blue}Figure S2}). More specifically, the likelihood of the RNA-first trajectory relative to that of the ORF-first trajectory  increases with increasing ORF length. This is true for loci with three different values of GC content (34\%, 42\%, 50\%). However, our complementary analysis using DNA oligomer frequencies from \textit{D. melanogaster} intergenic genome shows that the likelihood of RNA-first trajectory relative to that of ORF-first trajectory, reduces with increasing ORF length. Nonetheless, RNA-first trajectory is still the more feasible trajectory of \textit{de novo} gene emergence.} 
 
 A more stringent definition of the RNA-first trajectory would describe a two-step process. In the first step, an RNA emerges in an untranscribed region of DNA but an ORF does not emerge. In the second step an ORF emerges, while transcription stays intact (\autoref{rnafirsteq2}). Likewise, a ORF-first trajectory can be defined by a two-step probability. In the first step ORF emerges in an untranscribed DNA region, and in the second step transcription emerges, while the ORF remains intact (\autoref{orffirsteq2}).
 
@@ -150,7 +152,7 @@ P_\textit{RNA-first}' & = \underbrace{P_\textit{RNA-gain} \times (1-P_\textit{OR
 P_\textit{ORF-first}' & = \underbrace{P_\textit{ORF-gain} \times (1-P_\textit{RNA} -P_\textit{RNA-gain})}_\textit{first step} \times \underbrace{P_\textit{ORF-stay}\times P_\textit{RNA-gain \vline\ ORF}/(1-P_\textit{RNA})}_\textit{second step} \label{orffirsteq2}
 \end{align}
 
-\cmnt{Even with this stringent definition, \textit{de novo} emergence via the RNA-first trajectory is more feasible than via the ORF-first trajectory (\hyperref[whoisfirst]{\autoref{whoisfirst}B}). For all the three GC-content values, as well the specific analysis with \textit{D. melanogaster} genome, the two-step RNA-first trajectory becomes increasingly more probable than the two-step ORF-first trajectory, with increasing ORF length.}
+\cmnt{Even with this stringent definition, \textit{de novo} emergence via the RNA-first trajectory is more probable than via the ORF-first trajectory (\hyperref[whoisfirst]{\autoref{whoisfirst}B}). For all the three GC-content values, as well the specific analysis with \textit{D. melanogaster} genome, the two-step RNA-first trajectory becomes increasingly more probable than the two-step ORF-first trajectory, with increasing ORF length.}
 
 
 \subsection{Would extensive transcription loss suggest negative selection of toxic proteins?}
@@ -161,41 +163,17 @@ P_\textit{ORF-first}' & = \underbrace{P_\textit{ORF-gain} \times (1-P_\textit{RN
 \hrule
 \vspace{1ex}
 \includegraphics[scale=0.5]{Figures/pLoss_promoterlessX.pdf}
-\caption{ORF loss in proto-genes is more probable than transcription loss. The horizontal axis denotes the number of codons in the ORF \textbf{(A)} and GC-content \textbf{(B)}. The vertical axis shows the $\log_2$ transformed ratio of ORF loss and RNA loss probabilities, such that a positive value means ORF loss is more probable than RNA loss, and \textit{vice versa}.}
+\caption{ORF loss in proto-genes is more probable than transcription loss. The horizontal axis denotes the number of codons in the ORF. The vertical axis shows the $\log_2$ transformed ratio of ORF loss and RNA loss probabilities, such that a positive value means ORF loss is more probable than RNA loss, and \textit{vice versa}. Black lines denote the probability values estimated from overall GC content and the orange lined denotes the probability values estimated from trimer and hexamer frequencies in \textit{D. melanogaster} intergenic genome.}
 \label{lossprob}
 \end{figure}
 
 Proto-genes that do not provide any fitness benefit to an organism may not be fixed in populations via natural selection. These genes may be lost due to mutation pressure. Some newborn proto-genes can also encode toxic proteins, that may aggregate or interfere with physiology in some other way. These genes would thus be eliminated from the population genomes via negative selection. We note that an ORF is lost if the start codon is mutated, the stop codon is mutated to an amino acid encoding codon (non-stop mutation), or if an amino acid encoding codon is mutated to a stop codon (premature stop/non-sense mutation). However, it is likely that a non-stop mutation or a non-sense mutation, can still result in translation of a protein (extended or truncated, respectively). Furthermore, non-stop mutations can also lead to cellular toxicity \citep{nonstop}. Thus ORF loss does not ensure elimination of toxic proteins, which in turn suggests that transcription loss may more effectively inactivate the associated genes.
 
-\cmnt{To understand which is the most probable mechanism of gene loss, we compared the probabilities of ORF loss ($P_\textit{ORF-loss}$) and transcription loss ($P_\textit{RNA-loss}$). We found that ORF loss is more probable than transcription loss, especially so when the ORFs are long (\hyperref[lossprob]{\autoref{lossprob}A}). If transcription is strictly dependent on a core promoter (TATA-box or Inr), small genes (30 codons) with low GC content ($>$34\%) can be preferentially lost by loss of transcription (Figure SXXX). When the organismal fitness is affected only by the protein product of a proto-gene, then both RNA loss and ORF loss would affect the fitness equally. Thus the likelihood of gene extinction through ORF loss or RNA loss depends solely on the probability of these events. 
+\cmnt{To understand which is the most probable mechanism of gene loss, we compared the probabilities of ORF loss ($P_\textit{ORF-loss}$) and transcription loss ($P_\textit{RNA-loss}$). We found that ORF loss is more probable than transcription loss, especially so when the ORFs are long (\hyperref[lossprob]{\autoref{lossprob}A}). If transcription is strictly dependent on a core promoter (TATA-box or Inr), small genes (30 codons) with low GC content ($>$34\%) can be preferentially lost by loss of transcription ({\color{blue} Figure S3}). When the organismal fitness is affected only by the protein product of a proto-gene, then both RNA loss and ORF loss would affect the fitness equally. Thus the likelihood of gene extinction through ORF loss or RNA loss depends solely on the probability of these events. 
 
-Our analysis of gene loss mechanism considers the loss of one feature (for example transcription) without requiring the other feature to remain intact (for example the ORF). With more stringent analysis where we consider the loss of only one feature but not the other, we find a the that exclusive ORF loss is more likely than exclusive RNA loss (Supplementary section XXX). The difference between the likelihood of the two gene loss mechanisms is more remarkable when we consider exclusive loss of one feature.}
+Our analysis of gene loss mechanism considers the loss of one feature (for example transcription) without requiring the other feature to remain intact (for example the ORF). With more stringent analysis where we consider the loss of only one feature but not the other, we find a the that exclusive ORF loss is more likely than exclusive RNA loss ({\color{blue}Figure S5}). The difference between the likelihood of the two gene loss mechanisms is more remarkable when we consider exclusive loss of one feature.}
 
 Overall, our analysis suggests widespread transcription loss may be indicative of a negative selection on protein expression.
-
-  
-{\color{PineGreen} \textbf{MOVE TO SUPPLEMENTARY DATA}
-
-We made our analysis of gene loss more stringent by comparing the probabilities of two evolutionary scenarios, both of which begin with an intact proto-gene. In the first scenario, the ORF remains intact whereas the transcription is lost. The probability of this scenario ($P_\textit{onlyORF-loss}$) is described by: 
-
-\vspace{-1ex}
-
-\begin{equation}
-P_\textit{onlyRNA-loss} = \frac{P_\textit{ORF-stay \vline\ RNA}}{P_\textit{ORF \vline \ RNA}} \times P_\textit{RNA-loss \vline\ ORF}
-\end{equation}
-
-We note that the probability that an ORF is not lost due to mutations ($P_\textit{ORF-stay \vline \ RNA}$), includes the probability that the ORF already exists ($P_\textit{ORF \vline \ RNA}$). To describe the conditional probability of ORF remaining undisrupted, given that it already exists, we divide $P_\textit{ORF-stay \vline \ RNA}$ by $P_\textit{ORF \vline \ RNA}$.
-
-In the second scenario, transcription stays intact while ORF is lost. The probability of this scenario is: 
-
-\vspace{-1em}
-\begin{equation}
-P_\textit{onlyORF-loss} = \frac{P_\textit{RNA-stay \vline\ ORF}}{P_\textit{RNA \vline \ ORF}} \times P_\textit{ORF-loss \vline\ RNA}
-\end{equation}
-
-We find that the second scenario (only ORF loss) is more plausible for all the analysed ORFs lengths. Furthermore, the ratio of $P_\textit{onlyORF-loss}$ and $P_\textit{onlyRNA-loss}$ has nearly identical values and trend across different ORF lengths (data not shown), as the ratio of $P_\textit{ORF-loss}$ and $P_\textit{RNA-loss}$ shown in \autoref{lossprob}.
-}
-
 
 \subsection{Does mutation bias shape protein composition?}
 
@@ -281,15 +259,15 @@ We show that genes can be lost much more rapidly than they are gained, such that
 
 Within the limitations of our model assumptions, we answer the long standing question of which trajectory of mutational events leads to \textit{de novo} emergence. That is, whether ORF emerges first or transcription emerges first \citep{EBB-F1000}. We show that, in the absence of selection, genes are likely to emerge in existing transcripts (transcription emerges first). Long non-coding RNAs may be a potential source of proto-genes but this evolutionary process may be constrained by a different set of factors. A previous study has shown that new transcripts frequently arise in regions overlapping existing genes. These new transcripts can harbor ORFs which in turn leads to \textit{de novo} gene emergence \citep{albaYeastdenovo}. This is an example of RNA-first trajectory. However, the ORFs present in these genes may be under indirect selection pressure that acts on the overlapping gene sequences. Therefore, they may be less frequently mutated or lost.
 
-CHECK THIS XXX: Although our model is based on the assumption of neutral evolution, one can speculate the effects of positive selection on the proto-gene. For example, if the gene produces a protein that is beneficial to the organism, then selection would cause the fixation of the gene as soon as the ORF emerges via RNA-first trajectory. On the other hand, the selection would have no effect on an ORF that is not transcribed. This is based on the assumption that the ORF sequence has no other function (for example, regulation), or is not under indirect selection (for example, if it overlaps with an existing gene). Thus positive selection will intensify the preference for RNA-first trajectory.
+Although our model is based on the assumption of neutral evolution, one can speculate the effects of positive selection on the proto-gene. For example, if an ORF encodes a protein that is beneficial to the organism, then selection would cause the fixation of the gene as soon as the it emerges via RNA-first trajectory. On the other hand, the selection would have no effect on an ORF that is not transcribed, as long as it is does not harbor a functional DNA sequence (such as regulatory elements), and is not under indirect selection (for example, if it overlaps with an existing gene). The ORF may mutate before transcription emerges and the corresponding mutated protein may not be beneficial anymore. Thus positive selection may further increase the likelihood of the RNA-first trajectory.
 
 We show that transcription loss is less likely than the loss of long ORFs. However, it may be difficult to find direct evidence for such a phenomenon. Specifically, it is difficult to infer from data if transcription was lost or never emerged. If the protein encoded by an ORF is indeed toxic, it would be silenced or purged rapidly in microevolutionary time scales. One way of inferring negative selection from transcription loss may involve correlation of ORF sequence variation and transcription status. Mutations within an ORF sequence are much more probable than mutations that disrupt transcription or an ORF. This is so because the entire ORF sequence can have a higher number of mutable sites than a promoter. If an ORF variant is untranscribed in many populations (species or taxa), it is possibly toxic.  
 
 A large volume of work exists on the likelihood of amino acid substitutions and many of these models are widely used in phylogenetics studies \citep{aasubOhta,PAM,blosum,submat92,submat92j,submat01,submat05,submat07,submat08}. However, commonly used amino acid substitution models such as PAM and BLOSUM \citep{PAM,blosum} do not focus on directionality of mutations (the substitution matrices are symmetric). Our aim was to highlight how proteins can evolve under mutation pressure and that mutation bias causes some substitutions to occur more frequently than the others. Furthermore, we do not base our substitution probability calculations on known protein sequences but rather on random protein sequences that are more likely to to be encoded in proto-genes. Using our models, we show that for a pair of amino acids, one direction of substitution can be significantly more likely than the other. If a substitution occurs more frequently than it is expected to occur in our neutral model, then directional evolution can be a possible explanation for the observation. We also show that random mutations can lead to a small increase in a protein's hydrophobicity. Hydrophobic amino acids can facilitate folding \citep{Dill1985}, but can also cause proteins to aggregate \citep{hydrophobicRatchet}. Thus the effect of hydrophobicity increasing mutations on a protein's stability and toxicity, is dependent on where they occur in the protein structure.
 
-XXX: Like all theoretical models, our models are not without limitations. First, we assume that nucleotides are uniformly distributed according to GC-content. This is not true as nucleotide composition can vary significantly across the genome. Mutation rates are also not uniform across the genome and can vary significantly \citep{mutbiasArabidopsis}. However, our models can be adapted to investigate specific genomic loci, where information on the local GC-content and mutation rate can more accurately determine the \textit{de novo} gene evolution in these loci. Second, our models are based on parameters such as mutation rate and mutation bias, which we obtained from published data on human and \textit{D.melanogaster} genomes \citep{humanmutrate,drosophilamutrate}. The accuracy of the models' prediction will depend on the accuracy of parameters. However, mutation rate itself only determines the values of different probabilities. Our results, which are based on probability ratios, will not significantly change with a different value of mutation rate. More importantly, different species may have a different spectrum of mutations \citep{joshmutbias}, especially for species that are highly distant from each other. Thus our inferences based on our chosen parameters will not universally apply to all species. Third, we assume that all mutations are independent. This is not the case for tandem mutations, where multinucleotide mutations occur more frequently than their expected frequency under the assumption of mutational independence \citep{MNM}. Fourth, we did not model the effect of many regulatory sequence features such as enhancers, transcription factor binding sites, 5' and 3' untranslated regions, and Kozak consensus sequence, that can influence the evolution of proto-genes. For example \textit{de novo} emergence is very likely to occur near enhancers \citep{PacoEnhancers}. We instead focused on minimal requirements for transcription and translation. However, our modeling framework allows inclusion of any number of sequence features in the calculations as long as their sequences can be defined (\autoref{methfeatures}). Finally, we ignore insertions, deletions and transpositions as mechanisms of mutation. Insertions and deletions (indels) are reported to be less frequent than substitutions \citep{drosophilamutrate}, and both indels and transpositions cause larger sequence alterations than point mutations. Our modeling methodology also allows incorporation of these mechanisms as a source of mutations. 
+Like all theoretical models, our models are not without limitations. First, we assume that nucleotides are uniformly distributed according to GC-content. This is not true as nucleotide composition can vary significantly across the genome. \cmnt{Since our model primarily focuses on gene emergence at one locus, it can be used to predict evolutionary probabilities for different genomic loci. Furthermore, several predictions of our models are not qualitatively affected by GC-content. More realistic nucleotide composition distribution estimated from \textit{D. melanogaster} intergenic sequences, also qualitatively agree with GC-content based predictions. Thus, most predictions are qualitatively robust to small differences in parameters. Second, in our models, we assumed uniform mutation rate throughout the genome. However, recent studies have shown Mutation rates are also not uniform across the genome and can vary significantly \citep{mutbiasArabidopsis}}. Our models can be adapted to investigate specific genomic loci, where estimates of the local nucleotide composition and mutation rate can more accurately determine the \textit{de novo} gene evolution in these loci. Third, our models are based on parameters such as mutation rate and mutation bias, which we obtained from published data on human and \textit{D.melanogaster} genomes \citep{humanmutrate,drosophilamutrate}. The accuracy of the models' prediction will depend on the accuracy of parameters. However, mutation rate itself only determines the values of different probabilities. Our results, which are based on probability ratios, will not significantly change with a different value of mutation rate. Mutation bias may have more significant effect on the predictions than mutation rate. Existing data suggest that different species have a different spectrum of mutations \citep{joshmutbias}, especially for species that are highly distant from each other. Thus our inferences based on our chosen parameters will not universally apply to all species. Fourth, we assume that occurrence of a point mutation is independent of another mutation. This is not the case for tandem mutations, where multinucleotide mutations occur more frequently than their expected frequency under the assumption of mutational independence \citep{MNM}. Fourth, we did not specifically model the effect of many regulatory sequence features such as enhancers, transcription factor binding sites, 5' and 3' untranslated regions, and Kozak consensus sequence, that can influence the evolution of proto-genes. For example \textit{de novo} emergence is very likely to occur near enhancers \citep{PacoEnhancers}. \cmnt{To model this phenomenon in our analyses, we assumed that DNA loci feasible for transcript emergence are close to known \textit{cis-} regulatory elements \citep{RedFly2005,RedFly2007,RedFly2010,RedFly2018,RedFly2022}. Specifically, we assumed that transcription can be initiated at a probability that is equal to the proportion of such regulatory elements in the intergenic genome. This is a rough estimate but it can be updated when more specific data becomes available. For example, ATAC-seq data can provide reliable estimates of nucleosome depleted regions, that can act as transcription initiation sites \citep{ATAC-seq}. This analysis can be supplemented with data from techniques like native elongating transcript sequencing \citep[NET-seq;][]{NET-seq} and global run-on sequencing \citep[GRO-seq;][]{GRO-seq}, that can detect nascent transcripts.} Our modeling framework also allows incorporation of any number of sequence features in the calculations as long as their sequences can be defined (\autoref{methfeatures}). Finally, we ignore insertions, deletions and transpositions as mechanisms of mutation. Insertions and deletions (indels) are reported to be less frequent than substitutions \citep{drosophilamutrate}, and both indels and transpositions cause larger sequence alterations than point mutations. Our modeling methodology also allows incorporation of these mechanisms as a source of mutations. 
 
-A famous aphorism about theoretical models says ``all models are wrong but some are useful'' \citep{GEBox}. Our models are not an exception. They are not 100\% accurate but they are useful for making predictions that can lead to a more focused experimental validation. These models can be made more complex to accommodate diverse molecular mechanisms driving gene evolution. Therefore our work opens up an opportunity for theoretical and computational biologists to develop models using our modeling framework, that more accurately describe their system of interest.
+A famous aphorism about theoretical models says ``all models are wrong but some are useful'' \citep{GEBox}. Our models are not an exception. They may not be 100\% accurate but they make useful predictions that can lead to a more focused experimental validation. \cmnt{Many of our predictions are qualitatively robust to small parameter changes. Some predictions are also in agreement with experimental data. For example, our prediction of transcript gain rate is only slightly inflated than the estimated rates using an empirical analysis of \textit{D. melanogaster} populations \citep{AnnaPeteTranscripts}. This inflated estimate could have possibly resulted from our relaxed requirements for a promoter, or non-inclusion of other unknown factors that may have affected population evolution. When supplemented with experimental data analysis our models can be made more complex to accommodate diverse molecular mechanisms driving gene evolution, and can provide more accurate predictions.} Therefore our work opens up an opportunity for theoretical and computational biologists to design analyses using our modeling framework, that more accurately describe their system of interest.
 
 \section{Materials and Methods}
 
@@ -321,7 +299,13 @@ We calculated nucleotide substitution probabilities based on mutation rate and m
 \subsubsection{Probability of finding a DNA sequence}
 \label{methprob}
 
-We calculated the probability of finding a DNA sequence based on global nucleotide frequency distributions, given by the GC-content. We used a GC-content of 0.42 for our calculations. Specifically, the probability of finding either a \texttt{G} or a \texttt{C} is: $S = 0.5\times$GC-content. The probability of finding an \texttt{A} or a \texttt{T} is: $W = 0.5 - S$. Using these values, we calculated the probability of finding a DNA sequence motif by chance. For example, the probability of finding the sequence \texttt{ATG} would be: $W\times W \times S$.
+We calculated the probability of finding a DNA sequence based on global nucleotide frequency distributions, given by the GC-content. Specifically, the probability of finding either a \texttt{G} or a \texttt{C} is: 
+
+$$S = \frac{0.5\times\text{GC\%}}{100}$$
+
+The probability of finding an \texttt{A} or a \texttt{T} is: $W = 0.5 - S$. Using these values, we calculated the probability of finding a DNA sequence motif by chance. For example, the probability of finding the sequence \texttt{ATG} would be: $W\times W \times S$.
+
+\cmnt{We also estimated the probability of finding specific DNA sequences in a reference genome. Specifically, we calculated the frequencies of all 64 trimers and all 4096 hexamers in the genomic regions of \textit{D. melanogaster} that exist in open chromatin, and do not contain any known genes or regulatory elements (see \autoref{methRNA})}.
 
 \subsubsection{Probability of gaining a DNA sequence}
 \label{methgain}
@@ -333,6 +317,7 @@ $$SW^2 \times \lambda^2 \times \mu_{\texttt{G:C}\to\texttt{T:A}} \times \mu_{\te
 Next, we calculated the probability that every nucleotide triplet that is not \texttt{ATG}, mutates to \texttt{ATG}. This can happen via one, two, or three nucleotide mutations. The sum of all these mutation probabilities is the probability of \texttt{ATG} gain.
 
 Using the same principle we calculated the gain probability of any DNA sequence motif (of any length or composition). We excluded insertions and deletions as a mechanism of gain of small DNA sequences that we analysed in this study. 
+
 
 \subsubsection{Probability of losing a DNA sequence}
 
@@ -393,6 +378,10 @@ Thus the probability that a sequence of length $k$, containing $m$ number of \te
 $$P_0 = (1-e^{-m\lambda_\texttt{AT}})\times(1-e^{-(k-m)\lambda_\texttt{GC}})$$
 
 
+\cmnt{We also calculated all the above-defined probabilities ($P_\textit{feature-gain}$, $P_\textit{feature-loss}$ and $ P_\textit{feature-stay}$), using DNA trimer and hexamer frequencies from \textit{D. melanogaster}. In this case the probability of finding a nucleotide sequence depends on the trimer/hexamer distributions instead of GC-content, but the probability of mutational changes are only dependent on mutation bias. Trimers and hexamers would contain codons and polyA signals, respectively.}
+
+
+
 \subsection{Probabilities of finding, gaining, and losing an ORF}
 
 \label{methORF}
@@ -449,131 +438,50 @@ P_\textit{ORF-stay}(k) = P_\textit{ATG-stay} \times P_\textit{stop-stay} \times 
 \subsection{Probabilities of finding, gaining, and losing transcription}
 
 \label{methRNA}
-To calculate the probabilities of finding, gaining, and losing transcription, we first defined the minimum requirements for transcription. These requirements are a promoter, either a TATA-box or an Initiator (Inr) element, and a polyadenylation signal. Each of these three DNA sequence motifs consists of more than one DNA sequence.
-
-\subsubsection{Definition of TATA-box, Inr and poly-A signal}
-
-\paragraph{TATA box:}
-
-The consensus sequence of TATA-box is \texttt{TATA [T/A] A [T/A] [G/A]} \citep{tata2} such that, any of the nucleotides enclosed within the square brackets, can exist in that specific position in the sequence. Another study used X-ray crystallography to identify mutations that are tolerated in TATA-box consensus sequence \citep{tata1}. Thus there are eight consensus sequences, and at seven positions, a non-consensus nucleotide is tolerated (\autoref{tatatab}). This makes a TATA-box feature set that contains 104 sequences. We defined the corresponding non-feature set by generating all 8-mer DNA sequences that do not belong to the TATA-box feature set.
-
-\begin{table}[!t]
-\centering
-\begin{tabular}{c c}
-\toprule
-Position  & Accepted nucleotides \\ \midrule
-1         & T$\gg$C$>$A,G        \\ \midrule
-2         & A$\gg$T               \\ \midrule
-3         & T$\gg$A,C             \\ \midrule
-4         & A$\gg$T               \\ \midrule
-5         & T/A                   \\ \midrule
-6         & A$\gg$G$>$C/T         \\ \midrule
-7         & A/T$>$G$>$C           \\ \midrule
-8         & G/A$>$C/T             \\ \bottomrule
-\end{tabular}
-\caption{Nucleotide residues that are tolerated at different positions in a TATA-box \citep[based on][]{tata1}}
-\label{tatatab}
-\end{table}
-
-
-\paragraph{Inr:} The consensus sequence of Inr is \texttt{[T/G/C] [T/G/C] CA [T/G/C] [T/A]}, which gives 54 sequences in the Inr feature set \citep{Inr}. We generated the corresponding non-feature set with all DNA 6-mers that are distinct from the 54 Inr sequences.
-
-\paragraph{poly-A signal:} There are four known poly-A signal variants -- \texttt{AATAAA}, \texttt{ATTAAA}, \texttt{AGTAAA}, and \texttt{TATAAA} that compose the poly-A signal feature set \citep{polyA}. The non-feature set consists of all other DNA 6-mers.
-
-\vspace{1\baselineskip}
-
-We calculated probabilities of finding, gaining and losing these features as we described in the previous section.
-
 
 \subsubsection{Probability of transcription}
 
-For a a DNA region of a length, to be transcribed it should have a promoter the beginning of the DNA region, and a poly-A signal at the end of it. The transcribed DNA region should also not have any poly-A signal sequences within it except the one at the end of it. A transcribed DNA of length $l$ nucleotides, contains $l-5$ 6-mers. Each of these 6-mers can be a poly-A signal with a probability, $P_\textit{polyA}$. Probability that none of these 6-mers is a poly-A signal is $(1-P_\textit{polyA})^{l-5}$. Since we focus on protein coding genes in this work, we describe the length of transcript in terms of the length of protein it can encode. Assuming that untranslated regions have no effect on protein synthesis, the length of a transcript in number of nucleotides should be at least three times the length of the encoded protein in number of amino acids. Thus the probability that a DNA region produces a transcript that can harbor an ORF with $k$ codons ($P_\textit{RNA}$) is:
+\cmnt{In this study we defined a transcription model that is not dependent on specific promoter sequences. Instead we defined a probability that transcription is initiated at a genomic locus. To this end, we first extracted the genomic coordinates of intergenic sequences in \textit{D. melanogaster} genome \citep[release 6.49, FlyBase;][]{flybase}. Using the data on the genomic locations of open chromatin in \textit{D. melanogaster} \citep{dmel_Chromatin}, we obtained open chromatin regions within intergenic genome. Next, we calculated the fraction of this open-intergenic genome occupied by \textit{cis-} regulatory elements \citep{RedFly2005,RedFly2007,RedFly2010,RedFly2018,RedFly2022}. A significant proportion of these elements include enhancers. Enhancers, that can promote transcription in their neighboring genomic regions \citep{enhancers}, are also known to promote \textit{de novo} gene emergence \citep{PacoEnhancers}. Thus we reasoned that proportion of \textit{cis-} regulatory elements in open intergenic chromatin would roughly approximate the likelihood of transcription initiation ($P_\textit{RNAinit}$). We do not model the exact sequences because data is not yet available on exact sequence requirements and mutational robustness of enhancers and other \textit{cis-} regulatory elements. Thus poly-A signal is the primary sequence determinant of transcription probabilities. Relatedly, open intergenic chromatin regions, that are not interrupted by \textit{cis-} regulatory elements are the potential sites for \textit{de novo} gene emergence.
+
+A poly-A signal marks the end of a transcript. The transcribed DNA region should thus have only one poly-A signal at its end.} A transcribed DNA of length $l$ nucleotides, contains $l-5$ hexamers (6nt long sequences). Each of these hexamers can be a poly-A signal with a probability, $P_\textit{polyA}$. Probability that none of these hexamers is a poly-A signal is $(1-P_\textit{polyA})^{l-5}$. Since we focus on protein coding genes in this work, we describe the length of transcript in terms of the length of protein it can encode. Assuming that untranslated regions have no effect on protein synthesis, the length of a transcript in number of nucleotides should be at least three times the length of the encoded protein in number of amino acids. Thus the probability that a DNA region produces a transcript that can harbor an ORF with $k$ codons ($P_\textit{RNA}(k)$) is:
 
 \begin{equation}
-P_\textit{RNA}(k) = P_\textit{polyA} \times (P_\textit{TATA} + P_\textit{Inr}) (1-P_\textit{polyA})^{3k-5}
+P_\textit{RNA}(k) = P_\textit{RNAinit} \times P_\textit{polyA} \times (1-P_\textit{polyA})^{3k-5}
 \label{eqrnaprob}
 \end{equation}
 
 \subsubsection{Probability of gaining transcription}
 
-As we mentioned in the previous section, three requirements need to be met to produce a transcript of any given length. First, a promoter needs to be present. Second, a poly-A signal needs to be present at the end of the DNA region to be transcribed, and third, no poly-A signal should exist within this DNA region. Transcription can be gained if one of two of these requirements are already met and the third required feature emerges due to mutations. At the same time mutations do not destroy the existing features. It is possible that two or all the required features are missing and they emerge due to mutations. However such an event is highly improbable. Thus transcription gain can occur via three mechanisms.
+\cmnt{As we mentioned in the previous section, two requirements need to be met to produce a transcript of any given length. First, a poly-A signal needs to be present at the end of the DNA region to be transcribed, and second, no poly-A signal should exist within this DNA region. Transcription can be gained if one of these requirements are already met and the third required feature emerges due to mutations. At the same time mutations should not destroy the existing features. It is possible that both the required features are missing and they emerge simultaneously due to mutations. However such an event is highly improbable. Thus transcription gain can occur via two mechanisms. In the first mechanism a poly-A signal is gained at the end of a sequence ($P_\textit{polyA-gain}$), while no poly-A sites are present at any $l-5$ (or $3k-5$) sites within the sequence, and none emerge ($P_\textit{nopolyA-stay} = 1 - P_\textit{polyA} - P_\textit{polyA-gain}$). In the second mechanism, a poly-A signal is present at the end of the sequence, and is not lost due to mutations. Meanwhile, one poly-A signal at any of the $3k-5$ sites within the sequence is lost ($P_\textit{polyA-loss}$), whereas the other $3k-6$ sites do not encode a poly-A signal and continue to remain so.
 
-\vspace{\baselineskip}
-In the first mechanism:
-\begin{itemize}
-\item A promoter (TATA-box or Inr) exists at the beginning of a DNA region and remains intact ($P_\textit{TATA-stay}$, $P_\textit{Inr-stay}$)
-\item No poly-A signal sequences are present within the DNA region and none emerges ($P_\textit{nopolyA-stay} = 1 - P_\textit{polyA} - P_\textit{polyA-gain}$)
-\item A poly-A signal emerges at the end of the DNA region ($P_\textit{polyA-gain}$)
-\end{itemize}
+The combined probability of these two transcription gain mechanism is defined as:
 
-\vspace{\baselineskip}
-In the second mechanism:
-\begin{itemize}
-\item A poly-A signal is present at the end of the DNA region remains intact 
-\item No poly-A signal sequences are present within the DNA region and none emerges
-\item A promoter emerges at the beginning of the DNA region ($P_\textit{TATA-gain}$, $P_\textit{Inr-gain}$)
-\end{itemize}
-
-\vspace{\baselineskip}
-Finally, in the third mechanism:
-\begin{itemize}
-\item A promoter exists at the beginning of a DNA region and remains intact
-\item A poly-A site is present at the end of the DNA region remains intact
-\item One poly-A site that was present in the DNA region, is lost. ($P_\textit{polyA-loss}$)
-\item At every other site in the DNA region, no poly-A signal exists and none emerges
-\end{itemize}
-
-
-The total gain probability ($P_\textit{RNA-gain}$) of a transcript that can harbor an ORF with $k$ codons  would be the sum of the probabilities of the three gain mechanisms:
-
-\begin{align}
-P_\textit{RNA-gain}(k)  = & \ (P_\textit{TATA-stay} + P_\textit{Inr-stay})\times P_\textit{polyA-gain}\times (P_\textit{nopolyA-stay})^{3k-5} \nonumber\\[1ex]
-%
-& + (P_\textit{TATA-gain} + P_\textit{Inr-gain})\times P_\textit{polyA-stay}\times (P_\textit{nopolyA-stay})^{3k-5} \nonumber \\[1ex]
-& + (P_\textit{TATA-stay} + P_\textit{Inr-stay})\times P_\textit{polyA-stay}\times (P_\textit{nopolyA-stay})^{3k-5} \times (3k-6) \times P_\textit{polyA-loss}
+\begin{equation}
+P_\textit{RNA-gain}(k) = P_\textit{RNAinit} \times \begin{pmatrix}
+P_\textit{polyA-gain}\times (P_\textit{nopolyA-stay})^{3k-5} \\[1em]
+ +\  P_\textit{polyA-stay}\times (P_\textit{nopolyA-stay})^{3k-5} \times (3k-6) \times P_\textit{polyA-loss}
+\end{pmatrix}  
 \label{eqrnagain}
-\end{align}
-
-It is also possible that both the promoter and the poly-A signal were initially absent, and emerge via mutations. However, this probability is very small and is negligible.
-
+\end{equation}
 
 \subsubsection{Probability of losing transcription}
 
-Transcription is lost when either the promoter is lost or when the poly-A signal is lost. Since two kinds of promoters can initiate transcription, there can be three kinds of transcription units. First that contains only a TATA-box, second that contains only an Inr, and the third that contains both these promoters. All these three transcription units must also have a poly-A signal. To calculate the conditional probability of promoter loss, we calculated the fraction of transcription units ($Q$) that belong to each of these three classes. For example, the fraction of transcription units that are TATA-only ($Q_\textit{TATA-only}$) is:
+Transcription is lost when either the poly-A signal is lost or if one is gained within the transcribed sequence. The probability of transcription loss ($P_\textit{RNA-loss}$), given that already transcription exists, is thus defined as:
 
-\begin{equation*}
-Q_\textit{TATA-only} = \frac{P_\textit{TATA}\times(1 - P_\textit{Inr})}{(P_\textit{TATA} + P_\textit{Inr} - P_\textit{TATA}\times P_\textit{Inr})}
-\end{equation*}
-
-\vspace{1ex}
-
-Here, the numerator denotes probability of finding a TATA-box but not an Inr, and the denominator denotes the probability of finding a promoter that can be a TATA-box, Inr, or both. Likewise, the fraction of Inr-only ($Q_\textit{Inr-only}$) and TATA-Inr promoters ($Q_\textit{both}$) are given by:
-
-\begin{align*}
-Q_\textit{Inr-only} & = \frac{P_\textit{Inr}\times(1 - P_\textit{Inr})}{(P_\textit{TATA} + P_\textit{Inr} - P_\textit{TATA}\times P_\textit{Inr})} \\[1ex]
-Q_\textit{both} & = 1 - Q_\textit{TATA-only} -Q_\textit{Inr-only}
-\end{align*}
-
-For a TATA-only transcription unit to lose a promoter, it should lose the TATA-box but simultaneously not gain an Inr. Likewise, an Inr-only transcription unit will lose a promoter when it loses the Inr but not gain a TATA-box. A transcription unit that has both the promoters must lose both of them. For all the three kinds of transcription units, transcription would be lost if poly-A signal is lost.
-
-The conditional probability of transcription loss ($P_\textit{RNA-loss}$), given that transcription exists, is thus defined as:
-
-\begin{align}
-P_\textit{RNA-loss}(k) & = Q_\textit{TATA-only} \times P_\textit{TATA-loss}\times(1-P_\textit{Inr-gain}) \nonumber\\[1pt]
- & \quad + Q_\textit{Inr-only}\times P_\textit{Inr-loss}\times(1-P_\textit{TATA-gain}) \nonumber \\[1pt]
- & \quad + Q_\textit{both}\times P_\textit{TATA-loss} \times P_\textit{Inr-loss} + P_\textit{polyA-loss}
+\begin{equation}
+P_\textit{RNA-loss}(k) = P_\textit{polyA-loss} + (3k-5)\times P_\textit{polyA-gain}
 \label{eqrnaloss}
-\end{align}
+\end{equation}
 
 \subsubsection{Probability that transcription remains intact}
 
-Transcription remains intact if neither the promoter, nor the poly-A signal is lost. More specifically, we define this probability ($P_\textit{RNA-stay}$) as:
+Transcription remains intact if neither the poly-A signal is not lost and none is gained within the sequence. Probability of this event ($P_\textit{RNA-stay}$) is defined as:
 
 \begin{equation}
-P_\textit{RNA-stay}(k) = (P_\textit{TATA-stay} + P_\textit{Inr-stay}) \times P_\textit{polyA-stay}
+P_\textit{RNA-stay}(k) = P_\textit{polyA-stay} \times (P_\textit{nopolyA-stay})^{(3k-5)}
 \label{eqrnastay}
 \end{equation}
-
+}
 \subsection{Interdependence of transcription and ORF probabilities}
 
 \label{rnaorfindependence}
@@ -586,9 +494,29 @@ $$P_\textit{stop-gain \vline\ RNA} = \frac{P_\textit{stop-gain}\times(1- P_\text
 
 Overall the evolutionary dynamics of transcription and ORF gain, are not independent of each other. That is, presence of one feature makes the gain of the other more likely. The dependence becomes more prominent with increasing number of codons in the ORF of the proto-gene.
 
+\subsection{Calculation of fixation probabilities}
+
+We estimated gene fixation probabilities using Kimura's model \citep{KimuraFix}. Specifically we defined the probabilities of fixation and extinction of a proto-gene as shown in \autoref{pFix}:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c c c c}
+\toprule
+\textbf{Case} & \textbf{Gain of gene}  & \textbf{Loss of gene} & \textbf{Selection coefficient (s)}\\
+\midrule
+No selection on protogene & $\dfrac{1}{2N_e}$ & $\dfrac{1}{2N_e}$ & -- \\
+\midrule
+Selection on protogene & $\dfrac{1 - e^{-2s}}{1- e^{-4N_es}}$ & $\dfrac{1 - e^{2s}}{1- e^{4N_es}}$ & $\pm0.001$\\
+\bottomrule
+\end{tabular}
+\caption{Gene fixation/extinction probabilities with or without selection. Here $N_e$ denotes effective population size and $s$ denotes the selection co-efficient denoting the fitness advantage provided by the protein encoded in the proto-gene (positive valued for a beneficial protein, and negative valued for a deleterious protein).}
+\label{pFix}
+\end{table}
+
 \subsection{Probability of amino acid substitutions}
 
 We calculated the probability of amino acid substitutions based on nucleotide substitution in the corresponding codons. In this case, multiple codons that code for the same amino acid constitute a feature set (\autoref{methfeatures}). Similarly when analysing hydrobhobic to non-hydrophobic substitutions, all codons that represent hydrophobic amino acids form a feature set (and \textit{vice versa}).
+
 
 \section{Data availability}
 We performed all calculations using Julia programming language, and all scripts are freely available on GitHub: BharatRaviIyengar/DeNovoEvolution. Specifically, our model is implemented in the script \texttt{DeNovoProb.jl} which in turn uses the script \texttt{nucleotidefuncts.jl} for some basic functions.
