@@ -181,7 +181,13 @@ P_\textit{RNA-stay}(k) = (P_\textit{TATA-stay} + P_\textit{Inr-stay}) \times P_\
 \caption{ORF loss in proto-genes is more probable than transcription loss. The horizontal axis denotes the number of codons in the ORF \textbf{(A)} and GC-content \textbf{(B)}. The vertical axis shows the $\log_2$ transformed ratio of ORF loss and RNA loss probabilities, such that a positive value means ORF loss is more probable than RNA loss, and \textit{vice versa}.}
 \end{figure}
 
-\section{Effect on GC content on the probability of gene gain and loss}
+
+\clearpage
+
+\section{Model without core promoters}
+
+
+\subsection{Effect on GC content on the probability of gene gain and loss}
 
 We analysed the effect of effect on GC content on the number independent gene losses per gene gain, in the promoterless model.
 
@@ -191,7 +197,7 @@ We analysed the effect of effect on GC content on the number independent gene lo
 \caption{Genes are more likely to be independently lost twice, than being born once. The vertical axis shows the number of independent gene loss events that can occur relative to one gene gain event -- $\log(P_\textit{gene-gain})/\log(P_\textit{gene-loss})$. The horizontal axis shows the GC-content.}
 \end{figure}
 
-\section{Exclusive ORF or transcription loss}
+\subsection{Exclusive ORF or transcription loss}
 
 In the promoterless model, we made our analysis of gene loss more stringent by comparing the probabilities of two evolutionary scenarios, both of which begin with an intact proto-gene. In the first scenario, the ORF remains intact whereas the transcription is lost. The probability of this scenario ($P_\textit{onlyORF-loss}$) is described by: 
 
@@ -215,9 +221,10 @@ We find that the second scenario (only ORF loss) is more plausible for all the a
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{Figures/Supp_figures/pLossOnly_promoterlessX.pdf}
-\caption{Exclusive ORF loss in proto-genes is more probable than exclusive transcription loss. The horizontal axis denotes the number of codons in the ORF \textbf{(A)} and GC-content \textbf{(B)}. The vertical axis shows the $\log_2$ transformed ratio of only ORF loss and only RNA loss probabilities, such that a positive value means ORF loss is more probable than RNA loss, and \textit{vice versa}.}
+\caption{Exclusive ORF loss in proto-genes is more probable than exclusive transcription loss. The vertical axis shows the $\log_2$ transformed ratio of only ORF loss and only RNA loss probabilities, such that a positive value means ORF loss is more probable than RNA loss, and \textit{vice versa}. The horizontal axis denotes the number of codons in the ORF. Black lines denote the probability values estimated from overall GC content (34\%, 42\% and 50\%) and the orange line denotes the probability values estimated from trimer and hexamer frequencies in \textit{D. melanogaster} intergenic genome.}
 \end{figure}
 
+\clearpage
 
 \bibliographystyle{mybst}
 
