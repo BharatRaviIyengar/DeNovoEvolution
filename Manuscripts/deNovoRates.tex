@@ -18,6 +18,9 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{\baselineskip}
 
+\renewcommand{\subsectionautorefname}{Methods section}
+\renewcommand{\subsubsectionautorefname}{Methods section}
+\renewcommand{\thesubsection}{\arabic{subsection}}
 
 \newcommand{\cmnt}[1]{{\color{purple} #1}}
 
@@ -27,8 +30,8 @@
 }
 
 \title{Neutral models of \textit{de novo} gene emergence suggest that gene evolution has a preferred trajectory}
-\author{Bharat Ravi Iyengar$^1$, Erich Bornberg-Bauer$^{1,2}$}
-\date{\small $^1$Institute for Evolution and Biodiversity, Westfalian Wilhelms -- University of M\"{u}nster, H\"{u}fferstrasse 1, 48149 M\"{u}nster, Germany\\ $^2$Max Planck-Institute for Biology T\"{u}bingen, T\"{u}bingen, Germany}
+\author{Bharat Ravi Iyengar$^{1,\dagger}$, Erich Bornberg-Bauer$^{1,2}$}
+\date{\small $^1$Institute for Evolution and Biodiversity, University of M\"{u}nster,\\ H\"{u}fferstrasse 1, 48149 M\"{u}nster, Germany\\[1ex] $^2$Department of Protein Evolution, Max Planck Institute for Biology T\"{u}bingen, Max-Planck-Ring 5, 72076 T\"{u}bingen, Germany \\[1ex] $^\dagger$ Corresponding author: b.ravi@uni-muenster.de}
 
 \begin{document}
 
@@ -47,7 +50,7 @@ New protein coding genes can emerge from genomic regions that previously did not
 
 
 
-\section{Introduction}
+\section*{Introduction}
 
 Organisms evolve new traits by expanding their functional genome. Evolution of new genes is one of the ways by which new traits can emerge. The definition of a gene is complicated, and has been changing constantly \citep{genepostencode}. We use the following working definition of a gene: a gene is a region of the genome that gives rise to a functional product, that is an RNA or a protein. The next big challenge is to define what a function is, and how to classify gene functions. One of the easiest definition of a gene product's function is its ability to improve the survival of the organism under one or more environmental conditions \citep{deNovoFunction}. Proteins perform the most diverse kinds of molecular functions ranging from catalysis of biochemical reactions to formation of cellular structures \citep{berg}, whereas RNAs that do not encode proteins like mRNAs, or participate in protein synthesis like rRNAs and tRNAs, are mostly involved in regulation of gene expression \citep{fncel,Statello2021}.
 
@@ -61,7 +64,7 @@ Although gain of transcription and translation features guarantees \textit{de no
 
 In this study we develop probabilistic models of \textit{de novo} gene emergence \cmnt{in eukaryotes}. We focus on \textit{de novo} genes emerging from non-genic sequences, also known as ``proto-genes'' \citep{protogenes,vanOss}. We model \textit{de novo} gene emergence as a two step process. In the first step, a non-genic DNA sequence gains transcriptional features that allows it to express an untranslated (non-coding) RNA. In the second step this non-coding RNA gene acquires translational features that allows it to express a protein. Alternatively, translational features can emerge in the non-genic DNA before transcriptional features. Specifically, we calculate the probabilities by which polyadenylation signals and ORFs emerge, and are lost, based on the rates at which different kinds of DNA mutations naturally occur (mutation bias). With these probabilities we estimate whether transcriptional and translational features preferentially evolve in a specific order. Using a similar approach, we calculate how random mutations affect protein composition. In our models, we assume that the proteins expressed from these proto-genes provide no fitness advantage and are not toxic to the host organism. Thus our models are based on neutral evolution. Our models predict that there is indeed a preferred sequence of DNA feature evolution during \textit{de novo} emergence, even under the assumption of neutrality.
 
-\section{Results}
+\section*{Results}
 
 In this work, we developed mathematical models to estimate the rates and probabilities of \textit{de novo} gene emergence, as well as gene loss. A proto-gene emerges from non-genic DNA, when the latter mutates to gain sequence features necessary for transcription and translation \citep{protogenes,vanOss}. Both transcription and translation are complex processes involving many biomolecular complexes that work in concert. Here, we focus on the minimal requirements for these processes to occur. \cmnt{Experimental data show that transcription in eukaryotes can be initiated genome wide, especially in regions proximal to enhancers, and more specifically, in regions depleted of nucleosomes \citep{enhancers}. Thus transcription of many proto-genes can be initiated at a basal transcription rate, and may not require specific core promoters. Although transcription may be initiated without a core promoter, a stable RNA product often requires a poly-A tail that also facilitates RNA export to cytoplasm \citep{polyAterm,polyAexp}. This assumption is supported by experimental data, where the majority of detectably expressed proto-genes have polyadenylated RNAs \citep{Neme2016,Witt2019,PacoEnhancers,albaYeastdenovo}. Thus, we define a poly-A signal as the primary requirement for transcription such that it should exist but only at the end of a transcribed region.} For translation, we only require the gene to have an open reading frame (ORF). We only focus on intronless genes in this study. 
 
@@ -75,7 +78,7 @@ Using a similar approach, we predict how the nucleotide distribution and random 
 
 Overall, our models define a null hypothesis under which protein coding DNA sequences evolve neutrally through mutation pressure alone.
 
-\subsection{How likely is gene loss?}
+\subsection*{How likely is gene loss?}
 
 If a gene is found in one population but not populations, then the most parsimonious assumption is that this gene emerged only in one specific population. We asked what is the chance that the gene was present in an ancestral population but was lost in all lineages except one. To this end we calculated the probability of gene emergence and gene loss (\autoref{methfeatures}). Specifically, the probability of gene gain can be defined as the sum of three probabilities. First is the probability that an ORF already exists and is not lost due to mutations ($P_\textit{ORF-stay}$, \autoref{methORF}), while a mutation causes transcription to emerge ($P_\textit{RNA-gain}$, \autoref{methRNA}). Second is the probability that an ORF emerges ($P_\textit{ORF-gain}$, \autoref{methORF}) in a region of DNA that is already transcribed and continues to be transcribed ($P_\textit{RNA-stay}$, \autoref{methRNA}). Third is the probability that neither of the two features already exist and both emerge at the same time due to mutations (this probability is very small and is negligible). We found that the probability of transcription gain is dependent on the existence of an ORF, such that it is higher when the ORF is already present. This dependence exists because an ORF does not have stop codons (\texttt{TAA}, \texttt{TAG} and \texttt{TGA}) in its sequence. This in turn, restricts the number of positions where a poly-A signal, that has a \texttt{TAA} in its sequence, can exist (\autoref{rnaorfindependence}). Because of the same reason, the probability of ORF gain is higher when the DNA is already transcribed. Therefore, we additionally calculated the conditional probabilities of transcription gain ($P_\textit{RNA-gain \vline\ ORF}$) and ORF gain ($P_\textit{ORF-gain \vline\ RNA}$) given the condition that an ORF and a transcript already exists, respectively. We thus define the total probability of gene gain ($P_\textit{gene-gain}^*$) as:
 
@@ -125,7 +128,7 @@ Overall, our analysis suggests that a proto-gene expressed in only one populatio
 
 Despite low probability of gene gain at one particular locus ($\sim 10^{-15}$ per generation), the overall rate of gene gain throughout the genome could be much higher. To this end we calculated the total gain rate of genes of any length, at any locus in \textit{D. melanogaster} intergenic genome. We found this rate to be $2.8\times 10^{-5}$ new genes per generation, that corresponds to approximately $7.5\times 10^{-5}$ new genes per year \citep[assuming \textit{D. melanogaster} generation time of two weeks;][]{drosophilaModelOrg}. We performed an analogous analysis on the rate of gain of new transcripts and found this rate to be 1.53 transcripts per year. This estimate is slightly higher than the rate of transcript gain predicted from \textit{D. melanogaster} population transcriptomics data \citep[0.13 -- 0.34;][]{AnnaPeteTranscripts}}. 
 
-\subsection{Does \textit{de novo} gene emergence follow a preferred trajectory of events?}
+\subsection*{Does \textit{de novo} gene emergence follow a preferred trajectory of events?}
 
 For a proto-gene to emerge from a non-genic DNA sequence, both transcription and ORF need to emerge. That is, probability of gene emergence is equal to the product of probabilities of transcription gain and ORF gain. Thus it may appear that the order of the occurrence of these two events does not matter. However, gene emergence is much more likely when one of the two features already exists (\autoref{genegaineq}) and therefore it has two possible trajectories -- ORF emerges first (ORF-first) or transcription emerges first (RNA-first). Furthermore, emergence of an ORF is more likely when the proto-gene is already transcribed, and \textit{vice versa} (\autoref{rnaorfindependence}). To understand whether \textit{de novo} gene emergence has a preferred trajectory, we calculated two probabilities. First, the probability that an RNA exists and mutations cause a gain of an ORF but no disruption of transcription. This probability denotes the trajectory where RNA emerges first ($P_\textit{RNA-first}$, \autoref{rnafirsteq1}). 
 
@@ -163,7 +166,7 @@ P_\textit{ORF-first}' & = \underbrace{P_\textit{ORF-gain} \times (1-P_\textit{RN
 \cmnt{Even with this stringent definition, \textit{de novo} emergence via the RNA-first trajectory is more probable than via the ORF-first trajectory (\hyperref[whoisfirst]{\autoref{whoisfirst}B}). For all the three GC-content values, as well the specific analysis with \textit{D. melanogaster} genome, the two-step RNA-first trajectory becomes increasingly more probable than the two-step ORF-first trajectory, with increasing ORF length.}
 
 
-\subsection{Would extensive transcription loss suggest negative selection of toxic proteins?}
+\subsection*{Would extensive transcription loss suggest negative selection of toxic proteins?}
 
 
 \begin{figure}[!b]
@@ -183,7 +186,7 @@ Our analysis of gene loss mechanism considers the loss of one feature (for examp
 
 Overall, our analysis suggests widespread transcription loss may be indicative of a negative selection on protein expression.
 
-\subsection{Does mutation bias shape protein composition?}
+\subsection*{Does mutation bias shape protein composition?}
 
 \begin{figure}[!t]
 \centering
@@ -259,7 +262,7 @@ We found the average change in hydrophobicity to be slightly less than zero ($-0
 
 Overall our analyses show that random mutations may preferentially cause hydrophobic amino acids to accumulate in protein sequence but this effect may be very small.
 
-\section{Discussion} 
+\section*{Discussion} 
 
 In this work, we addressed some fundamental questions about \textit{de novo} emergence of protogenes. Broadly, we asked how quickly these genes can emerge and be lost, whether their birth and death has a preferred trajectory of mutational events, and how the composition of their protein sequence is determined. To this end, we developed mathematical models and used them to address specific questions. These models are based on mutation probability and mutation rate bias, and represent neutral evolution where DNA sequences are not evolving under natural selection. Thus our models provide an opportunity to test the alternative hypothesis that some proto-genes are evolving under selection.
 
@@ -277,7 +280,8 @@ Like all theoretical models, our models are not without limitations. First, we a
 
 A famous aphorism about theoretical models says ``all models are wrong but some are useful'' \citep{GEBox}. Our models are not an exception. They may not be 100\% accurate but they make useful predictions that can lead to a more focused experimental validation. \cmnt{Many of our predictions are qualitatively robust to small parameter changes. Some predictions are also in agreement with experimental data. For example, our prediction of transcript gain rate is only slightly inflated than the estimated rates using an empirical analysis of \textit{D. melanogaster} populations \citep{AnnaPeteTranscripts}. This difference could have possibly resulted from our relaxed requirements for a promoter, or other unknown factors that may have affected population evolution \citep[for example, the actual effective population size and environmental conditions;][]{dmel3decades}. When supplemented with experimental data analysis our models can be made more complex to accommodate diverse molecular mechanisms driving gene evolution, and can provide more accurate predictions.} Therefore our work opens up an opportunity for theoretical and computational biologists to design analyses using our modeling framework, that more accurately describe their system of interest.
 
-\section{Materials and Methods}
+
+\section*{Materials and Methods}
 
 \subsection{Mutation probabilities}
 
@@ -529,8 +533,12 @@ Selection on protogene & $\dfrac{1 - e^{-2s}}{1- e^{-4N_es}}$ & $\dfrac{1 - e^{2
 We calculated the probability of amino acid substitutions based on nucleotide substitution in the corresponding codons. In this case, multiple codons that code for the same amino acid constitute a feature set (\autoref{methfeatures}). Similarly when analysing hydrobhobic to non-hydrophobic substitutions, all codons that represent hydrophobic amino acids form a feature set (and \textit{vice versa}).
 
 
-\section{Data availability}
+\section*{Data availability}
 We performed all calculations using Julia programming language, and all scripts are freely available on GitHub: BharatRaviIyengar/DeNovoEvolution. Specifically, our model is implemented in the script \texttt{DeNovoProb.jl} which in turn uses the script \texttt{nucleotidefuncts.jl} for some basic functions.
+
+\section*{Acknowledgments}
+
+We thank Pete Czuppon (IEB, University of M\"{u}nster), for discussions on mathematical models.
 
 \bibliographystyle{mybst}
 
