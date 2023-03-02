@@ -15,8 +15,38 @@ p_A = 0.256362;
 p_G = 0.267809;
 p_C = 0.271612;
 
+nfmat = zeros(4,1);
+
+nfmat[nucnames['A']] = 0.256362;
+nfmat[nucnames['T']] = 0.204217;
+nfmat[nucnames['G']] = 0.267809;
+nfmat[nucnames['A']] = 0.271612;
+
+function nucprobss(s,nfmat)
+    return prod([nfmat[nucnames[x]] for x in s])
+end
+
 allcodons = kmers(3)
 nostopcodons = nostop(allcodons);
+
+noATG = setdiff(allcodons, ["ATG"]);
+function ATGprobs(gccontent)
+    ATGprob = nucprob("ATG",gccontent)
+    ATGgain = featuregain(noATG,["ATG"],gccontent)
+    ATGloss = featuregain(["ATG"],noATG,gccontent)/ATGprob
+    ATGstay = featurestay(["ATG"],gccontent)
+    return [ATGprob, ATGgain, ATGloss, ATGstay]
+end
+
+## Stop codon
+
+function stopprobs(gccontent)
+    stopprob = sum([nucprob(x,gccontent) for x in stopvars])
+    stopgain = featuregain(nostopcodons,stopvars,gccontent)
+    stoploss = featuregain(stopvars,nostop,gccontent)/stopprob
+    stopstay = featurestay(stopvars,gccontent)
+    return [stopprob, stopgain, stoploss, stopstay]
+end
 
 syncodons = Dict(x => gencode[(gencode[:,3].== transnucs(x)) .& (gencode[:,1] .!= x),1] for x in nostopcodons)
 
@@ -38,8 +68,10 @@ end
 vjoin = (z) -> [join(x) for x in eachrow(z)]
 phcp = (x,y) -> permutedims(hcat(collect.(product(x,y))...))
 
-p_synsubs = [featuregain([x],syncodons[x],gccontent) for x in keys(syncodons)]
-p_simsubs = [featuregain([x],simcodons[x],gccontent) for x in keys(simcodons)]
+
+
+# p_synsubs = [featuregain([x],syncodons[x],gccontent) for x in keys(syncodons)]
+# p_simsubs = [featuregain([x],simcodons[x],gccontent) for x in keys(simcodons)]
 
 # Codon pairs that have a stop codon in frame -2
 # Example: 
@@ -54,60 +86,110 @@ p_simsubs = [featuregain([x],simcodons[x],gccontent) for x in keys(simcodons)]
 
 stopneighborsR = [unique(vcat(frameXcpairs.(stop,-x)...), dims = 1) for x in 1:2];
 
-# Codon pairs inside an ORF, that have a stop codon in frame -2
+# Codon pairs inside an ORF, that have a stop codon in frame -x
 stopNbrWithin = [stopneighborsR[x][(stopneighborsR[x][:,1] .∉ Ref(stop)) .& (stopneighborsR[x][:,2] .∉ Ref(stop)),:] for x in 1:2];
-
-# Stop codon in frame -2, with a stop codon as an upstream codon in frame 0 #
-stopNbrUPstop = [stopneighborsR[x][(stopneighborsR[x][:,1] .∈ Ref(stop)),:] for x in 1:2];
-
-# Stop codon in frame -2, with a stop codon as an downstream codon in frame 0 #
-stopNbrDNstop = [stopneighborsR[x][(stopneighborsR[x][:,1] .∉ Ref(stop)) .& (stopneighborsR2[:,2] .∈ Ref(stop)),:] for x in 1:2];
 
 # Codons that encode a stop codon in the reverse frame
 stopneighborsR0 = reverse.(comp.(stop));
 
-p_stopWithin = [sum(nucprob.(vjoin(stopNbrWithin[x]),gccontent)) for x in 1:2];
-p_stopUPstop = [sum(nucprob.(vjoin(stopNbrUPstop[x]),gccontent)) for x in 1:2];
-p_stopDNstop = [sum(nucprob.(vjoin(stopNbrDNstop[x]),gccontent)) for x in 1:2];
-
-p_stopR0 = sum(nucprob.(stopneighborsR0,gccontent));
-
+# Codon pairs inside an ORF, that do not have a stop codon in frame -x
 nostopneighbors = [unique(vcat(frameXcpairs.(nostopcodons,-x)...), dims = 1) for x in 1:2];
 
+# Codons that do not encode a stop codon in the reverse frame
 nostopNbr0 = nostopcodons[nostopcodons .∉ Ref(stopneighborsR0)];
 
 nostopNbrWithin = [nostopneighbors[x][(nostopneighbors[x][:,1] .∉ Ref(stop)) .& (nostopneighbors[x][:,2] .∉ Ref(stop)),:] for x in 1:2];
 
-g_stopWithin = [featuregain(vjoin(nostopNbrWithin[x]),vjoin(stopNbrWithin[x]), gccontent) for x in 1:2]
 
-l_stopWithin = [featuregain(vjoin(stopNbrWithin[x]),vjoin(nostopNbrWithin[x]), gccontent) for x in 1:2]
+function stopprobsoverlap(gccontent)
+    # Probability of finding a stop codon
+
+    p_stopWithin = [sum(nucprob.(vjoin(stopNbrWithin[x]),gccontent)) for x in 1:2];
+
+    p_stopR0 = sum(nucprob.(stopneighborsR0,gccontent));
+    push!(p_stopWithin,p_stopR0);
+
+    # Probability of gaining a stop codon
+
+    g_stopWithin = [featuregain(vjoin(nostopNbrWithin[x]),vjoin(stopNbrWithin[x]), gccontent) for x in 1:2]
+
+    push!(g_stopWithin,featuregain(nostopNbr0,stopneighborsR0,gccontent));
+
+    # Probability of losing a stop codon (conditional)
+
+    l_stopWithin = [featuregain(vjoin(stopNbrWithin[x]),vjoin(nostopNbrWithin[x]), gccontent) for x in 1:2]
+
+    push!(l_stopWithin,featuregain(stopneighborsR0,nostopNbr0,gccontent));
+
+    l_stopWithin = l_stopWithin./p_stopWithin;
+
+    s_stopWithin = [featurestay(vjoin(stopNbrWithin[x]), gccontent) for x in 1:2];
+
+    push!(s_stopWithin,featurestay(stopneighborsR0,gccontent));
+
+
+    return(hcat(p_stopWithin,g_stopWithin,l_stopWithin, s_stopWithin))
+end
+
+
+
 
 # Effect of selection #
 
-function tprobsel(set1::Matrix{String},set2::Matrix{String},sdict::Dict,loss::Bool)
-    s = 0
+function tprobsel(set1::Matrix{String},set2::Matrix{String},sdict::Dict,gccontent)
+    g = 0
+    l = 0
     for x in eachrow(set1)
         feasible = phcp(vcat(x[1],sdict[x[1]]),vcat(x[2],sdict[x[2]]))
         fset2 = set2[(eachrow(set2) .∈ Ref(eachrow(feasible))) .& (eachrow(set2) .!= Ref(x)),:]
-        if(loss)
-            s = s + featuregain([join(x)],vjoin(fset2),gccontent)
+        g = g + featuregain([join(x)],vjoin(fset2),gccontent)
+        l = l + featuregain(vjoin(fset2),[join(x)],gccontent)
+    end
+    return hcat(g,l)
+end
+
+function staysel(set1::Matrix{String},sdict::Dict,gccontent)
+    s = 0
+    lenseq = 6
+    for x in eachrow(set1)
+        xj = join(x)
+        feasible = phcp(vcat(x[1],sdict[x[1]]),vcat(x[2],sdict[x[2]]))
+        fset1 = feasible[eachrow(feasible) .∈ Ref(eachrow(set1)),:];
+        if(isempty(fset1))
+            mp = 0
         else
-            s = s + featuregain(vjoin(fset2),[join(x)],gccontent)
+            mp = sum([mprob(xj,y) for y in vjoin(fset1)])
         end
+        s = s + nucprob(xj,gccontent)*(mp + (1-µA(mutrate,nsub))^numAT(xj)*(1-µG(mutrate,nsub))^(lenseq-numAT(xj)))
     end
     return s
 end
 
-function tprobsel0(set1::Vector{String},set2::Vector{String},sdict::Dict,loss::Bool)
-    s = 0
+function tprobsel0(set1::Vector{String},set2::Vector{String},sdict::Dict,gccontent)
+    g = 0 
+    l = 0
     for x in set1
         feasible = sdict[x]
         fset2 = set2[set2 .∈ Ref(feasible)]
-        if(loss)
-            s = s + featuregain([x],fset2,gccontent)
+        g = g + featuregain([x],fset2,gccontent)
+        l = l + featuregain(fset2,[x],gccontent)
+    end
+    return hcat(g,l)
+end
+
+function staysel0(set1::Vector{String},sdict::Dict,gccontent)
+    s = 0
+    for x in set1
+        feasible = sdict[x]
+        fset1 = feasible[feasible .∈ Ref(set1)]
+        
+        if(isempty(fset1))
+            mp = 0
         else
-            s = s + featuregain(fset2,[x],gccontent)
+            mp = sum([mprob(x,y) for y in fset1])
         end
+
+        s = s + nucprob(x,gccontent)*(mp + (1-µA(mutrate,nsub))^numAT(x)*(1-µG(mutrate,nsub))^(lenseq-numAT(x)))
     end
     return s
 end
@@ -116,29 +198,63 @@ end
 
 # Stop loss #
 
-l_stop_PurSelMax = [tprobsel(stopNbrWithin[x],nostopNbrWithin[x],syncodons,true)/p_stopWithin[x] for x in 1:2]
+function pstopsel(sdict,stopvals,gccontent)
+    pstops = stopvals[:,1];
 
-push!(l_stop_PurSelMax,tprobsel0(stopneighborsR0,nostopNbr0,syncodons,true)/p_stopR0)
+    GLF = vcat([tprobsel(stopNbrWithin[x],nostopNbrWithin[x],sdict,gccontent) for x in 1:2]...)
 
-# Stop gain #
+    GL0 = tprobsel0(stopneighborsR0,nostopNbr0,sdict,gccontent)
 
-g_stop_PurSelMax = [tprobsel(stopNbrWithin[x],nostopNbrWithin[x],syncodons,false)/sum(nucprob.(vjoin(nostopNbrWithin[x]),gccontent)) for x in 1:2]
+    gain = vcat(GLF[:,1],GL0[1])
+    loss = vcat(GLF[:,2],GL0[2])./pstops
+    stay = zeros(3,1)
+    for i = 1:2
+        stay[i] = staysel(stopNbrWithin[i],sdict,gccontent)
+    end
+    stay[3] = staysel0(stopneighborsR0,sdict,gccontent)
 
-push!(g_stop_PurSelMax,tprobsel0(stopneighborsR0,nostopNbr0,syncodons,false)/sum(nucprob.(nostopNbr0,gccontent)))
+    return hcat(pstops,gain,loss,stay)
+end
+
+# No selection
+
+stopvalsOL = stopprobsoverlap(gccontent)
 
 # Relaxed purifying selection #
 
-# Stop loss #
+stopvalsOL_RelPurSel = pstopsel(simcodons,stopvalsOL,gccontent)
 
-l_stop_PurSelRel = [tprobsel(stopNbrWithin[x],nostopNbrWithin[x],simcodons,true)/p_stopWithin[x] for x in 1:2]
+# Stringent purifying selection 
 
-push!(l_stop_PurSelRel,tprobsel0(stopneighborsR0,nostopNbr0,simcodons,true)/p_stopR0)
+stopvalsOL_MaxPurSel = pstopsel(syncodons,stopvalsOL,gccontent)
 
-# Stop gain #
 
-g_stop_PurSelRel = [tprobsel(stopNbrWithin[x],nostopNbrWithin[x],simcodons,false)/sum(nucprob.(vjoin(nostopNbrWithin[x]),gccontent)) for x in 1:2]
 
-push!(g_stop_PurSelRel,tprobsel0(stopneighborsR0,nostopNbr0,simcodons,false)/sum(nucprob.(nostopNbr0,gccontent)))
+function orfprobs(ATG,stop,k,ptype::Bool,polya)
+
+    if(!ptype)
+        stopprobc = stop[xProb] - polya[xProb]
+        stopgainc = stop[xGain]*(1-stopprobc)/(1-stop[xProb])
+    else
+        stopgainc = stop[xGain]
+        stopprobc = stop[xProb]
+    end
+
+    nostopstay = 1 - stopprobc - stopgainc
+
+    orfprob = ATG[xProb]*stop[xProb]*(1 - stopprobc)^(k-2)
+
+    gainmech1 = stop[xStay]*ATG[xGain]*nostopstay^(k-2);
+    gainmech2 = ATG[xStay]*stop[xGain]*nostopstay^(k-2);
+    gainmech3 = (k-2)*stop[xStay]*ATG[xStay]*stopprobc*stop[xLoss]*nostopstay^(k-1)
+
+    orfgain =  gainmech1 + gainmech2 + gainmech3
+
+    orfloss = stop[xLoss] + ATG[xLoss] + (k-2)*stopgainc/(1-stopprobc)
+
+    orfstay = ATG[xStay]*stop[xStay]*(nostopstay)^(k-2)
+    return [orfprob; orfgain; orfloss; orfstay]
+end
 
 
 # De novo sequence divergence #
