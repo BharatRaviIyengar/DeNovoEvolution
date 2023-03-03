@@ -1,14 +1,24 @@
 using Plots
+using Measures
 cd(Base.source_dir())
 include("nucleotidefuncts.jl")
-stop = ["TAA","TAG","TGA"]
 
+cm2pt = (cm) -> 28.3465*cm
+figdir = joinpath(Base.source_dir(),"../Manuscripts/Figures/");
+colors = ["#FFCC00","#5599FF","#D40000","#000000"];
+
+default(linecolor = :black, linewidth = 2, tickfont = font(10,"Helvetica"), 
+guidefont = font(13,"Helvetica"),framestyle = :box, legend = false);
+
+stopcodons = ["TAA","TAG","TGA"]
 function nostop(codonset)
-	codonset[codonset .∉ Ref(stop)]
+	codonset[codonset .∉ Ref(stopcodons)]
 end
 
 gccontent = 0.493611; # all mRNA #
 # gccontent = 0.53942 # all CDS #
+
+(xProb, xGain, xLoss, xStay) = [i for i in 1:4];
 
 p_T = 0.204217;
 p_A = 0.256362;
@@ -41,10 +51,10 @@ end
 ## Stop codon
 
 function stopprobs(gccontent)
-    stopprob = sum([nucprob(x,gccontent) for x in stopvars])
-    stopgain = featuregain(nostopcodons,stopvars,gccontent)
-    stoploss = featuregain(stopvars,nostop,gccontent)/stopprob
-    stopstay = featurestay(stopvars,gccontent)
+    stopprob = sum([nucprob(x,gccontent) for x in stopcodons])
+    stopgain = featuregain(nostopcodons,stopcodons,gccontent)
+    stoploss = featuregain(stopcodons,nostopcodons,gccontent)/stopprob
+    stopstay = featurestay(stopcodons,gccontent)
     return [stopprob, stopgain, stoploss, stopstay]
 end
 
@@ -84,13 +94,13 @@ phcp = (x,y) -> permutedims(hcat(collect.(product(x,y))...))
 #   AGT
 
 
-stopneighborsR = [unique(vcat(frameXcpairs.(stop,-x)...), dims = 1) for x in 1:2];
+stopneighborsR = [unique(vcat(frameXcpairs.(stopcodons,-x)...), dims = 1) for x in 1:2];
 
 # Codon pairs inside an ORF, that have a stop codon in frame -x
-stopNbrWithin = [stopneighborsR[x][(stopneighborsR[x][:,1] .∉ Ref(stop)) .& (stopneighborsR[x][:,2] .∉ Ref(stop)),:] for x in 1:2];
+stopNbrWithin = [stopneighborsR[x][(stopneighborsR[x][:,1] .∉ Ref(stopcodons)) .& (stopneighborsR[x][:,2] .∉ Ref(stopcodons)),:] for x in 1:2];
 
 # Codons that encode a stop codon in the reverse frame
-stopneighborsR0 = reverse.(comp.(stop));
+stopneighborsR0 = reverse.(comp.(stopcodons));
 
 # Codon pairs inside an ORF, that do not have a stop codon in frame -x
 nostopneighbors = [unique(vcat(frameXcpairs.(nostopcodons,-x)...), dims = 1) for x in 1:2];
@@ -98,7 +108,7 @@ nostopneighbors = [unique(vcat(frameXcpairs.(nostopcodons,-x)...), dims = 1) for
 # Codons that do not encode a stop codon in the reverse frame
 nostopNbr0 = nostopcodons[nostopcodons .∉ Ref(stopneighborsR0)];
 
-nostopNbrWithin = [nostopneighbors[x][(nostopneighbors[x][:,1] .∉ Ref(stop)) .& (nostopneighbors[x][:,2] .∉ Ref(stop)),:] for x in 1:2];
+nostopNbrWithin = [nostopneighbors[x][(nostopneighbors[x][:,1] .∉ Ref(stopcodons)) .& (nostopneighbors[x][:,2] .∉ Ref(stopcodons)),:] for x in 1:2];
 
 
 function stopprobsoverlap(gccontent)
@@ -179,6 +189,7 @@ end
 
 function staysel0(set1::Vector{String},sdict::Dict,gccontent)
     s = 0
+    lenseq = 3
     for x in set1
         feasible = sdict[x]
         fset1 = feasible[feasible .∈ Ref(set1)]
@@ -216,29 +227,10 @@ function pstopsel(sdict,stopvals,gccontent)
     return hcat(pstops,gain,loss,stay)
 end
 
-# No selection
+function orfprobs(ATG,stop,k)
 
-stopvalsOL = stopprobsoverlap(gccontent)
-
-# Relaxed purifying selection #
-
-stopvalsOL_RelPurSel = pstopsel(simcodons,stopvalsOL,gccontent)
-
-# Stringent purifying selection 
-
-stopvalsOL_MaxPurSel = pstopsel(syncodons,stopvalsOL,gccontent)
-
-
-
-function orfprobs(ATG,stop,k,ptype::Bool,polya)
-
-    if(!ptype)
-        stopprobc = stop[xProb] - polya[xProb]
-        stopgainc = stop[xGain]*(1-stopprobc)/(1-stop[xProb])
-    else
-        stopgainc = stop[xGain]
-        stopprobc = stop[xProb]
-    end
+    stopgainc = stop[xGain]
+    stopprobc = stop[xProb]
 
     nostopstay = 1 - stopprobc - stopgainc
 
@@ -256,6 +248,87 @@ function orfprobs(ATG,stop,k,ptype::Bool,polya)
     return [orfprob; orfgain; orfloss; orfstay]
 end
 
+ncodons = [30:300;];
+gcrange = [0.3:0.05:0.6;];
+
+orfvalsITG = zeros(length(gcrange),length(ncodons),4);
+orfvalsONS, orfvalsORS, orfvalsOSS = [zeros(length(gcrange),length(ncodons),3,4) for i = 1:3];
+
+PStpR = zeros(size(gcrange));
+GstpR, LstpR = [zeros(length(gcrange),3) for i = 1:3];
+
+for g in eachindex(gcrange)
+    atgvals = ATGprobs(gcrange[g])
+
+    # Intergenic region
+    stopitg = stopprobs(gcrange[g])
+
+    # No selection
+    stopvalsOL = stopprobsoverlap(gcrange[g])
+    PStpR[g] = stopvalsOL[1,1]/stopitg[1]
+
+    # Relaxed purifying selection #
+    stopvalsOL_RelPurSel = pstopsel(simcodons,stopvalsOL,gcrange[g])
+    
+    # Stringent purifying selection 
+    stopvalsOL_MaxPurSel = pstopsel(syncodons,stopvalsOL,gcrange[g])
+
+    
+
+    for k in eachindex(ncodons)
+        orfvalsITG[g,k,:] = orfprobs(atgvals,stopitg,ncodons[k])
+        for f in 1:3
+            orfvalsONS[g,k,f,:] = orfprobs(atgvals,stopvalsOL[f,:],ncodons[k])
+            orfvalsORS[g,k,f,:] = orfprobs(atgvals,stopvalsOL_RelPurSel[f,:],ncodons[k])
+            orfvalsOSS[g,k,f,:] = orfprobs(atgvals,stopvalsOL_MaxPurSel[f,:],ncodons[k])
+        end
+    end
+    println("Done: ",gcrange[g])
+end
+
+plots_gain, plots_loss = [Array{Plots.Plot{Plots.GRBackend}}(undef,3,3) for i = 1:2]; 
+
+rat = zeros(length(ncodons),4,3,2);
+gx = [1:2:7;];
+
+pnames = ["stationary","gain","loss"];
+snames = ["No selection", "Relaxed", "Stringent"];
+for f = 1:3
+    for p = 1:2
+        rat[:,:,1,p] = log2.(orfvalsONS[gx,:,f,p+1]./orfvalsITG[gx,:,p+1])'
+        rat[:,:,2,p] = log2.(orfvalsORS[gx,:,f,p+1]./orfvalsITG[gx,:,p+1])'
+        rat[:,:,3,p] = log2.(orfvalsOSS[gx,:,f,p+1]./orfvalsITG[gx,:,p+1])'
+    end
+    for s in 1:3
+        ydatag = rat[:,:,s,1]
+        lbg = minimum(ydatag); ubg = maximum(ydatag)
+        mng = maximum(abs.(ydatag));
+        mng>10 ? d = 2 : d = 3
+        plots_gain[f,s] = plot(ncodons, ydatag[:,1],
+            linecolor = colors[1],
+            yticks = round.(range(lbg,stop=ubg,length = 4),digits=d)
+        );
+
+        ydatal = rat[:,:,s,2]
+        lbl = minimum(ydatal); ubl = maximum(ydatal)
+        mnl = maximum(abs.(ydatal));
+        mnl>10 ? d = 2 : d = 3
+        plots_loss[f,s] = plot(ncodons, ydatal[:,1],
+            linecolor = colors[1],
+            yticks = round.(range(lbl,stop=ubl,length = 4),digits=d)
+        );
+        for q = 2:4
+            plot!(plots_gain[f,s],ncodons,ydatag[:,q], linecolor = colors[q]);
+            plot!(plots_loss[f,s],ncodons,ydatal[:,q], linecolor = colors[q]);
+        end  
+    end
+end
+
+pG = plot(plots_gain..., size = (width = cm2pt(27.5), height = cm2pt(25)));
+savefig(pG, figdir*"pORFgain_antisense.pdf")
+
+pL = plot(plots_loss..., size = (width = cm2pt(27.5), height = cm2pt(25)));
+savefig(pL, figdir*"pORFloss_antisense.pdf")
 
 # De novo sequence divergence #
 
