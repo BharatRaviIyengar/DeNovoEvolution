@@ -10,12 +10,6 @@ colors = ["#FFCC00","#5599FF","#D40000","#000000"];
 default(linecolor = :black, linewidth = 2, tickfont = font(10,"Helvetica"), 
 guidefont = font(13,"Helvetica"),framestyle = :box, legend = false);
 
-data, header = readdlm(joinpath(Base.source_dir(),"trimers1CDS.txt"), '\t', header=true);
-header = replace.(header, r"[^A-Z,a-z]" => "");
-mers3freq = DataFrame(data[:,[1,3]], header[[1,3]]);
-
-nprob3 = x -> mers3freq.Frequency[mers3freq.kmer .== x][1]
-
 stopcodons = ["TAA","TAG","TGA"]
 function nostop(codonset)
 	codonset[codonset .∉ Ref(stopcodons)]
@@ -253,6 +247,8 @@ function orfprobs(ATG,stop,k)
     orfstay = ATG[xStay]*stop[xStay]*(nostopstay)^(k-2)
     return [orfprob; orfgain; orfloss; orfstay]
 end
+
+include("antisenseGenes_supplement.jl")
 
 ncodons = [30:300;];
 gcrange = [0.3:0.05:0.6;];

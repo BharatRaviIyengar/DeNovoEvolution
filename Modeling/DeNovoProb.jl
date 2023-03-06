@@ -2,6 +2,7 @@ using Combinatorics
 using Plots
 using Measures
 # using HypothesisTests
+using DataFrames
 
 include("nucleotidefuncts.jl")
 
@@ -18,6 +19,61 @@ gccontent = 0.41
 (xProb, xGain, xLoss, xStay) = [i for i in 1:4];
 
 mers6 = kmers(6);
+
+# Data based calculations #
+
+data, header = readdlm(joinpath(Base.source_dir(),"hexamers2.txt"), '\t', header=true);
+header = replace.(header, r"[^A-Z,a-z]" => "");
+mers6freq = DataFrame(data[:,[1,3]], header[[1,3]]);
+
+data, header = readdlm(joinpath(Base.source_dir(),"trimers2.txt"), '\t', header=true);
+header = replace.(header, r"[^A-Z,a-z]" => "");
+mers3freq = DataFrame(data[:,[1,3]], header[[1,3]]);
+
+nprob6 = x -> mers6freq.Frequency[mers6freq.kmer .== x][1]
+nprob3 = x -> mers3freq.Frequency[mers3freq.kmer .== x][1]
+
+function featuregain3(set1,set2)
+    if(isempty(set1) || isempty(set2))
+        @warn "empty feature sets, returning 0"
+        return 0
+    end
+    v1 = sum([nprob3(s1)*sum([mprob(s1,s2) for s2 in set2])
+                for s1 in set1])
+    return v1
+end
+
+function featurestay3(set1)
+    v =  sum(
+        [nprob3(s1)*(
+            sum([mprob(s1,s2) for s2 in set1]) +
+            (1-µA(mutrate,nsub))^numAT(s1)*
+            (1-µG(mutrate,nsub))^(3-numAT(s1))
+            ) for s1 in set1]
+        )
+    return v
+end
+
+function featuregain6(set1,set2)
+    if(isempty(set1) || isempty(set2))
+        @warn "empty feature sets, returning 0"
+        return 0
+    end
+    v1 = sum([nprob6(s1)*sum([mprob(s1,s2) for s2 in set2])
+                for s1 in set1])
+    return v1
+end
+
+function featurestay6(set1)
+    v =  sum(
+        [nprob6(s1)*(
+            sum([mprob(s1,s2) for s2 in set1]) +
+            (1-µA(mutrate,nsub))^numAT(s1)*
+            (1-µG(mutrate,nsub))^(6-numAT(s1))
+            ) for s1 in set1]
+        )
+    return v
+end
 
 ## TATA box
 # Consensus sequence = TATAWAWR
