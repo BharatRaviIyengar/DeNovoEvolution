@@ -227,3 +227,48 @@ function featurestay(set1,gccontent)
         )
     return v
 end
+
+nprob3 = (x,t3) -> t3[t3[:,1] .== x,2][1]
+nprob6 = (x,t6) -> t6[t6[:,1] .== x,2][1]
+
+function featuregain3(set1,set2,t3)
+    if(isempty(set1) || isempty(set2))
+        @warn "empty feature sets, returning 0"
+        return 0
+    end
+    v1 = sum([nprob3(s1,t3)*sum([mprob(s1,s2) for s2 in set2])
+                for s1 in set1])
+    return v1[1]
+end
+
+function featurestay3(set1,t3)
+    v =  sum(
+        [nprob3(s1,t3)*(
+            sum([mprob(s1,s2) for s2 in set1]) +
+            (1-µA(mutrate,nsub))^numAT(s1)*
+            (1-µG(mutrate,nsub))^(3-numAT(s1))
+            ) for s1 in set1]
+        )
+    return v[1]
+end
+
+function featuregain6(set1,set2,t6)
+    if(isempty(set1) || isempty(set2))
+        @warn "empty feature sets, returning 0"
+        return 0
+    end
+    v1 = sum([nprob6(s1,t6)*sum([mprob(s1,s2) for s2 in set2])
+                for s1 in set1])
+    return v1[1]
+end
+
+function featurestay6(set1,t6)
+    v =  sum(
+        [nprob6(s1,t6)*(
+            sum([mprob(s1,s2) for s2 in set1]) +
+            (1-µA(mutrate,nsub))^numAT(s1)*
+            (1-µG(mutrate,nsub))^(6-numAT(s1))
+            ) for s1 in set1]
+        )
+    return v[1]
+end

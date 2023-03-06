@@ -22,58 +22,8 @@ mers6 = kmers(6);
 
 # Data based calculations #
 
-data, header = readdlm(joinpath(Base.source_dir(),"hexamers2.txt"), '\t', header=true);
-header = replace.(header, r"[^A-Z,a-z]" => "");
-mers6freq = DataFrame(data[:,[1,3]], header[[1,3]]);
-
-data, header = readdlm(joinpath(Base.source_dir(),"trimers2.txt"), '\t', header=true);
-header = replace.(header, r"[^A-Z,a-z]" => "");
-mers3freq = DataFrame(data[:,[1,3]], header[[1,3]]);
-
-nprob6 = x -> mers6freq.Frequency[mers6freq.kmer .== x][1]
-nprob3 = x -> mers3freq.Frequency[mers3freq.kmer .== x][1]
-
-function featuregain3(set1,set2)
-    if(isempty(set1) || isempty(set2))
-        @warn "empty feature sets, returning 0"
-        return 0
-    end
-    v1 = sum([nprob3(s1)*sum([mprob(s1,s2) for s2 in set2])
-                for s1 in set1])
-    return v1
-end
-
-function featurestay3(set1)
-    v =  sum(
-        [nprob3(s1)*(
-            sum([mprob(s1,s2) for s2 in set1]) +
-            (1-µA(mutrate,nsub))^numAT(s1)*
-            (1-µG(mutrate,nsub))^(3-numAT(s1))
-            ) for s1 in set1]
-        )
-    return v
-end
-
-function featuregain6(set1,set2)
-    if(isempty(set1) || isempty(set2))
-        @warn "empty feature sets, returning 0"
-        return 0
-    end
-    v1 = sum([nprob6(s1)*sum([mprob(s1,s2) for s2 in set2])
-                for s1 in set1])
-    return v1
-end
-
-function featurestay6(set1)
-    v =  sum(
-        [nprob6(s1)*(
-            sum([mprob(s1,s2) for s2 in set1]) +
-            (1-µA(mutrate,nsub))^numAT(s1)*
-            (1-µG(mutrate,nsub))^(6-numAT(s1))
-            ) for s1 in set1]
-        )
-    return v
-end
+f6= readdlm(joinpath(Base.source_dir(),"hexamers2.txt"), '\t');
+f3 = readdlm(joinpath(Base.source_dir(),"trimers2.txt"), '\t');
 
 ## TATA box
 # Consensus sequence = TATAWAWR
@@ -505,24 +455,24 @@ onlyorfloss = crnastay[dGC,:].*corfloss[dGC,:]./crnaprob[dGC,:];
 promprob = 5331240/43164203; # CRMs in open chromatin / Total intergenic region
 
 polyavalsX = [
-    sum(nprob6.(polyavars)),
-    featuregain6(nopolyas,polyavars),
-    featuregain6(polyavars,nopolyas)/sum(nprob6.(polyavars)),
-    featurestay6(polyavars)
+    sum(nprob6.(polyavars,f6)),
+    featuregain6(nopolyas,polyavars,f6),
+    featuregain6(polyavars,nopolyas,f6)/sum(nprob6.(polyavars,f6)),
+    featurestay6(polyavars,f6)
 ];
 
 ATGvalsX = [
     nprob3("ATG"),
-    featuregain3(noATG,["ATG"]),
-    featuregain3(["ATG"],noATG)/nprob3("ATG"),
-    featurestay3(["ATG"])
+    featuregain3(noATG,["ATG"],f3),
+    featuregain3(["ATG"],noATG,f3)/nprob3("ATG"),
+    featurestay3(["ATG"],f3)
 ];
 
 stopvalsX = [
-    sum(nprob3.(stopvars)),
-    featuregain3(nostop,stopvars),
-    featuregain3(stopvars,nostop)/sum(nprob3.(stopvars)),
-    featurestay3(stopvars)
+    sum(nprob3.(stopvars,f3)),
+    featuregain3(nostop,stopvars,f3),
+    featuregain3(stopvars,nostop,f3)/sum(nprob3.(stopvars,f3)),
+    featurestay3(stopvars,f3)
 ];
 
 (rnaprobX, rnagainX, rnalossX, rnastayX, 
