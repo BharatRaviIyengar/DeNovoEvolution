@@ -19,6 +19,7 @@ end
 dicodonfreq[:,2] = normalize(dicodonfreq[:,2]);
 
 trimerfreq = readdlm(joinpath(Base.source_dir(),"trimers2.txt"), '\t');
+trimerfreq[:,2] = normalize(trimerfreq[:,2])
 
 function ATGprobsX(t3)
     ATGprob = nprob3("ATG",t3)
@@ -41,9 +42,9 @@ end
 function stopprobsoverlapX(t3,t6)
     # Probability of finding a stop codon
 
-    p_stopWithin = [sum(nprob6.(vjoin(stopNbrWithin[x]),t6)) for x in 1:2];
+    p_stopWithin = [sum([nprob6(y,t6) for y in vjoin(stopNbrWithin[x])]) for x in 1:2];
 
-    p_stopR0 = sum(nprob3.(stopneighborsR0,t3));
+    p_stopR0 = sum([nprob3(y,t3) for y in stopneighborsR0]);
     push!(p_stopWithin,p_stopR0);
 
     # Probability of gaining a stop codon
@@ -62,8 +63,7 @@ function stopprobsoverlapX(t3,t6)
 
     s_stopWithin = [featurestay6(vjoin(stopNbrWithin[x]),t6) for x in 1:2];
 
-    push!(s_stopWithin,featurestay3(stopneighborsR0));
-
+    push!(s_stopWithin,featurestay3(stopneighborsR0,t3));
 
     return(hcat(p_stopWithin,g_stopWithin,l_stopWithin, s_stopWithin))
 end
@@ -152,4 +152,49 @@ function pstopselX(sdict,stopvals,t3,t6)
     stay[3] = staysel0X(stopneighborsR0,sdict,t3)
 
     return hcat(pstops,gain,loss,stay)
+end
+
+function aadivframeR_X(frm::Int,sdict::Dict,t6)
+    d = 0
+    p = 0
+    for Z in eachrow(csetR[frm])
+        stZ = phcp(vcat(Z[1],sdict[Z[1]]),vcat(Z[2],sdict[Z[2]]))
+        rcdn = Rcodon(Z,frm)
+        stZ2 = stZ[(eachrow(stZ) .!= Ref(Z)) .& ([Rcodon(y,frm) for y in eachrow(stZ)] .∉ Ref(stopcodons)) ,:]
+        if(isempty(stZ2))
+            dZ=0
+        else
+            dZ = sum([PBMEC2[cdn2aanum(rcdn),cdn2aanum(Rcodon(y,frm))] for y in eachrow(stZ2)])
+        end
+        pZ = nprob6(join(Z),t6)
+        d += abs(dZ)*pZ
+        p += pZ
+    end
+    if p==0
+        return 0
+    else
+        return d/p
+    end
+end
+
+function aadivframe0_X(sdict::Dict,t3)
+    d = 0
+    p = 0
+    for Z in nostopNbr0
+        stZ = sdict[Z]
+        stZ2 = stZ[stZ .!= Z]
+        if(isempty(stZ2))
+            dZ=0
+        else
+            dZ = sum([PBMEC2[cdn2aanum(Z),cdn2aanum(y)] for y in stZ2])
+        end
+        pZ = nprob3(join(Z),t3)
+        d += abs(dZ)*pZ
+        p += pZ
+    end
+    if p==0
+        return 0
+    else
+        return d/p
+    end
 end

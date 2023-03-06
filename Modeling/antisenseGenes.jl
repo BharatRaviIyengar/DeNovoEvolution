@@ -5,7 +5,8 @@ include("nucleotidefuncts.jl")
 
 cm2pt = (cm) -> 28.3465*cm
 figdir = joinpath(Base.source_dir(),"../Manuscripts/Figures/");
-colors = ["#FFCC00","#5599FF","#D40000","#000000"];
+colors = ["#FFCC00","#5599FF","#D40000","#000000","#754473"];
+lstyles = [:solid,:dash,:dot]
 
 default(linecolor = :black, linewidth = 2, tickfont = font(10,"Helvetica"), 
 guidefont = font(13,"Helvetica"),framestyle = :box, legend = false);
@@ -78,7 +79,12 @@ end
 vjoin = (z) -> [join(x) for x in eachrow(z)]
 phcp = (x,y) -> permutedims(hcat(collect.(product(x,y))...))
 
+allaacodonpairs = phcp(nostopcodons,nostopcodons);
 
+csetR = [allaacodonpairs[eachrow(allaacodonpairs) .∉ Ref(eachrow(stopNbrWithin[x])),:] for x in 1:2];
+
+Rcodon = (codonpair,x) -> reverse(comp(join(codonpair)[3-x+1:6-x]))
+cdn2aanum = (cdn) -> aanames[transnucs(cdn)]
 
 # p_synsubs = [featuregain([x],syncodons[x],gccontent) for x in keys(syncodons)]
 # p_simsubs = [featuregain([x],simcodons[x],gccontent) for x in keys(simcodons)]
@@ -248,16 +254,14 @@ function orfprobs(ATG,stop,k)
     return [orfprob; orfgain; orfloss; orfstay]
 end
 
-include("antisenseGenes_supplement.jl")
-
 ncodons = [30:300;];
-gcrange = [0.3:0.05:0.6;];
+gcrange = [0.3:0.1:0.6;];
 
 orfvalsITG = zeros(length(gcrange),length(ncodons),4);
 orfvalsONS, orfvalsORS, orfvalsOSS = [zeros(length(gcrange),length(ncodons),3,4) for i = 1:3];
 
-PStpR = zeros(size(gcrange));
-GstpR, LstpR = [zeros(length(gcrange),3) for i = 1:3];
+PstpR = zeros(3,length(gcrange));
+GstpR, LstpR = [zeros(3,3,length(gcrange)) for i = 1:2];
 
 for g in eachindex(gcrange)
     atgvals = ATGprobs(gcrange[g])
@@ -267,7 +271,7 @@ for g in eachindex(gcrange)
 
     # No selection
     stopvalsOL = stopprobsoverlap(gcrange[g])
-    PStpR[g] = stopvalsOL[1,1]/stopitg[1]
+    PstpR[:,g] = stopvalsOL[:,1]/stopitg[1]
 
     # Relaxed purifying selection #
     stopvalsOL_RelPurSel = pstopsel(simcodons,stopvalsOL,gcrange[g])
@@ -275,7 +279,9 @@ for g in eachindex(gcrange)
     # Stringent purifying selection 
     stopvalsOL_MaxPurSel = pstopsel(syncodons,stopvalsOL,gcrange[g])
 
-    
+    GstpR[:,:,g] = hcat(stopvalsOL[:,2], stopvalsOL_RelPurSel[:,2], stopvalsOL_RelPurSel[:,2])/stopitg[2];
+
+    LstpR[:,:,g] = hcat(stopvalsOL[:,3], stopvalsOL_RelPurSel[:,3], stopvalsOL_RelPurSel[:,3])/stopitg[3];
 
     for k in eachindex(ncodons)
         orfvalsITG[g,k,:] = orfprobs(atgvals,stopitg,ncodons[k])
@@ -288,18 +294,39 @@ for g in eachindex(gcrange)
     println("Done: ",gcrange[g])
 end
 
+include("antisenseGenes_supplement.jl")
+
+orfvalsITG_X = zeros(length(ncodons),4);
+orfvalsONS_X, orfvalsORS_X, orfvalsOSS_X = [zeros(length(ncodons),3,4) for i = 1:3];
+
+atgvals_X = ATGprobsX(trimerfreq)
+stopitg_X = stopprobsX(trimerfreq)
+stopvalsONS_X = stopprobsoverlapX(codonfreq,dicodonfreq)
+stopvalsORS_X = pstopselX(simcodons,stopvalsONS_X,codonfreq,dicodonfreq)
+stopvalsOSS_X = pstopselX(syncodons,stopvalsONS_X,codonfreq,dicodonfreq)
+
+for k in eachindex(ncodons)
+    orfvalsITG_X[k,:] = orfprobs(atgvals_X,stopitg_X,ncodons[k])
+    for f in 1:3
+        orfvalsONS_X[k,f,:] = orfprobs(atgvals_X,stopvalsONS_X[f,:],ncodons[k])
+        orfvalsORS_X[k,f,:] = orfprobs(atgvals_X,stopvalsORS_X[f,:],ncodons[k])
+        orfvalsOSS_X[k,f,:] = orfprobs(atgvals_X,stopvalsOSS_X[f,:],ncodons[k])
+    end
+end
+
 plots_gain, plots_loss = [Array{Plots.Plot{Plots.GRBackend}}(undef,3,3) for i = 1:2]; 
 
 rat = zeros(length(ncodons),4,3,2);
-gx = [1:2:7;];
+gx = [1:4;];
 
 pnames = ["stationary","gain","loss"];
 snames = ["No selection", "Relaxed", "Stringent"];
+
 for f = 1:3
     for p = 1:2
-        rat[:,:,1,p] = log2.(orfvalsONS[gx,:,f,p+1]./orfvalsITG[gx,:,p+1])'
-        rat[:,:,2,p] = log2.(orfvalsORS[gx,:,f,p+1]./orfvalsITG[gx,:,p+1])'
-        rat[:,:,3,p] = log2.(orfvalsOSS[gx,:,f,p+1]./orfvalsITG[gx,:,p+1])'
+        rat[:,1:4,1,p] = log2.(orfvalsONS[gx,:,f,p+1]./orfvalsITG[gx,:,p+1])'
+        rat[:,1:4,2,p] = log2.(orfvalsORS[gx,:,f,p+1]./orfvalsITG[gx,:,p+1])'
+        rat[:,1:4,3,p] = log2.(orfvalsOSS[gx,:,f,p+1]./orfvalsITG[gx,:,p+1])'
     end
     for s in 1:3
         ydatag = rat[:,:,s,1]
@@ -308,7 +335,7 @@ for f = 1:3
         mng>10 ? d = 2 : d = 3
         plots_gain[f,s] = plot(ncodons, ydatag[:,1],
             linecolor = colors[1],
-            yticks = round.(range(lbg,stop=ubg,length = 4),digits=d)
+            yticks = round.(range(lbg,stop=ubg,length = 4))
         );
 
         ydatal = rat[:,:,s,2]
@@ -317,12 +344,13 @@ for f = 1:3
         mnl>10 ? d = 2 : d = 3
         plots_loss[f,s] = plot(ncodons, ydatal[:,1],
             linecolor = colors[1],
-            yticks = round.(range(lbl,stop=ubl,length = 4),digits=d)
+            yticks = round.(range(lbl,stop=ubl,length = 4),digits=2)
         );
         for q = 2:4
             plot!(plots_gain[f,s],ncodons,ydatag[:,q], linecolor = colors[q]);
             plot!(plots_loss[f,s],ncodons,ydatal[:,q], linecolor = colors[q]);
-        end  
+        end
+
     end
 end
 
@@ -332,30 +360,66 @@ savefig(pG, figdir*"pORFgain_antisense.pdf")
 pL = plot(plots_loss..., size = (width = cm2pt(27.5), height = cm2pt(25)));
 savefig(pL, figdir*"pORFloss_antisense.pdf")
 
+plots_gain_dmel, plots_loss_dmel = [Array{Plots.Plot{Plots.GRBackend}}(undef,1,3) for i = 1:2];
+
+
+rat_dmel = zeros(length(ncodons),3,2);
+
+for f = 1:3
+    for p = 1:2
+        rat_dmel[:,1,p] = log2.(orfvalsONS_X[:,f,p+1]./orfvalsITG_X[:,p+1])'
+        rat_dmel[:,2,p] = log2.(orfvalsORS_X[:,f,p+1]./orfvalsITG_X[:,p+1])'
+        rat_dmel[:,3,p] = log2.(orfvalsOSS_X[:,f,p+1]./orfvalsITG_X[:,p+1])'
+    end
+
+    ydatag = rat_dmel[:,:,1]
+    lbg = minimum(ydatag); ubg = maximum(ydatag)
+    mng = maximum(abs.(ydatag));
+    mng>10 ? d = 2 : d = 3
+    plots_gain_dmel[f] = plot(ncodons, ydatag[:,1],
+        linestyle = lstyles[1],
+        yticks = round.(range(lbg,stop=ubg,length = 4),digits=1)
+    );
+
+    ydatal = rat_dmel[:,:,2]
+    lbl = minimum(ydatal); ubl = maximum(ydatal)
+    mnl = maximum(abs.(ydatal));
+    mnl>10 ? d = 2 : d = 3
+    plots_loss_dmel[f] = plot(ncodons, ydatal[:,1],
+        linestyle = lstyles[1],
+         yticks = round.(range(lbl,stop=ubl,length = 4),digits=1)
+    );
+
+    for q = 2:3
+        plot!(plots_gain_dmel[f],ncodons,ydatag[:,q], linestyle = lstyles[q]);
+        plot!(plots_loss_dmel[f],ncodons,ydatal[:,q], linestyle = lstyles[q]);
+    end
+
+end
+
+pGD = plot(plots_gain_dmel..., layout = (1,3), size = (width = cm2pt(27.5), height = cm2pt(9)));
+savefig(pGD, figdir*"pORFgain_antisense_dmel.pdf")
+
+pLD = plot(plots_loss_dmel..., layout = (1,3), size = (width = cm2pt(27.5), height = cm2pt(9)));
+savefig(pLD, figdir*"pORFloss_antisense_dmel.pdf")
+
 # De novo sequence divergence #
 
-allaacodonpairs = phcp(nostopcodons,nostopcodons);
 
-csetR = [allaacodonpairs[eachrow(allaacodonpairs) .∉ Ref(eachrow(stopNbrWithin[x])),:] for x in 1:2];
-
-Rcodon = (codonpair,x) -> reverse(comp(join(codonpair)[3-x+1:6-x]))
-
-cdn2aanum = (cdn) -> aanames[transnucs(cdn)]
-
-function aadivframeR(frm::Int,sdict::Dict)
+function aadivframeR(frm::Int,sdict::Dict,gccontent)
     d = 0
     p = 0
     for Z in eachrow(csetR[frm])
         stZ = phcp(vcat(Z[1],sdict[Z[1]]),vcat(Z[2],sdict[Z[2]]))
         rcdn = Rcodon(Z,frm)
-        stZ2 = stZ[(eachrow(stZ) .!= Ref(Z)) .& ([Rcodon(y,frm) for y in eachrow(stZ)] .∉ Ref(stop)) ,:]
+        stZ2 = stZ[(eachrow(stZ) .!= Ref(Z)) .& ([Rcodon(y,frm) for y in eachrow(stZ)] .∉ Ref(stopcodons)) ,:]
         if(isempty(stZ2))
             dZ=0
         else
             dZ = sum([PBMEC2[cdn2aanum(rcdn),cdn2aanum(Rcodon(y,frm))] for y in eachrow(stZ2)])
         end
         pZ = nucprob(join(Z),gccontent)
-        d += dZ*pZ
+        d += abs(dZ)*pZ
         p += pZ
     end
     if p==0
@@ -365,7 +429,7 @@ function aadivframeR(frm::Int,sdict::Dict)
     end
 end
 
-function aadivframe0(sdict::Dict)
+function aadivframe0(sdict::Dict,gccontent)
     d = 0
     p = 0
     for Z in nostopNbr0
@@ -376,8 +440,8 @@ function aadivframe0(sdict::Dict)
         else
             dZ = sum([PBMEC2[cdn2aanum(Z),cdn2aanum(y)] for y in stZ2])
         end
-        pZ = nucprob(join(Z),gccontent)
-        d += dZ*pZ
+        pZ = nucprob(Z,gccontent)
+        d += abs(dZ)*pZ
         p += pZ
     end
     if p==0
@@ -387,12 +451,22 @@ function aadivframe0(sdict::Dict)
     end
 end
 
-divergence_PurSel_Max = [aadivframeR(x,syncodons) for x in 1:2]
-push!(divergence_PurSel_Max,aadivframe0(syncodons))
+divergence_PurSel_Max, divergence_PurSel_Rel = [zeros(length(gcrange),3) for i = 1:2];
 
-divergence_PurSel_Rel = [aadivframeR(x,simcodons) for x in 1:2]
-push!(divergence_PurSel_Rel,aadivframe0(simcodons))
+for g in eachindex(gcrange)
+    gcx = gcrange[g]
+    divergence_PurSel_Max[g,1:2] = [aadivframeR(x,syncodons,gcx) for x in 1:2]
+    divergence_PurSel_Max[g,3] = aadivframe0(syncodons,gcx)
 
+    divergence_PurSel_Rel[g,1:2] = [aadivframeR(x,simcodons,gcx) for x in 1:2]
+    divergence_PurSel_Rel[g,3] = aadivframe0(simcodons,gcx)
+end
+
+divergence_PurSel_Rel_X = [aadivframeR_X(x,simcodons,dicodonfreq) for x in 1:2]
+push!(divergence_PurSel_Rel_X,aadivframe0_X(simcodons,codonfreq))
+
+divergence_PurSel_Max_X = [aadivframeR_X(x,syncodons,dicodonfreq) for x in 1:2]
+push!(divergence_PurSel_Max_X,aadivframe0_X(syncodons,codonfreq))
 
 # # INTRONS #
 
