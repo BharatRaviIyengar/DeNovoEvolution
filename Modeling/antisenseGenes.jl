@@ -3,6 +3,8 @@ using Measures
 cd(Base.source_dir())
 include("nucleotidefuncts.jl")
 
+organism = "dmel"
+
 cm2pt = (cm) -> 28.3465*cm
 figdir = joinpath(Base.source_dir(),"../Manuscripts/Figures/");
 colors = ["#FFCC00","#5599FF","#D40000","#000000","#754473"];
@@ -16,29 +18,12 @@ function nostop(codonset)
 	codonset[codonset .∉ Ref(stopcodons)]
 end
 
-gccontent = 0.493611; # all mRNA #
-# gccontent = 0.53942 # all CDS #
-
 (xProb, xGain, xLoss, xStay) = [i for i in 1:4];
-
-p_T = 0.204217;
-p_A = 0.256362;
-p_G = 0.267809;
-p_C = 0.271612;
-
-nfmat = zeros(4,1);
-
-nfmat[nucnames['A']] = 0.256362;
-nfmat[nucnames['T']] = 0.204217;
-nfmat[nucnames['G']] = 0.267809;
-nfmat[nucnames['A']] = 0.271612;
-
-function nucprobss(s,nfmat)
-    return prod([nfmat[nucnames[x]] for x in s])
-end
 
 allcodons = kmers(3)
 nostopcodons = nostop(allcodons);
+
+nsub, nucsmbt = readdlm(organism*"_mutbias.txt",'\t',header = true);
 
 noATG = setdiff(allcodons, ["ATG"]);
 function ATGprobs(gccontent)
@@ -335,7 +320,7 @@ for f = 1:3
         mng>10 ? d = 2 : d = 3
         plots_gain[f,s] = plot(ncodons, ydatag[:,1],
             linecolor = colors[1],
-            yticks = round.(range(lbg,stop=ubg,length = 4))
+            yticks = round.(range(lbg,stop=ubg,length = 4),digits=2)
         );
 
         ydatal = rat[:,:,s,2]
@@ -355,10 +340,10 @@ for f = 1:3
 end
 
 pG = plot(plots_gain..., size = (width = cm2pt(27.5), height = cm2pt(25)));
-savefig(pG, figdir*"pORFgain_antisense.pdf")
+savefig(pG, figdir*"pORFgain_antisense_"*organism*"GC.pdf")
 
 pL = plot(plots_loss..., size = (width = cm2pt(27.5), height = cm2pt(25)));
-savefig(pL, figdir*"pORFloss_antisense.pdf")
+savefig(pL, figdir*"pORFloss_antisense_"*organism*"GC.pdf")
 
 plots_gain_dmel, plots_loss_dmel = [Array{Plots.Plot{Plots.GRBackend}}(undef,1,3) for i = 1:2];
 
@@ -398,10 +383,10 @@ for f = 1:3
 end
 
 pGD = plot(plots_gain_dmel..., layout = (1,3), size = (width = cm2pt(27.5), height = cm2pt(9)));
-savefig(pGD, figdir*"pORFgain_antisense_dmel.pdf")
+savefig(pGD, figdir*"pORFgain_antisense_"*organism*"WC.pdf")
 
 pLD = plot(plots_loss_dmel..., layout = (1,3), size = (width = cm2pt(27.5), height = cm2pt(9)));
-savefig(pLD, figdir*"pORFloss_antisense_dmel.pdf")
+savefig(pLD, figdir*"pORFloss_antisense_"*organism*"WC.pdf")
 
 # De novo sequence divergence #
 
@@ -467,3 +452,46 @@ push!(divergence_PurSel_Rel_X,aadivframe0_X(simcodons,codonfreq))
 
 divergence_PurSel_Max_X = [aadivframeR_X(x,syncodons,dicodonfreq) for x in 1:2]
 push!(divergence_PurSel_Max_X,aadivframe0_X(syncodons,codonfreq))
+
+alldivRel = vcat(divergence_PurSel_Rel,divergence_PurSel_Rel_X')
+alldivMax = vcat(divergence_PurSel_Max,divergence_PurSel_Max_X')
+
+bwf = 1/7;
+
+pDivRel = plot(
+    xlabel = "Frame",
+    ylabel = "Divergence", 
+    size = (width = cm2pt(11.5), height = cm2pt(10)),   
+);
+
+
+for j = 1:3
+    bar!(pDivRel,[j+x*bwf for x in 1:5],alldivRel[:,j],
+        fill = colors,
+        bar_width = bwf,
+        linecolor = nothing
+    )
+end
+
+xticks!(pDivRel,[1:3;] .+ 3*bwf, string.([1,2,0]));
+
+savefig(pDivRel,figdir*"DivergenceRel_"*organism*".pdf")
+
+
+pDivMax = plot(
+    xlabel = "Frame",
+    ylabel = "Divergence", 
+    size = (width = cm2pt(11.5), height = cm2pt(10)),   
+);
+
+for j = 1:3
+    bar!(pDivMax,[j+x*bwf for x in 1:5],alldivMax[:,j],
+        fill = colors,
+        bar_width = bwf,
+        linecolor = nothing
+    )
+end
+
+xticks!(pDivMax,[1:3;] .+ 3*bwf, string.([1,2,0]));
+
+savefig(pDivMax,figdir*"DivergenceMax_"*organism*".pdf")

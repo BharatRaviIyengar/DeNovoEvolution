@@ -2,8 +2,8 @@ using DelimitedFiles
 
 normalize = x -> x/sum(x)
 
-codonfreq = readdlm(joinpath(Base.source_dir(),"dmel_orf_codonfreq.txt"), '\t');
-dicodonfreq = readdlm(joinpath(Base.source_dir(),"dmel_orf_dicodonfreq.txt"), '\t');
+codonfreq = readdlm(joinpath(Base.source_dir(),organism*"_orf_codonfreq.txt"), '\t');
+dicodonfreq = readdlm(joinpath(Base.source_dir(),organism*"_orf_dicodonfreq.txt"), '\t');
 # codonfreq[codonfreq[:,1] .∈ Ref(stopcodons),2] .= 0;
 # codonfreq[:,2] = normalize(codonfreq[:,2]);
 
@@ -19,7 +19,7 @@ dicodonfreq = readdlm(joinpath(Base.source_dir(),"dmel_orf_dicodonfreq.txt"), '\
 
 # dicodonfreq[:,2] = normalize(dicodonfreq[:,2]);
 
-trimerfreq = readdlm(joinpath(Base.source_dir(),"dmel_intergenic_trimers.txt"), '\t');
+trimerfreq = readdlm(joinpath(Base.source_dir(),organism*"_intergenic_trimers.txt"), '\t');
 trimerfreq[:,2] = normalize(trimerfreq[:,2])
 
 function ATGprobsX(t3)
