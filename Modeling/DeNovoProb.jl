@@ -22,8 +22,8 @@ mers6 = kmers(6);
 
 # Data based calculations #
 
-f6= readdlm(joinpath(Base.source_dir(),"hexamers2.txt"), '\t');
-f3 = readdlm(joinpath(Base.source_dir(),"trimers2.txt"), '\t');
+f6= readdlm(joinpath(Base.source_dir(),"dmel_intergenic_hexamers.txt"), '\t');
+f3 = readdlm(joinpath(Base.source_dir(),"dmel_intergenic_trimers.txt"), '\t');
 
 ## TATA box
 # Consensus sequence = TATAWAWR
