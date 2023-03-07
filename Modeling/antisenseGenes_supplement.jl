@@ -2,23 +2,24 @@ using DelimitedFiles
 
 normalize = x -> x/sum(x)
 
-codonfreq = readdlm(joinpath(Base.source_dir(),"codons.txt"), '\t');
-codonfreq[codonfreq[:,1] .∈ Ref(stopcodons),2] .= 0;
-codonfreq[:,2] = codonfreq[:,2]/sum(codonfreq[:,2]);
+codonfreq = readdlm(joinpath(Base.source_dir(),"dmel_orf_codonfreq.txt"), '\t');
+dicodonfreq = readdlm(joinpath(Base.source_dir(),"dmel_orf_dicodonfreq.txt"), '\t');
+# codonfreq[codonfreq[:,1] .∈ Ref(stopcodons),2] .= 0;
+# codonfreq[:,2] = normalize(codonfreq[:,2]);
 
-dcfreqdata = readdlm(joinpath(Base.source_dir(),"dicodons.txt"), '\t');
-cc = z -> [x[z:z+2] for x in dcfreqdata[:,1]]
+# dcfreqdata = readdlm(joinpath(Base.source_dir(),"dmel_orf_dicodonfreq.txt"), '\t');
+# cc = z -> [x[z:z+2] for x in dcfreqdata[:,1]]
 
-dcfreqdata[(cc(1) .∈ Ref(stopcodons)) .| (cc(3) .∈ Ref(stopcodons)) ,2] .= 0;
+# dcfreqdata[(cc(1) .∈ Ref(stopcodons)) .| (cc(4) .∈ Ref(stopcodons)) ,2] .= 0;
 
-dicodonfreq = hcat(kmers(6),zeros(4^6,1));
-for x in eachrow(dcfreqdata)
-    dicodonfreq[dicodonfreq[:,1] .== x[1],2] .= x[2];
-end
+# dicodonfreq = hcat(kmers(6),zeros(4^6,1));
+# for x in eachrow(dcfreqdata)
+#     dicodonfreq[dicodonfreq[:,1] .== x[1],2] .= x[2];
+# end
 
-dicodonfreq[:,2] = normalize(dicodonfreq[:,2]);
+# dicodonfreq[:,2] = normalize(dicodonfreq[:,2]);
 
-trimerfreq = readdlm(joinpath(Base.source_dir(),"trimers2.txt"), '\t');
+trimerfreq = readdlm(joinpath(Base.source_dir(),"dmel_intergenic_trimers.txt"), '\t');
 trimerfreq[:,2] = normalize(trimerfreq[:,2])
 
 function ATGprobsX(t3)

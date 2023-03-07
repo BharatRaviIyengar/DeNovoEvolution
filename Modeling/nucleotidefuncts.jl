@@ -105,38 +105,9 @@ end
 
 
 
-nsub = zeros(4,4);
-
-nsub[1,2] = 0.056043956043956;
-nsub[1,3] = 0.242857142857143;
-nsub[1,4] = 0.074725274725275;
-nsub[3,1] = 0.438461538461539;
-nsub[3,2] = 0.075164835164835;
-nsub[3,4] = 1 - sum(nsub[1,:]) - sum(nsub[3,1:2]);
-nsub[2,1] = nsub[1,2];
-nsub[2,3] = nsub[1,4];
-nsub[2,4] = nsub[1,3];
-nsub[4,3] = nsub[3,4];
-nsub[4,2] = nsub[3,1];
-nsub[4,1] = nsub[3,2];
+nsub, nucsmbt = readdlm("dmel_mutbias.txt",'\t',header = true);
 
 mutrate = 7.8e-9
-
-
-nsubbac = zeros(4,4)
-
-nsubbac[1,2] = 0.0031813361611877;
-nsubbac[1,3] = 0.0095440084835631;
-nsubbac[1,4] = 0.0031813361611877;
-nsubbac[3,1] = 0.0689289501590668;
-nsubbac[3,2] = 0.907741251325557;
-nsubbac[3,4] = 1 - sum(nsubbac[1,:]) - sum(nsubbac[3,1:2]);
-nsubbac[2,1] = nsubbac[1,2];
-nsubbac[2,3] = nsubbac[1,4];
-nsubbac[2,4] = nsubbac[1,3];
-nsubbac[4,3] = nsubbac[3,4];
-nsubbac[4,2] = nsubbac[3,1];
-nsubbac[4,1] = nsubbac[3,2];
 
 mutratebac = 2e-8;
 

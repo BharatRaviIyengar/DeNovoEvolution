@@ -81,11 +81,6 @@ phcp = (x,y) -> permutedims(hcat(collect.(product(x,y))...))
 
 allaacodonpairs = phcp(nostopcodons,nostopcodons);
 
-csetR = [allaacodonpairs[eachrow(allaacodonpairs) .∉ Ref(eachrow(stopNbrWithin[x])),:] for x in 1:2];
-
-Rcodon = (codonpair,x) -> reverse(comp(join(codonpair)[3-x+1:6-x]))
-cdn2aanum = (cdn) -> aanames[transnucs(cdn)]
-
 # p_synsubs = [featuregain([x],syncodons[x],gccontent) for x in keys(syncodons)]
 # p_simsubs = [featuregain([x],simcodons[x],gccontent) for x in keys(simcodons)]
 
@@ -115,6 +110,11 @@ nostopneighbors = [unique(vcat(frameXcpairs.(nostopcodons,-x)...), dims = 1) for
 nostopNbr0 = nostopcodons[nostopcodons .∉ Ref(stopneighborsR0)];
 
 nostopNbrWithin = [nostopneighbors[x][(nostopneighbors[x][:,1] .∉ Ref(stopcodons)) .& (nostopneighbors[x][:,2] .∉ Ref(stopcodons)),:] for x in 1:2];
+
+csetR = [allaacodonpairs[eachrow(allaacodonpairs) .∉ Ref(eachrow(stopNbrWithin[x])),:] for x in 1:2];
+
+Rcodon = (codonpair,x) -> reverse(comp(join(codonpair)[3-x+1:6-x]))
+cdn2aanum = (cdn) -> aanames[transnucs(cdn)]
 
 
 function stopprobsoverlap(gccontent)
@@ -467,31 +467,3 @@ push!(divergence_PurSel_Rel_X,aadivframe0_X(simcodons,codonfreq))
 
 divergence_PurSel_Max_X = [aadivframeR_X(x,syncodons,dicodonfreq) for x in 1:2]
 push!(divergence_PurSel_Max_X,aadivframe0_X(syncodons,codonfreq))
-
-# # INTRONS #
-
-# # Intron frame frequency (dmel-6.46) #
-
-# intfrm2 = 0.423237
-# intfrm1 = 0.281180
-# intfrm0 = 0.295583
-
-# # Intron nucleotide frequency (dmel-6.46) #
-# first6 = [
-#     0.000763	0.998862	0.000264	0.000083;
-#     0.000403	0.000222	0.990159	0.009147;
-#     0.601574	0.332121	0.052466	0.013755;
-#     0.740860	0.097563	0.095633	0.065819;
-#     0.087000	0.821628	0.065236	0.025997;
-#     0.133678	0.066222	0.681662	0.118299;
-# ];
-
-# last6 = [
-#     0.000347	0.998612	0.000555	0.000444;
-#     0.998820	0.000194	0.000472	0.000458;
-#     0.062405	0.002637	0.252797	0.682106;
-#     0.268023	0.281431	0.288274	0.162188;
-#     0.126433	0.047942	0.621853	0.203689;
-#     0.119868	0.063307	0.588166	0.228576;
-# ];
-
