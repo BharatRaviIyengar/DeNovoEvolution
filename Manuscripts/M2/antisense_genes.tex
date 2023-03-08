@@ -29,13 +29,14 @@
   \textbf{\large\abstractname\\[1em]} % with a normal space
 }
 
-\title{Neutral models of \textit{de novo} gene emergence suggest that gene evolution has a preferred trajectory}
+\title{Antisense transcripts can quickly evolve to encode proteins}
 \author{Bharat Ravi Iyengar$^{1,\dagger}$, Erich Bornberg-Bauer$^{1,2}$}
 \date{\small $^1$Institute for Evolution and Biodiversity, University of M\"{u}nster,\\ H\"{u}fferstrasse 1, 48149 M\"{u}nster, Germany\\[1ex] $^2$Department of Protein Evolution, Max Planck Institute for Biology T\"{u}bingen, Max-Planck-Ring 5, 72076 T\"{u}bingen, Germany \\[1ex] $^\dagger$ Corresponding author: b.ravi@uni-muenster.de}
 
 \begin{document}
 
 \onehalfspacing
+\def\figdir{../Figures/M1_main}
 
 \setlength{\abovedisplayskip}{0pt}
 \setlength{\belowdisplayskip}{1em}
@@ -55,6 +56,11 @@
 
 
 \section*{Results}
+
+We developed mathematical models to estimate the probabilities of ORF emergence and loss, in DNA regions antisense to existing protein coding ORFs. For any stretch of DNA to be an ORF, its sequence should contain 3$n$ nucleotides (with $n$ being at least 3), with a start codon that marks its beginning, and exactly one stop codon that marks its end. Specifically, the absence of any stop codons within the DNA sequence is the most important factor in determining the likelihood of an ORF to exist. That is because the likelihood of a premature stop codon increases exponentially with the ORF's length, whereas likelihood of a start codon and a terminal stop codon are unaffected by the ORF's length. 
+
+We estimate the gain and loss probabilities of antisense ORFs using the existing (sense) ORF as a reference. Specifically, we analyse the effect of the composition of the sense ORF, and of mutations in its sequence, to determine how likely it is for an antisense ORFs to exist, and to be gained or lost. Antisense ORFs can overlap with the sense ORFs in three different frames. In frame 0, the codons in the antisense ORF exactly overlap the codons in the sense ORF. In frames 1 and 2, the codons in the antisense ORF are shifted towards the 5' end of sense ORF by one and two nucleotide positions, respectively. In frame 0, the sequence of an antisense codon is determined by the sequence of the exactly overlapping sense codon. However, for frames 1 and 2, the sequence of an antisense codon is determined by two partially overlapping sense codons.
+
 
 
 \section*{Discussion} 
@@ -228,7 +234,7 @@ P_\textit{ORF-stay}(k) = P_\textit{ATG-stay} \times P_\textit{stop-stay} \times 
 
 
 \section*{Data availability}
-We performed all calculations using Julia programming language, and all scripts are freely available on GitHub: BharatRaviIyengar/DeNovoEvolution. Specifically, our model is implemented in the script \texttt{DeNovoProb.jl} which in turn uses the script \texttt{nucleotidefuncts.jl} for some basic functions.
+We performed all calculations using Julia programming language, and all scripts are freely available on GitHub: BharatRaviIyengar/DeNovoEvolution. Specifically, our model is implemented in the scripts \texttt{antisenseGenes.jl}, and  \texttt{antisenseGenes\_supplement.jl}, which in turn depend on the script \texttt{nucleotidefuncts.jl} for some basic functions.
 
 \section*{Acknowledgments}
 
