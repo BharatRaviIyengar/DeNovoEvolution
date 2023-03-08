@@ -1,0 +1,240 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,graphicx,setspace,palatino,float,subcaption, booktabs, titlesec,lineno}
+\usepackage[colorlinks, allcolors = blue]{hyperref}
+\usepackage{natbib}
+\citestyle{egu}
+
+\usepackage[usenames,dvipsnames]{xcolor}
+
+\captionsetup[figure]{labelfont=bf,textfont={small,normalfont}}
+%\captionsetup[subfigure]{labelsep=quad, labelfont={bf,small}, textfont=small, singlelinecheck=off, justification=raggedright, position=top}
+%\renewcommand{\thesubfigure}{\Alph{subfigure}}
+
+\renewcommand{\subsectionautorefname}{Section}
+\renewcommand{\subsubsectionautorefname}{Section}
+\titleformat{\paragraph}[hang]{\normalfont\normalsize\itshape}{\theparagraph}{0em}{}
+\titlespacing*{\paragraph}{0pt}{1\baselineskip}{3pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{\baselineskip}
+
+\renewcommand{\subsectionautorefname}{Methods section}
+\renewcommand{\subsubsectionautorefname}{Methods section}
+\renewcommand{\thesubsection}{\arabic{subsection}}
+
+\newcommand{\cmnt}[1]{{\color{purple} #1}}
+
+\renewenvironment{abstract}{%
+  \normalsize
+  \textbf{\large\abstractname\\[1em]} % with a normal space
+}
+
+\title{Neutral models of \textit{de novo} gene emergence suggest that gene evolution has a preferred trajectory}
+\author{Bharat Ravi Iyengar$^{1,\dagger}$, Erich Bornberg-Bauer$^{1,2}$}
+\date{\small $^1$Institute for Evolution and Biodiversity, University of M\"{u}nster,\\ H\"{u}fferstrasse 1, 48149 M\"{u}nster, Germany\\[1ex] $^2$Department of Protein Evolution, Max Planck Institute for Biology T\"{u}bingen, Max-Planck-Ring 5, 72076 T\"{u}bingen, Germany \\[1ex] $^\dagger$ Corresponding author: b.ravi@uni-muenster.de}
+
+\begin{document}
+
+\onehalfspacing
+
+\setlength{\abovedisplayskip}{0pt}
+\setlength{\belowdisplayskip}{1em}
+
+\maketitle
+
+
+\linenumbers
+
+\section*{Abstract}
+
+
+
+
+\section*{Introduction}
+
+
+
+\section*{Results}
+
+
+\section*{Discussion} 
+
+
+\section*{Materials and Methods}
+
+\subsection{Mutation probabilities}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c c}
+\toprule
+\textbf{Substitution} & Probability($\mu$) \\\midrule
+\texttt{A:T}$\to$\texttt{T:A} & 0.056 \\\midrule
+\texttt{A:T}$\to$\texttt{G:C} & 0.243 \\\midrule
+\texttt{A:T}$\to$\texttt{C:G} & 0.074 \\\midrule
+\texttt{G:C}$\to$\texttt{A:T} & 0.483 \\\midrule
+\texttt{G:C}$\to$\texttt{T:A} & 0.075 \\\midrule
+\texttt{G:C}$\to$\texttt{C:G} & 0.069 \\\bottomrule
+\end{tabular}
+\caption{Mutation bias probabilities for different nucleotide mutations. \texttt{A:T} denotes an \texttt{A}-\texttt{T} base pair in a double stranded DNA. Thus \texttt{A}$\to$\texttt{G} mutation on one DNA strand would cause a \texttt{T}$\to$\texttt{C} mutation on the complementary strand. We describe the other mutations in the same way.}
+\label{mutbias}
+\end{table}
+
+We calculated nucleotide substitution probabilities based on mutation rate and mutation rate bias data. Specifically, we  used a mutation rate ($\lambda$) of $7.8\times10^{-9}$ mutations per nucleotide position per generation \citep{drosophilamutrate}. We derived our mutation bias parameters from two published studies, the first on \textit{Drosophila melanogaster} \citep{drosophilamutrate}, and the second on humans \citep{humanmutrate}. \autoref{mutbias} shows the exact values of mutation bias probabilities that we used in this study.
+
+
+
+%\subsection{Probabilities of finding, gaining, and losing a DNA sequence}
+%\label{methbasic}
+%
+%\subsubsection{Probability of finding a DNA sequence}
+%\label{methprob}
+%
+%We calculated the probability of finding a DNA sequence based on global nucleotide frequency distributions, given by the GC-content. Specifically, the probability of finding either a \texttt{G} or a \texttt{C} is: 
+%
+%$$S = \frac{0.5\times\text{GC\%}}{100}$$
+%
+%The probability of finding an \texttt{A} or a \texttt{T} is: $W = 0.5 - S$. Using these values, we calculated the probability of finding a DNA sequence motif by chance. For example, the probability of finding the sequence \texttt{ATG} would be: $W\times W \times S$.
+%
+%\cmnt{We also estimated the probability of finding specific DNA sequences in a reference genome. Specifically, we calculated the frequencies of all 64 trimers and all 4096 hexamers in the genomic regions of \textit{D. melanogaster} that exist in open chromatin, and do not contain any known genes or regulatory elements (see \autoref{methRNA})}.
+%
+%\subsubsection{Probability of gaining a DNA sequence}
+%\label{methgain}
+%
+%We calculated the probability of gaining a DNA sequence due to mutations using GC-content, mutation rate and mutation bias. Specifically, we calculated the probability that a DNA sequence does not exist, and it emerges due to specific nucleotide mutations. More precisely, this probability is the product of two other probabilities. The first is the probability of finding a DNA sequence ($x$) that is not the sequence of interest. The second probability is that this sequence $x$ mutates to the sequence of interest. To explain this calculation better, we use the example of \texttt{CTA} mutating to \texttt{ATG}. The first probability, that is the probability of finding \texttt{CTA} by chance is $SW^2$. \texttt{CTA} mutates to \texttt{ATG} via two nucleotide mutations (\texttt{C}$\to$\texttt{A} and \texttt{A}$\to$\texttt{G}). Thus the probability of this DNA change would be the probability of two nucleotide mutations ($\lambda^2$) multiplied by two mutation bias probabilities (\texttt{G:C}$\to$\texttt{T:A} and \texttt{A:T}$\to$\texttt{G:C}). Overall, the chance of \texttt{CTA} mutating to \texttt{ATG} would be:
+%
+%$$SW^2 \times \lambda^2 \times \mu_{\texttt{G:C}\to\texttt{T:A}} \times \mu_{\texttt{A:T}\to\texttt{G:C}}$$
+%
+%Next, we calculated the probability that every nucleotide triplet that is not \texttt{ATG}, mutates to \texttt{ATG}. This can happen via one, two, or three nucleotide mutations. The sum of all these mutation probabilities is the probability of \texttt{ATG} gain.
+%
+%Using the same principle we calculated the gain probability of any DNA sequence motif (of any length or composition). We excluded insertions and deletions as a mechanism of gain of small DNA sequences that we analysed in this study. 
+%
+%
+%\subsubsection{Probability of losing a DNA sequence}
+%
+%We calculated the loss of a DNA sequence motif using the same principle we used for calculating gain probabilities. However, we defined loss probability as a conditional probability, that is we assume that the DNA sequence of interest already exists in the genome. For example, the loss probability of a specific \texttt{ATG} sequence would be the sum of probabilities of \texttt{ATG} mutating to any of the other 63 nucleotide triplets (via one, two, or three nucleotide mutations). We use conditional loss probabilities by default, because usually one is interested in finding out how quickly an existing DNA sequence can erode.
+%
+%We used this method to calculate the loss probability of any DNA sequence motif, and we excluded insertions and deletions from this calculation.
+%
+%\subsection{Probabilities of finding, gaining, and losing DNA features}
+%\label{methfeatures}
+%
+%Usually, a specific function is encoded in DNA by several DNA sequences. For example, translation stop is encoded by three codons (\texttt{TGA}, \texttt{TAG}, \texttt{TAA}). We use the term DNA features to mean a set of DNA sequences that are associated with the same function. For every such DNA feature set, there is a complementary set of non-features, that is DNA sequences that are not associated with the feature's function. For example, the non-feature set of stop codons would be all the other 61 codons. 
+%
+%The probability that a DNA feature exists, is the sum of probabilities of every DNA sequence in that set (\autoref{methprob}).
+%
+%The probability that a DNA feature is gained via mutations, is the sum of probabilities of every non-feature sequence mutating to any feature sequence. If $F$ denotes the feature set, and $\mu_{y\to x}$ denotes the probability of a DNA sequence $y$ mutating to a DNA sequence $x$ (see \autoref{methgain}), then:
+%
+%\begin{equation}
+%P_\textit{feature-gain} = \sum_{x \in F} \sum_{y \notin F} P_y \times \mu_{y\to x}
+%\end{equation}
+%
+%The probability that a DNA feature is lost via mutations is a conditional probability that given a feature exists, it mutates to any of the non-feature sequences. 
+%
+%\begin{equation}
+%P_\textit{feature-loss} = \frac{\displaystyle\sum_{x \in F} \sum_{y \notin F} P_x \times \mu_{x\to y}}{\displaystyle\sum_{x \in F} P_x}
+%\end{equation}
+%
+%Because a feature set usually has many DNA sequences, a mutation can change a feature sequence such that the resulting sequence is also a part of the feature set. Thus we defined the probability ($P_\textit{feature-stay}$) that a feature does not erode because of mutations. Specifically, it is the sum of two probabilities. First is the probability that no mutation occurs in the DNA sequence ($P_0$), and the second probability describes the event where the mutated sequence remains a part of the feature set.
+%
+%\begin{equation}
+%P_\textit{feature-stay} = P_0 + \sum_{x \in F} \sum_{\genfrac{}{}{0pt}{1}{y \in F}{y\neq x}} \mu_{x\to y}
+%\end{equation}
+%
+%
+%The probability that no mutation occurs ($P_0$) in a DNA sequence of length $k$ is described by Poisson distribution. 
+%
+%$$P_0 = 1-e^{-k\lambda}$$
+%
+%Because the mutation rate is biased (\autoref{mutbias}), the probability that no mutation occurs in a DNA sequence depends on its composition. 
+%
+%The probability that an \texttt{A} or a \texttt{T} mutates ($\lambda_\texttt{AT}$), is thus described as:
+%
+%$$\lambda_\texttt{AT} = 2\times\lambda\times(\mu_{\texttt{A:T}\to\texttt{T:A}} + \mu_{\texttt{A:T}\to\texttt{G:C}} + \mu_{\texttt{A:T}\to\texttt{C:G}})$$
+%
+%Likewise, the probability that a \texttt{G} or a \texttt{C} mutates ($\lambda_\texttt{GC}$) is: 
+%
+%\vspace{-1ex}
+%
+%$$\lambda_\texttt{GC} = 2\times\lambda\times(\mu_{\texttt{G:C}\to\texttt{A:T}} + \mu_{\texttt{G:C}\to\texttt{T:A}} + \mu_{\texttt{G:C}\to\texttt{C:G}})$$
+%
+%(Note that the general mutation rate, $\lambda$, is an average of $\lambda_\texttt{AT}$ and $\lambda_\texttt{GC}$.)
+%
+%\vspace{1\baselineskip}
+%
+%Thus the probability that a sequence of length $k$, containing $m$ number of \texttt{A} and \texttt{T}, does not mutate is:
+%
+%\vspace{-1ex}
+%
+%$$P_0 = (1-e^{-m\lambda_\texttt{AT}})\times(1-e^{-(k-m)\lambda_\texttt{GC}})$$
+%
+%
+%\cmnt{We also calculated all the above-defined probabilities ($P_\textit{feature-gain}$, $P_\textit{feature-loss}$ and $ P_\textit{feature-stay}$), using DNA trimer and hexamer frequencies from \textit{D. melanogaster}. In this case the probability of finding a nucleotide sequence depends on the trimer/hexamer distributions instead of GC-content, but the probability of mutational changes are only dependent on mutation bias. Trimers and hexamers would contain codons and polyA signals, respectively.}
+%
+
+
+\subsection{Probabilities of finding, gaining, and losing an ORF}
+
+\label{methORF}
+
+\subsubsection{Probability of finding an ORF}
+
+A reading frame is a nucleotide sequence with a length that is a multiple of three. A reading frame that begins with a start codon (\texttt{ATG}), and ends with one of the three stop codons (\texttt{TAG}, \texttt{TGA}, \texttt{TAA}) is an open reading frame (ORF). This necessarily means that there are no stop codons within the sequence. Thus the probability of finding an ORF containing $k$ codons including start and stop codons ($P_\textit{ORF}$) is: 
+
+\begin{equation}
+P_\textit{ORF}(k) = P_\textit{ATG} \times P_\textit{stop} \times (1 - P_\textit{stop})^{k-2}
+\label{eqorfprob}
+\end{equation}
+
+Here, $P_\textit{ATG}$ and $P_\textit{stop}$ are the probabilities of finding a start codon, and a stop codon by chance, respectively.
+
+\subsubsection{Probability of gaining an ORF}
+
+As we defined in the previous section, an ORF has three requirements (start codon, stop codon, and no premature stop codon in the sequence). Thus an ORF can emerge due to mutations via three mechanisms. In each of these mechanisms, one requirement is initially absent whereas the other two are present. Then mutations cause the missing requirement to emerge while not disrupting the other two requirements. More specifically, the ORF can be gained via the following three mechanisms:
+\begin{enumerate}
+\item Gain of a start codon ($P_\textit{ATG-gain}$) while a stop codon continues to exist at the end of a reading frame ($P_\textit{stop-stay}$), and there is no emergence of stop codon within the reading frame ($1- P_\textit{stop} - P_\textit{stop-gain}$).
+\item Gain of a stop codon ($P_\textit{stop-gain}$), while a start codon continues to exist at the beginning of a reading frame ($P_\textit{ATG-stay}$), and there is no emergence of stop codon within the reading frame.
+\item Loss of a premature stop codon, at any of the $k-2$ codon positions within the reading frame ($P_\textit{stop-gain}$). At the same time start and stop codons remain undisrupted by mutations, and no stop codon emerges at any of the other $k-3$ positions.
+\end{enumerate} 
+
+Thus we define the probability of ORF gain ($P_\textit{ORF-gain}$) as:
+
+\begin{align}
+P_\textit{ORF-gain}(k) & = \quad P_\textit{ATG-gain}\times P_\textit{stop-stay} \times (1- P_\textit{stop} - P_\textit{stop-gain})^{k-2} \nonumber \\[1pt]
+& \quad + P_\textit{ATG-stay}\times P_\textit{stop-gain} \times (1- P_\textit{stop} - P_\textit{stop-gain})^{k-2} \nonumber \\[1pt]
+& \quad + P_\textit{ATG-stay}\times P_\textit{stop-stay} \times P_\textit{stop-loss}\times(k-2) \times (1- P_\textit{stop} - P_\textit{stop-gain})^{k-3} 
+\label{eqorfgain}
+\end{align}
+
+\subsubsection{Probability of ORF loss}
+
+ORF can be lost when any of its three requirements are lost. We thus define the conditional probability of ORF loss as:
+
+\begin{equation}
+P_\textit{ORF-loss}(k) = P_\textit{ATG-loss} + P_\textit{stop-loss} + (k-2)\times \frac{P_\textit{stop-gain}}{1-P_\textit{stop}}
+\label{eqorfloss}
+\end{equation}
+
+The last term in this equation describes the conditional probability of stop-gain, given the assumption that no stop codon exists within the ORF.
+
+\subsubsection{Probability that ORF remains intact}
+
+We assumed that an ORF of a certain length remains intact if none of the necessary features are lost. However, the ORF sequence can mutate to cause non-synonymous changes in the translated protein sequence. This condition applies to all the three ORF probabilities described above. We define the probability that an ORF remains intact ($P_\textit{ORF-stay}$) as:
+
+\begin{equation}
+P_\textit{ORF-stay}(k) = P_\textit{ATG-stay} \times P_\textit{stop-stay} \times (1 - P_\textit{stop} - P_\textit{stop-gain})^{k-2}
+\label{eqorfstay}
+\end{equation}
+
+
+\section*{Data availability}
+We performed all calculations using Julia programming language, and all scripts are freely available on GitHub: BharatRaviIyengar/DeNovoEvolution. Specifically, our model is implemented in the script \texttt{DeNovoProb.jl} which in turn uses the script \texttt{nucleotidefuncts.jl} for some basic functions.
+
+\section*{Acknowledgments}
+
+\bibliographystyle{mybst}
+
+\small
+\bibliography{refs}
+
+\end{document}

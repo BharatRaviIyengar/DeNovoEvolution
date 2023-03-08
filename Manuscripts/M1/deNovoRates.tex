@@ -40,6 +40,8 @@
 \setlength{\abovedisplayskip}{0pt}
 \setlength{\belowdisplayskip}{1em}
 
+\def\figdir{../Figures/M1_main}
+
 \maketitle
 
 
@@ -115,7 +117,7 @@ For example, a log-log ratio value of 2 would indicate that two independent gene
 
 \begin{figure}[!t]
 \centering
-\includegraphics[scale=0.5]{Figures/pGainLossFix2.pdf}
+\includegraphics[scale=0.5]{\figdir/pGainLossFix2.pdf}
 \caption{Genes are more likely to be independently lost twice, than being born once. The vertical axis in all panels shows the number of independent gene loss events with extinction (\autoref{genelosseq}) that can occur relative to one gene gain event with fixation (\autoref{loglogratio}, \autoref{pFix}), under \textbf{(A)} no selection, \textbf{(B)} weak positive selection and \textbf{(C)} weak negative selection on the expression of the protein from a proto-gene. Horizontal axes show the number of codons in the ORF. Black lines in panel \textbf{(A)} denote the probability values estimated from overall GC content (34\%, 42\% and 50\%) and the orange line denotes the probability values estimated from trimer and hexamer frequencies in \textit{D. melanogaster} intergenic genome. In panels \textbf{(B)} and \textbf{(C)} we use the probabilitiy values from \textit{D. melanogaster} intergenic genome. $N_e$ denotes effective population size and $s$ denotes the selection co-efficient.}
 \label{gainlossprob}
 \vspace{1ex}
@@ -147,7 +149,7 @@ P_\textit{ORF-first} = P_\textit{ORF-stay}\times P_\textit{RNA-gain \vline\ ORF}
 
 \begin{figure}[!t]
 \centering
-\includegraphics[scale=0.5]{Figures/whoisfirstX.pdf}
+\includegraphics[scale=0.5]{\figdir/whoisfirstX.pdf}
 \caption{Proto-genes preferentially emerge RNA-first. The vertical axis shows the $\log_2$ transformed ratio of the probabilities of the RNA-first and the ORF-first trajectories, described as \textbf{(A)} a single-step process (Equations \ref{rnafirsteq1} \& \ref{orffirsteq1}) and \textbf{(B)} a two-step process (Equations \ref{rnafirsteq2} \& \ref{orffirsteq2}). A positive value suggests that RNA-first trajectory is more likely than ORF-first trajectory, and \textit{vice versa}. In both panels, the horizontal axis denotes the number of codons in the ORF. Black lines denote the probability values estimated from overall GC content (34\%, 42\% and 50\%) and the orange line denotes the probability values estimated from trimer and hexamer frequencies in \textit{D. melanogaster} intergenic genome.}
 \label{whoisfirst}
 \vspace{1ex}
@@ -173,7 +175,7 @@ P_\textit{ORF-first}' & = \underbrace{P_\textit{ORF-gain} \times (1-P_\textit{RN
 \centering
 \hrule
 \vspace{1ex}
-\includegraphics[scale=0.5]{Figures/pLoss_promoterlessX.pdf}
+\includegraphics[scale=0.5]{\figdir/pLoss_promoterlessX.pdf}
 \caption{ORF loss in proto-genes is more probable than transcription loss. The horizontal axis denotes the number of codons in the ORF. The vertical axis shows the $\log_2$ transformed ratio of ORF loss and RNA loss probabilities, such that a positive value means ORF loss is more probable than RNA loss, and \textit{vice versa}. Black lines denote the probability values estimated from overall GC content (34\%, 42\% and 50\%) and the orange line denotes the probability values estimated from trimer and hexamer frequencies in \textit{D. melanogaster} intergenic genome.}
 \label{lossprob}
 \end{figure}
@@ -190,7 +192,7 @@ Overall, our analysis suggests widespread transcription loss may be indicative o
 
 \begin{figure}[!t]
 \centering
-\includegraphics[scale=0.5]{Figures/proteinComposition.pdf}
+\includegraphics[scale=0.5]{\figdir/proteinComposition.pdf}
 
 \caption{Mutation bias and GC-content shape protein composition. Panels \textbf{(A)}, \textbf{(B)} and \textbf{(C)} show expected frequency, gain probability (\autoref{aagaineq}), and loss probability (\autoref{aalosseq}) for different amino acids (horizontal axes). The vertical axis in all these three subplots show the normalized values of these measures such that their sum over all amino acids is equal to one. Panel \textbf{(D)} shows the directionality (colored tiles, $\textit{D}_{x\to y}$, \autoref{directionality}) of the substitution from an amino acid (vertical axis) to another (horizontal axis). Positive values of $\textit{D}_{x\to y}$ are shown in shades of red, whereas negative values are shown in shades of blue. We only show substitutions that can be realized by a single nucleotide mutation but we include all possible nucleotide mutations in the directionality calculations for these substitutions. In all panels, amino acids are ordered based on their chemical similarity \citep{PMBEC}.}
 \label{aafreq}
