@@ -264,10 +264,15 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      showgrid="false"
-     inkscape:zoom="0.76551178"
-     inkscape:cx="168.51472"
-     inkscape:cy="436.96258"
-     inkscape:current-layer="g10">
+     inkscape:zoom="1.5310236"
+     inkscape:cx="480.39757"
+     inkscape:cy="145.32761"
+     inkscape:current-layer="g10"
+     inkscape:window-width="1920"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1">
     <inkscape:page
        x="0"
        y="0"
@@ -511,7 +516,7 @@
            clip-path="url(#clipPath152)">
           <path
              d="M 97.4,140.95 V 60.12 h 12.96 v 80.83 H 97.4 v 0"
-             style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             style="fill:#754473;fill-opacity:1;fill-rule:evenodd;stroke:none"
              id="path154" />
         </g>
       </g>
@@ -526,7 +531,7 @@
            clip-path="url(#clipPath164)">
           <path
              d="M 110.36,120.21 V 60.12 h 12.95 v 60.09 h -12.95 v 0"
-             style="fill:#754473;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
              id="path166" />
         </g>
       </g>
@@ -606,7 +611,7 @@
            clip-path="url(#clipPath222)">
           <path
              d="M 188.1,265.49 V 60.12 h 12.96 V 265.49 H 188.1 v 0"
-             style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             style="fill:#754473;fill-opacity:1;fill-rule:evenodd;stroke:none"
              id="path224" />
         </g>
       </g>
@@ -621,7 +626,7 @@
            clip-path="url(#clipPath234)">
           <path
              d="M 201.06,215.71 V 60.12 h 12.96 v 155.59 h -12.96 v 0"
-             style="fill:#754473;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
              id="path236" />
         </g>
       </g>
@@ -1002,7 +1007,7 @@
            clip-path="url(#clipPath877)">
           <path
              d="M 104.24,226.03 V 60.12 h 12.55 v 165.91 h -12.55 v 0"
-             style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             style="fill:#754473;fill-opacity:1;fill-rule:evenodd;stroke:none"
              id="path879" />
         </g>
       </g>
@@ -1018,7 +1023,7 @@
            clip-path="url(#clipPath889)">
           <path
              d="M 116.79,216.63 V 60.12 h 12.55 v 156.51 h -12.55 v 0"
-             style="fill:#754473;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
              id="path891" />
         </g>
       </g>
@@ -1102,7 +1107,7 @@
            clip-path="url(#clipPath947)">
           <path
              d="M 192.08,265.49 V 60.12 h 12.55 v 205.37 h -12.55 v 0"
-             style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             style="fill:#754473;fill-opacity:1;fill-rule:evenodd;stroke:none"
              id="path949" />
         </g>
       </g>
@@ -1118,7 +1123,7 @@
            clip-path="url(#clipPath959)">
           <path
              d="M 204.63,246.78 V 60.12 h 12.55 v 186.66 h -12.55 v 0"
-             style="fill:#754473;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
              id="path961" />
         </g>
       </g>
@@ -1202,7 +1207,7 @@
            clip-path="url(#clipPath1017)">
           <path
              d="M 279.93,71.36 V 60.12 h 12.55 v 11.24 h -12.55 v 0"
-             style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             style="fill:#754473;fill-opacity:1;fill-rule:evenodd;stroke:none"
              id="path1019" />
         </g>
       </g>
@@ -1218,7 +1223,7 @@
            clip-path="url(#clipPath1029)">
           <path
              d="M 292.48,71.37 V 60.12 h 12.55 v 11.25 h -12.55 v 0"
-             style="fill:#754473;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
              id="path1031" />
         </g>
       </g>
@@ -1374,7 +1379,7 @@
              y="54.277393"
              id="tspan1832-1-5-54">60</tspan></text>
         <rect
-           style="fill:#000000;stroke:none;stroke-width:1.39358;stroke-linecap:round;stroke-linejoin:round"
+           style="fill:#754473;stroke:none;stroke-width:1.39358;stroke-linecap:round;stroke-linejoin:round;fill-opacity:1"
            id="rect4248"
            width="12.779645"
            height="12.779647"
@@ -1398,7 +1403,7 @@
              y="54.277393"
              id="tspan4252">Genomic est.</tspan></text>
         <rect
-           style="fill:#754473;fill-opacity:1;stroke:none;stroke-width:1.39358;stroke-linecap:round;stroke-linejoin:round"
+           style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.39358;stroke-linecap:round;stroke-linejoin:round"
            id="rect4256"
            width="12.779645"
            height="12.779647"

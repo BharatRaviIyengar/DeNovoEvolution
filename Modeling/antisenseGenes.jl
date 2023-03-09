@@ -3,11 +3,11 @@ using Measures
 cd(Base.source_dir())
 include("nucleotidefuncts.jl")
 
-organism = "dmel"
+organism = "scer"
 
 cm2pt = (cm) -> 28.3465*cm
-figdir = joinpath(Base.source_dir(),"../Manuscripts/Figures/");
-colors = ["#FFCC00","#5599FF","#D40000","#000000","#754473"];
+figdir = joinpath(Base.source_dir(),"../Manuscripts/Figures/M2_main/");
+colors = ["#FFCC00","#5599FF","#D40000","#754473","#000000"];
 lstyles = [:solid,:dash,:dot]
 
 default(linecolor = :black, linewidth = 2, tickfont = font(10,"Helvetica"), 
@@ -24,6 +24,9 @@ allcodons = kmers(3)
 nostopcodons = nostop(allcodons);
 
 nsub, nucsmbt = readdlm(organism*"_mutbias.txt",'\t',header = true);
+if organism == "scer"
+    mutrate = 1.7e-10
+end
 
 noATG = setdiff(allcodons, ["ATG"]);
 function ATGprobs(gccontent)
@@ -381,6 +384,20 @@ for f = 1:3
     end
 
 end
+
+pORF = plot(xlabel = "ORF length (codons)", ylabel = "Relative ORF Probability\n (Frame 1)", size = (width = cm2pt(12), height = cm2pt(10)));
+
+for q in 1:4
+    plot!(pORF,ncodons,log2.(orfvalsONS[q,:,1,1]./orfvalsITG[q,:,1]),
+        linecolor = colors[q]
+    );
+end
+
+plot!(pORF,ncodons,log2.(orfvalsONS_X[:,1,1]./orfvalsITG_X[:,1]),
+        linecolor = colors[5]
+);
+
+savefig(pORF, figdir*"pORF_antisense_"*organism*".pdf")
 
 pGD = plot(plots_gain_dmel..., layout = (1,3), size = (width = cm2pt(27.5), height = cm2pt(9)));
 savefig(pGD, figdir*"pORFgain_antisense_"*organism*"WC.pdf")
