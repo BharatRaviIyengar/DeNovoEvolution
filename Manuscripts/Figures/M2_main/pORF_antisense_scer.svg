@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="240mm"
+   width="250mm"
    height="120mm"
-   viewBox="0 0 240 120"
+   viewBox="0 0 250 120"
    version="1.1"
    id="svg1116"
    inkscape:version="1.2 (dc2aeda, 2022-05-15)"
@@ -25,8 +25,8 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="0.75098906"
-     inkscape:cx="360.85746"
-     inkscape:cy="171.10769"
+     inkscape:cx="331.56275"
+     inkscape:cy="172.43926"
      inkscape:window-width="1920"
      inkscape:window-height="1011"
      inkscape:window-x="0"
@@ -64,27 +64,28 @@
      transform="translate(-17.576694,-42.306851)">
     <g
        id="g291"
-       transform="matrix(0.7696995,0,0,-0.42334015,17.576694,162.30685)"
-       style="stroke-width:0.618011">
+       transform="matrix(0.80177031,0,0,-0.42334015,17.576694,162.30685)"
+       style="stroke-width:0.605525">
       <g
          id="g293"
          clip-path="url(#clipPath297)"
-         style="stroke-width:0.618011">
+         style="stroke-width:0.605525">
         <path
            d="M 0,0 H 311.81 V 283.46 H 0"
-           style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.618011"
+           style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.605525"
            id="path299" />
       </g>
     </g>
     <g
-       id="g6038">
+       id="g6038"
+       transform="translate(10.089406)">
       <text
          xml:space="preserve"
          style="font-size:29.3333px;line-height:1.25;font-family:'TeX Gyre Heros';-inkscape-font-specification:'TeX Gyre Heros';letter-spacing:0px;word-spacing:0px"
          x="32.005722"
          y="-8.6443624"
          id="text2278"
-         transform="matrix(0.26458333,0,0,0.26458333,10.798069,51.612405)"><tspan
+         transform="matrix(0.26458333,0,0,0.26458333,0.70866355,51.612405)"><tspan
            sodipodi:role="line"
            id="tspan2276"
            x="32.005722"
@@ -493,14 +494,14 @@
     </g>
     <g
        id="g5942"
-       transform="translate(-0.52916667)">
+       transform="translate(9.5250003)">
       <text
          xml:space="preserve"
          style="font-size:29.3333px;line-height:1.25;font-family:'TeX Gyre Heros';-inkscape-font-specification:'TeX Gyre Heros';letter-spacing:0px;word-spacing:0px"
          x="32.005722"
          y="-8.6443624"
          id="text2278-3"
-         transform="matrix(0.26458333,0,0,0.26458333,145.15309,51.612405)"><tspan
+         transform="matrix(0.26458333,0,0,0.26458333,135.06369,51.612405)"><tspan
            sodipodi:role="line"
            id="tspan2276-5"
            x="32.005722"
