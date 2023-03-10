@@ -385,7 +385,7 @@ for f = 1:3
 
 end
 
-pORF = plot(xlabel = "ORF length (codons)", ylabel = "Relative ORF Probability\n (Frame 1)", size = (width = cm2pt(12), height = cm2pt(10)));
+pORF = plot(xlabel = "ORF length (codons)", ylabel = "Relative ORF Probability\n (Frame 1)", size = (width = cm2pt(11), height = cm2pt(10)));
 
 for q in 1:4
     plot!(pORF,ncodons,log2.(orfvalsONS[q,:,1,1]./orfvalsITG[q,:,1]),
@@ -393,11 +393,17 @@ for q in 1:4
     );
 end
 
-plot!(pORF,ncodons,log2.(orfvalsONS_X[:,1,1]./orfvalsITG_X[:,1]),
-        linecolor = colors[5]
-);
+savefig(pORF, figdir*"pORF_antisense_"*organism*"GC.pdf")
 
-savefig(pORF, figdir*"pORF_antisense_"*organism*".pdf")
+pORFX = plot(xlabel = "ORF length (codons)", ylabel = "Relative ORF Probability\n log2(antisense/intergenic)", size = (width = cm2pt(11), height = cm2pt(10)));
+
+for q = 1:3
+    plot!(pORFX,ncodons,log2.(orfvalsONS_X[:,q,1]./orfvalsITG_X[:,1]),
+            linestyle = lstyles[q]
+    );
+end
+
+savefig(pORFX, figdir*"pORF_antisense_"*organism*"WC.pdf")
 
 pGD = plot(plots_gain_dmel..., layout = (1,3), size = (width = cm2pt(27.5), height = cm2pt(9)));
 savefig(pGD, figdir*"pORFgain_antisense_"*organism*"WC.pdf")

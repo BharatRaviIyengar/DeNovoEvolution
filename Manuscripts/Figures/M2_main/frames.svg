@@ -25,8 +25,8 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="0.75098906"
-     inkscape:cx="367.51534"
-     inkscape:cy="243.01286"
+     inkscape:cx="368.18113"
+     inkscape:cy="244.34444"
      inkscape:window-width="1920"
      inkscape:window-height="1011"
      inkscape:window-x="0"
@@ -39,6 +39,14 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
+    <rect
+       style="fill:#ffffff;stroke:none;stroke-width:5.77193;stroke-linecap:round;stroke-linejoin:round"
+       id="rect214"
+       width="569.88367"
+       height="205.77747"
+       x="-52.96088"
+       y="-17.728167"
+       transform="matrix(0.19302185,0,0,0.1555078,10.222607,2.7568682)" />
     <path
        d="m 80.207698,184.03129 h 14.830748 v 2.21355 h -6.080737 v 17.22658 h -2.643232 v -17.22658 h -6.106779 z"
        style="font-size:26.6667px;line-height:1.25;font-family:'DejaVu Sans Mono';-inkscape-font-specification:'DejaVu Sans Mono';letter-spacing:0px;word-spacing:0px"
