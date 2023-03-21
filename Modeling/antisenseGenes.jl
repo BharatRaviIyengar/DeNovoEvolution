@@ -3,10 +3,10 @@ using Measures
 cd(Base.source_dir())
 include("nucleotidefuncts.jl")
 
-organism = "dmel"
+organism = "scer"
 
 cm2pt = (cm) -> 28.3465*cm
-figdir = joinpath(Base.source_dir(),"../Manuscripts/Figures/M2_main/");
+figdir = joinpath(Base.source_dir(),"../Manuscripts/Figures/M2_main/pdf/");
 colors = ["#FFCC00","#5599FF","#D40000","#754473","#000000"];
 lstyles = [:solid,:dash,:dot]
 
@@ -107,34 +107,28 @@ cdn2aanum = (cdn) -> aanames[transnucs(cdn)]
 
 function stopprobsoverlap(gccontent)
     # Probability of finding a stop codon
-
-    p_stopWithin = [sum(nucprob.(vjoin(stopNbrWithin[x]),gccontent)) for x in 1:2];
-
+    p_stopR12 = [sum(nucprob.(vjoin(stopNbrWithin[x]),gccontent)) for x in 1:2];
     p_stopR0 = sum(nucprob.(stopneighborsR0,gccontent));
-    push!(p_stopWithin,p_stopR0);
+    p_stopWithin = vcat(p_stopR0,p_stopR12);
 
     # Probability of gaining a stop codon
 
-    g_stopWithin = [featuregain(vjoin(nostopNbrWithin[x]),vjoin(stopNbrWithin[x]), gccontent) for x in 1:2]
-
-    push!(g_stopWithin,featuregain(nostopNbr0,stopneighborsR0,gccontent));
+    g_stopR12 = [featuregain(vjoin(nostopNbrWithin[x]),vjoin(stopNbrWithin[x]), gccontent) for x in 1:2]
+    g_stopR0 = featuregain(nostopNbr0,stopneighborsR0,gccontent);
+    g_stopWithin = vcat(g_stopR0,g_stopR12);
 
     # Probability of losing a stop codon (conditional)
 
-    l_stopWithin = [featuregain(vjoin(stopNbrWithin[x]),vjoin(nostopNbrWithin[x]), gccontent) for x in 1:2]
+    l_stopR12 = [featuregain(vjoin(stopNbrWithin[x]),vjoin(nostopNbrWithin[x]), gccontent) for x in 1:2]
+    l_stopR0 = featuregain(stopneighborsR0,nostopNbr0,gccontent);
+	l_stopWithin = vcat(l_stopR0,l_stopR12)./p_stopWithin; 
 
-    push!(l_stopWithin,featuregain(stopneighborsR0,nostopNbr0,gccontent));
-
-    l_stopWithin = l_stopWithin./p_stopWithin;
-
-    s_stopWithin = [featurestay(vjoin(stopNbrWithin[x]), gccontent) for x in 1:2];
-
-    push!(s_stopWithin,featurestay(stopneighborsR0,gccontent));
-
+    s_stopR12 = [featurestay(vjoin(stopNbrWithin[x]), gccontent) for x in 1:2];
+    s_stopR0 = featurestay(stopneighborsR0,gccontent);
+    s_stopWithin = vcat(s_stopR0,s_stopR12);
 
     return(hcat(p_stopWithin,g_stopWithin,l_stopWithin, s_stopWithin))
 end
-
 
 
 
@@ -210,13 +204,14 @@ function pstopsel(sdict,stopvals,gccontent)
 
     GL0 = tprobsel0(stopneighborsR0,nostopNbr0,sdict,gccontent)
 
-    gain = vcat(GLF[:,1],GL0[1])
-    loss = vcat(GLF[:,2],GL0[2])./pstops
+    gain = vcat(GL0[1],GLF[:,1])
+    loss = vcat(GL0[2],GLF[:,2])./pstops
     stay = zeros(3,1)
-    for i = 1:2
-        stay[i] = staysel(stopNbrWithin[i],sdict,gccontent)
+    stay[1] = staysel0(stopneighborsR0,sdict,gccontent)
+    for i = 2:3
+        stay[i] = staysel(stopNbrWithin[i-1],sdict,gccontent)
     end
-    stay[3] = staysel0(stopneighborsR0,sdict,gccontent)
+    
 
     return hcat(pstops,gain,loss,stay)
 end
@@ -343,7 +338,8 @@ for f = 1:3
         mng>10 ? d = 2 : d = 3
         plots_gain[f,s] = plot(ncodons, ydatag[:,1],
             linecolor = colors[1],
-            yticks = round.(range(lbg,stop=ubg,length = 4),digits=2)
+            yticks = round.(range(lbg,stop=ubg,length = 4),digits=2),
+            xticks = [80, 160, 240]
         );
 
         ydatal = rat[:,:,s,2]
@@ -352,7 +348,8 @@ for f = 1:3
         mnl>10 ? d = 2 : d = 3
         plots_loss[f,s] = plot(ncodons, ydatal[:,1],
             linecolor = colors[1],
-            yticks = round.(range(lbl,stop=ubl,length = 4),digits=2)
+            yticks = round.(range(lbl,stop=ubl,length = 4),digits=2),
+            xticks = [80, 160, 240]
         );
         for q = 2:4
             plot!(plots_gain[f,s],ncodons,ydatag[:,q], linecolor = colors[q]);
@@ -362,10 +359,10 @@ for f = 1:3
     end
 end
 
-pG = plot(plots_gain..., size = (width = cm2pt(27.5), height = cm2pt(25)));
+pG = plot(plots_gain..., size = (width = cm2pt(21), height = cm2pt(18)));
 savefig(pG, figdir*"pORFgain_antisense_"*organism*"GC.pdf")
 
-pL = plot(plots_loss..., size = (width = cm2pt(27.5), height = cm2pt(25)));
+pL = plot(plots_loss..., size = (width = cm2pt(21), height = cm2pt(18)));
 savefig(pL, figdir*"pORFloss_antisense_"*organism*"GC.pdf")
 
 plots_gain_dmel, plots_loss_dmel = [Array{Plots.Plot{Plots.GRBackend}}(undef,1,3) for i = 1:2];
@@ -386,7 +383,8 @@ for f = 1:3
     mng>10 ? d = 2 : d = 3
     plots_gain_dmel[f] = plot(ncodons, ydatag[:,1],
         linestyle = lstyles[1],
-        yticks = round.(range(lbg,stop=ubg,length = 4),digits=1)
+        yticks = round.(range(lbg,stop=ubg,length = 4),digits=1),
+        xticks = [80, 160, 240]
     );
 
     ydatal = rat_dmel[:,:,2]
@@ -395,7 +393,8 @@ for f = 1:3
     mnl>10 ? d = 2 : d = 3
     plots_loss_dmel[f] = plot(ncodons, ydatal[:,1],
         linestyle = lstyles[1],
-         yticks = round.(range(lbl,stop=ubl,length = 4),digits=1)
+         yticks = round.(range(lbl,stop=ubl,length = 4),digits=1),
+         xticks = [80, 160, 240]
     );
 
     for q = 2:3
@@ -405,10 +404,10 @@ for f = 1:3
 
 end
 
-pGD = plot(plots_gain_dmel..., layout = (1,3), size = (width = cm2pt(27.5), height = cm2pt(9)));
+pGD = plot(plots_gain_dmel..., layout = (1,3), size = (width = cm2pt(21), height = cm2pt(6.75)));
 savefig(pGD, figdir*"pORFgain_antisense_"*organism*"WC.pdf")
 
-pLD = plot(plots_loss_dmel..., layout = (1,3), size = (width = cm2pt(27.5), height = cm2pt(9)));
+pLD = plot(plots_loss_dmel..., layout = (1,3), size = (width = cm2pt(21), height = cm2pt(6.75)));
 savefig(pLD, figdir*"pORFloss_antisense_"*organism*"WC.pdf")
 
 # De novo sequence divergence #

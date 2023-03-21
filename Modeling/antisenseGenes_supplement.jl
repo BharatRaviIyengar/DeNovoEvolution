@@ -43,28 +43,25 @@ end
 function stopprobsoverlapX(t3,t6)
     # Probability of finding a stop codon
 
-    p_stopWithin = [sum([nprob6(y,t6) for y in vjoin(stopNbrWithin[x])]) for x in 1:2];
-
+    p_stopR12 = [sum([nprob6(y,t6) for y in vjoin(stopNbrWithin[x])]) for x in 1:2];
     p_stopR0 = sum([nprob3(y,t3) for y in stopneighborsR0]);
-    push!(p_stopWithin,p_stopR0);
+    p_stopWithin = vcat(p_stopR0,p_stopR12);
 
     # Probability of gaining a stop codon
 
-    g_stopWithin = [featuregain6(vjoin(nostopNbrWithin[x]),vjoin(stopNbrWithin[x]),t6) for x in 1:2]
-
-    push!(g_stopWithin,featuregain3(nostopNbr0,stopneighborsR0,t3));
+    g_stopR12 = [featuregain6(vjoin(nostopNbrWithin[x]),vjoin(stopNbrWithin[x]),t6) for x in 1:2]
+    g_stopR0 = featuregain3(nostopNbr0,stopneighborsR0,t3);
+    g_stopWithin = vcat(g_stopR0,g_stopR12);
 
     # Probability of losing a stop codon (conditional)
 
-    l_stopWithin = [featuregain6(vjoin(stopNbrWithin[x]),vjoin(nostopNbrWithin[x]),t6) for x in 1:2]
+    l_stopR12 = [featuregain6(vjoin(stopNbrWithin[x]),vjoin(nostopNbrWithin[x]),t6) for x in 1:2]
+    l_stopR0 = featuregain3(stopneighborsR0,nostopNbr0,t3);
+	l_stopWithin = vcat(l_stopR0,l_stopR12)./p_stopWithin; 
 
-    push!(l_stopWithin,featuregain3(stopneighborsR0,nostopNbr0,t3));
-
-    l_stopWithin = l_stopWithin./p_stopWithin;
-
-    s_stopWithin = [featurestay6(vjoin(stopNbrWithin[x]),t6) for x in 1:2];
-
-    push!(s_stopWithin,featurestay3(stopneighborsR0,t3));
+    s_stopR12 = [featurestay6(vjoin(stopNbrWithin[x]),t6) for x in 1:2];
+    s_stopR0 = featurestay3(stopneighborsR0,t3);
+    s_stopWithin = vcat(s_stopR0,s_stopR12);
 
     return(hcat(p_stopWithin,g_stopWithin,l_stopWithin, s_stopWithin))
 end
@@ -144,13 +141,13 @@ function pstopselX(sdict,stopvals,t3,t6)
 
     GL0 = tprobsel0X(stopneighborsR0,nostopNbr0,sdict,t3)
 
-    gain = vcat(GLF[:,1],GL0[1])
-    loss = vcat(GLF[:,2],GL0[2])./pstops
+    gain = vcat(GL0[1], GLF[:,1])
+    loss = vcat(GL0[2],GLF[:,2])./pstops
     stay = zeros(3,1)
-    for i = 1:2
-        stay[i] = stayselX(stopNbrWithin[i],sdict,t6)
+    stay[1] = staysel0X(stopneighborsR0,sdict,t3)
+    for i = 2:3
+        stay[i] = stayselX(stopNbrWithin[i-1],sdict,t6)
     end
-    stay[3] = staysel0X(stopneighborsR0,sdict,t3)
 
     return hcat(pstops,gain,loss,stay)
 end
