@@ -106,31 +106,13 @@ Purifying selection reduces the number of tolerated mutations in a DNA locus. We
 
 Overall, our analyses suggest that antisense overlap with an existing ORF facilitates emergence of new ORFs, and protects the existing antisense ORFs from being lost. A complementary analysis with parameters estimated from \textit{D. melanogaster} further supports this finding.
 
+\subsection*{Antisense ORF sequence can diverge even with weak purifying selection on sense ORFs}
 
-%frame 1 vs intergenic 
-%
-%no sel:
-% 30
-% 30
-% 33
-% 46
-%
-%ws: 
-% 43
-% 54
-% 70
-% 93
-% 
-%ss:
-%  49
-%  63
-%  81
-% 109
+In the previous sections, purifying selection on the sense ORF can affect the emergence and loss of antisense ORFs. We next asked if this purifying selection can also constrain the diversification of the proteins encoded by antisense ORF sequences. To this end, we first calculated the chemical distance ($\delta$) between an amino acid and the substituted amino acid that results due to a mutation. For this calculation we used a distance matrix that we derived from an experimentally estimated amino acid similarity matrix reported in a previous study \citep{PMBEC}. Next, we calculated the average chemical difference ($\bar{\delta}$) introduced by a random mutation, weighted by the probability of the corresponding mutations. Specifically, if $i$ denotes the original codon, $j$ denotes the substituted codon, $P_i$ denotes the probability of finding codon-$i$, $\mu_{ij}$ denotes the probability of codon-$i$ mutating to codon-$j$, and $\delta_{ij}$ denotes the chemical difference between the amino acids encoded by these codons, then the average chemical difference is defined by the following equation:
 
-%genomic:
-%ns, ws, ss : 30, 60, 69
-
-
+\begin{equation}
+\bar{\delta} = \frac{\displaystyle\sum_i P_i \sum_j \mu_{ij}\delta_{ij}}{\displaystyle\sum_i P_i \sum_j \mu_{ij}}
+\end{equation}
 
 \section*{Discussion} 
 

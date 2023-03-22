@@ -160,13 +160,20 @@ function aadivframeR_X(frm::Int,sdict::Dict,t6)
         rcdn = Rcodon(Z,frm)
         stZ2 = stZ[(eachrow(stZ) .!= Ref(Z)) .& ([Rcodon(y,frm) for y in eachrow(stZ)] .∉ Ref(stopcodons)) ,:]
         if(isempty(stZ2))
-            dZ=0
+            dZ = 0
+            mZ = 0
         else
-            dZ = sum([PBMEC2[cdn2aanum(rcdn),cdn2aanum(Rcodon(y,frm))] for y in eachrow(stZ2)])
+            dZZ = [PBMEC2[cdn2aanum(rcdn),cdn2aanum(Rcodon(y,frm))] for y in eachrow(stZ2)]
+
+            mZZ = [mprob(rcdn,Rcodon(y,frm)) for y in eachrow(stZ2)]
+
+            dZ = sum(dZZ.*mZZ)
+            mZ = sum(mZZ)
+
         end
         pZ = nprob6(join(Z),t6)
         d += abs(dZ)*pZ
-        p += pZ
+        p += pZ*mZ
     end
     if p==0
         return 0
@@ -182,13 +189,38 @@ function aadivframe0_X(sdict::Dict,t3)
         stZ = sdict[Z]
         stZ2 = stZ[stZ .!= Z]
         if(isempty(stZ2))
-            dZ=0
+            dZ = 0
+            mZ = 0
         else
-            dZ = sum([PBMEC2[cdn2aanum(Z),cdn2aanum(y)] for y in stZ2])
+            dZZ = [PBMEC2[cdn2aanum(Z),cdn2aanum(y)] for y in stZ2]
+            mZZ = [mprob(Z,y) for y in stZ2]
+
+            dZ = sum(dZZ.*mZZ)
+            mZ = sum(mZZ)
         end
         pZ = nprob3(join(Z),t3)
         d += abs(dZ)*pZ
-        p += pZ
+        p += pZ*mZ
+    end
+    if p==0
+        return 0
+    else
+        return d/p
+    end
+end
+
+function divallX(t3)
+    d = 0
+    p = 0
+    for Z in nostopcodons
+        dZZ = [PBMEC2[cdn2aanum(Z),cdn2aanum(y)] for y in nostopcodons]
+        mZZ = [mprob(Z,y) for y in nostopcodons]
+
+        dZ = sum(dZZ.*mZZ)
+        mZ = sum(mZZ)
+        pZ = nprob3(Z,t3)
+        d += abs(dZ)*pZ
+        p += pZ*mZ
     end
     if p==0
         return 0

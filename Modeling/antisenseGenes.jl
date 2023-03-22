@@ -421,13 +421,19 @@ function aadivframeR(frm::Int,sdict::Dict,gccontent)
         rcdn = Rcodon(Z,frm)
         stZ2 = stZ[(eachrow(stZ) .!= Ref(Z)) .& ([Rcodon(y,frm) for y in eachrow(stZ)] .∉ Ref(stopcodons)) ,:]
         if(isempty(stZ2))
-            dZ=0
+            dZ = 0
+            mZ = 0
         else
-            dZ = sum([PBMEC2[cdn2aanum(rcdn),cdn2aanum(Rcodon(y,frm))] for y in eachrow(stZ2)])
+            dZZ = [PBMEC2[cdn2aanum(rcdn),cdn2aanum(Rcodon(y,frm))] for y in eachrow(stZ2)]
+
+            mZZ = [mprob(rcdn,Rcodon(y,frm)) for y in eachrow(stZ2)]
+
+            dZ = sum(dZZ.*mZZ)
+            mZ = sum(mZZ)
         end
         pZ = nucprob(join(Z),gccontent)
         d += abs(dZ)*pZ
-        p += pZ
+        p += pZ*mZ
     end
     if p==0
         return 0
@@ -443,13 +449,39 @@ function aadivframe0(sdict::Dict,gccontent)
         stZ = sdict[Z]
         stZ2 = stZ[stZ .!= Z]
         if(isempty(stZ2))
-            dZ=0
+            dZ = 0
+            mZ = 0
         else
-            dZ = sum([PBMEC2[cdn2aanum(Z),cdn2aanum(y)] for y in stZ2])
+            dZZ = [PBMEC2[cdn2aanum(Z),cdn2aanum(y)] for y in stZ2]
+            mZZ = [mprob(Z,y) for y in stZ2]
+
+            dZ = sum(dZZ.*mZZ)
+            mZ = sum(mZZ)
         end
         pZ = nucprob(Z,gccontent)
         d += abs(dZ)*pZ
-        p += pZ
+        p += pZ*mZ
+    end
+    if p==0
+        return 0
+    else
+        return d/p
+    end
+end
+
+function divall(gcc)
+    d = 0
+    p = 0
+    for Z in nostopcodons
+        dZZ = [PBMEC2[cdn2aanum(Z),cdn2aanum(y)] for y in nostopcodons]
+        mZZ = [mprob(Z,y) for y in nostopcodons]
+
+        dZ = sum(dZZ.*mZZ)
+        mZ = sum(mZZ)
+
+        pZ = nucprob(Z,gcc)
+        d += abs(dZ)*pZ
+        p += pZ*mZ
     end
     if p==0
         return 0
@@ -460,23 +492,27 @@ end
 
 divergence_PurSel_Max, divergence_PurSel_Rel = [zeros(length(gcrange),3) for i = 1:2];
 
+divergence_PurSel_Max_X, divergence_PurSel_Rel_X = [zeros(3,1) for i = 1:2];
+
 for g in eachindex(gcrange)
     gcx = gcrange[g]
-    divergence_PurSel_Max[g,1:2] = [aadivframeR(x,syncodons,gcx) for x in 1:2]
-    divergence_PurSel_Max[g,3] = aadivframe0(syncodons,gcx)
+    divergence_PurSel_Max[g,2:3] = [aadivframeR(x,syncodons,gcx) for x in 1:2]
+    divergence_PurSel_Max[g,1] = aadivframe0(syncodons,gcx)
 
-    divergence_PurSel_Rel[g,1:2] = [aadivframeR(x,simcodons,gcx) for x in 1:2]
-    divergence_PurSel_Rel[g,3] = aadivframe0(simcodons,gcx)
+    divergence_PurSel_Rel[g,2:3] = [aadivframeR(x,simcodons,gcx) for x in 1:2]
+    divergence_PurSel_Rel[g,1] = aadivframe0(simcodons,gcx)
 end
 
-divergence_PurSel_Rel_X = [aadivframeR_X(x,simcodons,dicodonfreq) for x in 1:2]
-push!(divergence_PurSel_Rel_X,aadivframe0_X(simcodons,codonfreq))
+divergence_PurSel_Rel_X[1] = aadivframe0_X(simcodons,codonfreq);
+divergence_PurSel_Rel_X[2:3] = [aadivframeR_X(x,simcodons,dicodonfreq) for x in 1:2];
 
-divergence_PurSel_Max_X = [aadivframeR_X(x,syncodons,dicodonfreq) for x in 1:2]
-push!(divergence_PurSel_Max_X,aadivframe0_X(syncodons,codonfreq))
+divergence_PurSel_Max_X[1] = aadivframe0_X(syncodons,codonfreq);
+divergence_PurSel_Max_X[2:3] = [aadivframeR_X(x,syncodons,dicodonfreq) for x in 1:2];
 
 alldivRel = vcat(divergence_PurSel_Rel,divergence_PurSel_Rel_X')
 alldivMax = vcat(divergence_PurSel_Max,divergence_PurSel_Max_X')
+
+alldivNoS = vcat([divall(x) for x in gcrange],divallX(codonfreq))
 
 bwf = 1/7;
 
@@ -493,9 +529,15 @@ for j = 1:3
         bar_width = bwf,
         linecolor = nothing
     )
+    plot!(pDivRel,[j+x*bwf for x in 1:5],alldivNoS,
+        markersize = 2,
+        markershape = :circle,
+        markercolor = :white,
+        linecolor = nothing
+    )
 end
 
-xticks!(pDivRel,[1:3;] .+ 3*bwf, string.([1,2,0]));
+xticks!(pDivRel,[1:3;] .+ 3*bwf, string.([0,1,2]));
 
 savefig(pDivRel,figdir*"DivergenceRel_"*organism*".pdf")
 
@@ -512,8 +554,14 @@ for j = 1:3
         bar_width = bwf,
         linecolor = nothing
     )
+    plot!(pDivMax,[j+x*bwf for x in 1:5],alldivNoS,
+        markersize = 2,
+        markershape = :circle,
+        markercolor = :white,
+        linecolor = nothing
+    )
 end
 
-xticks!(pDivMax,[1:3;] .+ 3*bwf, string.([1,2,0]));
+xticks!(pDivMax,[1:3;] .+ 3*bwf, string.([0,1,2]));
 
 savefig(pDivMax,figdir*"DivergenceMax_"*organism*".pdf")
