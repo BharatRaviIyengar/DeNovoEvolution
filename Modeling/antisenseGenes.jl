@@ -414,10 +414,11 @@ savefig(pLD, figdir*"pORFloss_antisense_"*organism*"WC.pdf")
 
 
 function aadivframeR(frm::Int,sdict::Dict,gccontent)
-    d = 0
-    p = 0
+    pvec,dvec = [zeros(size(csetR[frm],1),1) for i = 1:2]
+    ind = 0
     for Z in eachrow(csetR[frm])
-        stZ = phcp(vcat(Z[1],sdict[Z[1]]),vcat(Z[2],sdict[Z[2]]))
+        ind += 1
+            stZ = phcp(vcat(Z[1],sdict[Z[1]]),vcat(Z[2],sdict[Z[2]]))
         rcdn = Rcodon(Z,frm)
         stZ2 = stZ[(eachrow(stZ) .!= Ref(Z)) .& ([Rcodon(y,frm) for y in eachrow(stZ)] .∉ Ref(stopcodons)) ,:]
         if(isempty(stZ2))
@@ -432,20 +433,24 @@ function aadivframeR(frm::Int,sdict::Dict,gccontent)
             mZ = sum(mZZ)
         end
         pZ = nucprob(join(Z),gccontent)
-        d += abs(dZ)*pZ
-        p += pZ*mZ
+        dvec[ind] = abs(dZ)*pZ
+        pvec[ind] = pZ*mZ
     end
+    p = sum(pvec)
+    dm = sum(dvec)/p
+    dv = sum((dvec - dm.*pvec).^2)/p
     if p==0
-        return 0
+        return [0,0]
     else
-        return d/p
+        return [dm,sqrt(dv)]
     end
 end
 
 function aadivframe0(sdict::Dict,gccontent)
-    d = 0
-    p = 0
+    pvec,dvec = [zeros(size(nostopNbr0)) for i = 1:2]
+    ind = 0
     for Z in nostopNbr0
+        ind += 1
         stZ = sdict[Z]
         stZ2 = stZ[stZ .!= Z]
         if(isempty(stZ2))
@@ -459,20 +464,24 @@ function aadivframe0(sdict::Dict,gccontent)
             mZ = sum(mZZ)
         end
         pZ = nucprob(Z,gccontent)
-        d += abs(dZ)*pZ
-        p += pZ*mZ
+        dvec[ind] = abs(dZ)*pZ
+        pvec[ind] = pZ*mZ
     end
+    p = sum(pvec)
+    dm = sum(dvec)/p
+    dv = sum((dvec - dm.*pvec).^2)/p
     if p==0
-        return 0
+        return [0,0]
     else
-        return d/p
+        return [dm,sqrt(dv)]
     end
 end
 
 function divall(gcc)
-    d = 0
-    p = 0
+    pvec,dvec = [zeros(size(nostopcodons)) for i = 1:2]
+    ind = 0
     for Z in nostopcodons
+        ind += 1
         dZZ = [PBMEC2[cdn2aanum(Z),cdn2aanum(y)] for y in nostopcodons]
         mZZ = [mprob(Z,y) for y in nostopcodons]
 
@@ -480,39 +489,48 @@ function divall(gcc)
         mZ = sum(mZZ)
 
         pZ = nucprob(Z,gcc)
-        d += abs(dZ)*pZ
-        p += pZ*mZ
+        dvec[ind] = abs(dZ)*pZ
+        pvec[ind] = pZ*mZ
     end
+    p = sum(pvec)
+    dm = sum(dvec)/p
+    dv = sum((dvec - dm.*pvec).^2)/p
     if p==0
-        return 0
+        return [0,0]
     else
-        return d/p
+        return [dm,sqrt(dv)]
     end
 end
 
-divergence_PurSel_Max, divergence_PurSel_Rel = [zeros(length(gcrange),3) for i = 1:2];
+divergence_PurSel_Max, divergence_PurSel_Rel = [zeros(length(gcrange),3,2) for i = 1:2];
 
-divergence_PurSel_Max_X, divergence_PurSel_Rel_X = [zeros(3,1) for i = 1:2];
+divergence_PurSel_Max_X, divergence_PurSel_Rel_X = [zeros(3,2) for i = 1:2];
 
 for g in eachindex(gcrange)
     gcx = gcrange[g]
-    divergence_PurSel_Max[g,2:3] = [aadivframeR(x,syncodons,gcx) for x in 1:2]
-    divergence_PurSel_Max[g,1] = aadivframe0(syncodons,gcx)
-
-    divergence_PurSel_Rel[g,2:3] = [aadivframeR(x,simcodons,gcx) for x in 1:2]
-    divergence_PurSel_Rel[g,1] = aadivframe0(simcodons,gcx)
+    for x = 1:2
+        divergence_PurSel_Max[g,x+1,:] = aadivframeR(x,syncodons,gcx)
+        divergence_PurSel_Rel[g,x+1,:] = aadivframeR(x,simcodons,gcx)
+    end
+    divergence_PurSel_Max[g,1,:] = aadivframe0(syncodons,gcx)
+    divergence_PurSel_Rel[g,1,:] = aadivframe0(simcodons,gcx)
 end
 
-divergence_PurSel_Rel_X[1] = aadivframe0_X(simcodons,codonfreq);
-divergence_PurSel_Rel_X[2:3] = [aadivframeR_X(x,simcodons,dicodonfreq) for x in 1:2];
+divergence_PurSel_Rel_X[1,:] = aadivframe0_X(simcodons,codonfreq);
+divergence_PurSel_Max_X[1,:] = aadivframe0_X(syncodons,codonfreq);
+for x = 1:2
+    divergence_PurSel_Rel_X[x+1,:] = aadivframeR_X(x,simcodons,dicodonfreq)
+    divergence_PurSel_Max_X[x+1,:] = aadivframeR_X(x,syncodons,dicodonfreq)
+end
 
-divergence_PurSel_Max_X[1] = aadivframe0_X(syncodons,codonfreq);
-divergence_PurSel_Max_X[2:3] = [aadivframeR_X(x,syncodons,dicodonfreq) for x in 1:2];
 
-alldivRel = vcat(divergence_PurSel_Rel,divergence_PurSel_Rel_X')
-alldivMax = vcat(divergence_PurSel_Max,divergence_PurSel_Max_X')
+alldivRel_avg = vcat(divergence_PurSel_Rel[:,:,1],divergence_PurSel_Rel_X[:,1]')
+alldivMax_avg = vcat(divergence_PurSel_Max[:,:,1],divergence_PurSel_Max_X[:,1]')
 
-alldivNoS = vcat([divall(x) for x in gcrange],divallX(codonfreq))
+alldivRel_std = vcat(divergence_PurSel_Rel[:,:,2],divergence_PurSel_Rel_X[:,2]')
+alldivMax_std = vcat(divergence_PurSel_Max[:,:,2],divergence_PurSel_Max_X[:,2]')
+
+alldivNoS = hcat([divall(x) for x in gcrange]...)
 
 bwf = 1/7;
 

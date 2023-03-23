@@ -153,9 +153,10 @@ function pstopselX(sdict,stopvals,t3,t6)
 end
 
 function aadivframeR_X(frm::Int,sdict::Dict,t6)
-    d = 0
-    p = 0
+    pvec,dvec = [zeros(size(csetR[frm],1),1) for i = 1:2]
+    ind = 0
     for Z in eachrow(csetR[frm])
+        ind +=1
         stZ = phcp(vcat(Z[1],sdict[Z[1]]),vcat(Z[2],sdict[Z[2]]))
         rcdn = Rcodon(Z,frm)
         stZ2 = stZ[(eachrow(stZ) .!= Ref(Z)) .& ([Rcodon(y,frm) for y in eachrow(stZ)] .∉ Ref(stopcodons)) ,:]
@@ -172,20 +173,24 @@ function aadivframeR_X(frm::Int,sdict::Dict,t6)
 
         end
         pZ = nprob6(join(Z),t6)
-        d += abs(dZ)*pZ
-        p += pZ*mZ
+        dvec[ind] = abs(dZ)*pZ
+        pvec[ind] = pZ*mZ
     end
+    p = sum(pvec)
+    dm = sum(dvec)/p
+    dv = sum((dvec - dm.*pvec).^2)/p
     if p==0
-        return 0
+        return [0,0]
     else
-        return d/p
+        return [dm,sqrt(dv)]
     end
 end
 
 function aadivframe0_X(sdict::Dict,t3)
-    d = 0
-    p = 0
+    pvec,dvec = [zeros(size(nostopNbr0)) for i = 1:2]
+    ind = 0
     for Z in nostopNbr0
+        ind +=1
         stZ = sdict[Z]
         stZ2 = stZ[stZ .!= Z]
         if(isempty(stZ2))
@@ -199,32 +204,39 @@ function aadivframe0_X(sdict::Dict,t3)
             mZ = sum(mZZ)
         end
         pZ = nprob3(join(Z),t3)
-        d += abs(dZ)*pZ
-        p += pZ*mZ
+        dvec[ind] = abs(dZ)*pZ
+        pvec[ind] = pZ*mZ
     end
+    p = sum(pvec)
+    dm = sum(dvec)/p
+    dv = sum((dvec - dm.*pvec).^2)/p
     if p==0
-        return 0
+        return [0,0]
     else
-        return d/p
+        return [dm,sqrt(dv)]
     end
 end
 
 function divallX(t3)
-    d = 0
-    p = 0
+    pvec,dvec = [zeros(size(nostopcodons)) for i = 1:2]
+    ind = 0
     for Z in nostopcodons
+        ind +=1 
         dZZ = [PBMEC2[cdn2aanum(Z),cdn2aanum(y)] for y in nostopcodons]
         mZZ = [mprob(Z,y) for y in nostopcodons]
 
         dZ = sum(dZZ.*mZZ)
         mZ = sum(mZZ)
         pZ = nprob3(Z,t3)
-        d += abs(dZ)*pZ
-        p += pZ*mZ
+        dvec[ind] = abs(dZ)*pZ
+        pvec[ind] = pZ*mZ
     end
+    p = sum(pvec)
+    dm = sum(dvec)/p
+    dv = sum((dvec - dm.*pvec).^2)/p
     if p==0
-        return 0
+        return [0,0]
     else
-        return d/p
+        return [dm,sqrt(dv)]
     end
 end
