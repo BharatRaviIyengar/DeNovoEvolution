@@ -536,50 +536,46 @@ bwf = 1/7;
 
 pDivRel = plot(
     xlabel = "Frame",
-    ylabel = "Divergence", 
-    size = (width = cm2pt(11.5), height = cm2pt(10)),   
 );
-
-
-for j = 1:3
-    bar!(pDivRel,[j+x*bwf for x in 1:5],alldivRel[:,j],
-        fill = colors,
-        bar_width = bwf,
-        linecolor = nothing
-    )
-    plot!(pDivRel,[j+x*bwf for x in 1:5],alldivNoS,
-        markersize = 2,
-        markershape = :circle,
-        markercolor = :white,
-        linecolor = nothing
-    )
-end
-
-xticks!(pDivRel,[1:3;] .+ 3*bwf, string.([0,1,2]));
-
-savefig(pDivRel,figdir*"DivergenceRel_"*organism*".pdf")
-
-
 pDivMax = plot(
     xlabel = "Frame",
-    ylabel = "Divergence", 
-    size = (width = cm2pt(11.5), height = cm2pt(10)),   
 );
 
 for j = 1:3
-    bar!(pDivMax,[j+x*bwf for x in 1:5],alldivMax[:,j],
+    bar!(pDivRel,[j+x*bwf for x in 1:5],alldivRel_avg[:,j],
         fill = colors,
         bar_width = bwf,
         linecolor = nothing
     )
-    plot!(pDivMax,[j+x*bwf for x in 1:5],alldivNoS,
-        markersize = 2,
+    plot!(pDivRel,[j+x*bwf for x in 1:5],alldivNoS[1,:],
+        markersize = 3,
         markershape = :circle,
-        markercolor = :white,
+        markercolor = colors,
+        markerstrokecolor = :white,
+        markerstrokewidth = 2.5,
+        linecolor = nothing
+    )
+    bar!(pDivMax,[j+x*bwf for x in 1:5],alldivMax_avg[:,j],
+        fill = colors,
+        bar_width = bwf,
+        linecolor = nothing
+    )
+    plot!(pDivMax,[j+x*bwf for x in 1:5],alldivNoS[1,:],
+        markersize = 3,
+        markershape = :circle,
+        markercolor = colors,
+        markerstrokecolor = :white,
+        markerstrokewidth = 2.5,
         linecolor = nothing
     )
 end
 
 xticks!(pDivMax,[1:3;] .+ 3*bwf, string.([0,1,2]));
+xticks!(pDivRel,[1:3;] .+ 3*bwf, string.([0,1,2]));
 
-savefig(pDivMax,figdir*"DivergenceMax_"*organism*".pdf")
+ylims!(pDivRel,ylims(pDivMax));
+yticks!(pDivRel,yticks(pDivMax)[1][1]);
+
+pDivAll = plot(pDivRel,pDivMax, layout = (1,2), size = (width = cm2pt(20), height = cm2pt(10)))
+
+savefig(pDivAll,figdir*"Divergence_"*organism*".pdf")

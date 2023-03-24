@@ -103,17 +103,23 @@ Our analysis of ORF gain probabilities using the frequencies of DNA oligomers (c
 
 Purifying selection reduces the number of tolerated mutations in a DNA locus. We note again that our lowest level of purifying selection also disallows nonsense mutations from occurring in the sense ORFs. We thus hypothesized that overlap with a sense ORF may protect the antisense ORFs from being lost. To this end, we calculated ORF loss probabilities for different ORF lengths, GC-content, and intensities of purifying selection. In an analogous analysis, we used codon, dicodon, and intergenic trimer frequencies, instead of GC-content, to calculate ORF loss probabilities. Our analyses show that antisense ORFs are indeed protected from loss due to overlap with existing ORFs. That is, the loss probability of antisense ORFs is less than that of intergenic ORFs. This protection against loss increases with increasing intensity of purifying selection. However, selection does not protect the ORFs in all the three antisense frames equally. Antisense ORFs are more likely to be preserved when they exist in frame 1. 
 
-
 Overall, our analyses suggest that antisense overlap with an existing ORF facilitates emergence of new ORFs, and protects the existing antisense ORFs from being lost. A complementary analysis with parameters estimated from \textit{D. melanogaster} further supports this finding.
 
-\subsection*{Antisense ORF sequence can diverge even with weak purifying selection on sense ORFs}
+\subsection*{Overlap with sense ORFs promotes divergence of antisense ORFs in frame 2}
 
-In the previous sections, purifying selection on the sense ORF can affect the emergence and loss of antisense ORFs. We next asked if this purifying selection can also constrain the diversification of the proteins encoded by antisense ORF sequences. To this end, we first calculated the chemical distance ($\delta$) between an amino acid and the substituted amino acid that results due to a mutation. For this calculation we used a distance matrix that we derived from an experimentally estimated amino acid similarity matrix reported in a previous study \citep{PMBEC}. Next, we calculated the average chemical difference ($\bar{\delta}$) introduced by a random mutation, weighted by the probability of the corresponding mutations. Specifically, if $i$ denotes the original codon, $j$ denotes the substituted codon, $P_i$ denotes the probability of finding codon-$i$, $\mu_{ij}$ denotes the probability of codon-$i$ mutating to codon-$j$, and $\delta_{ij}$ denotes the chemical difference between the amino acids encoded by these codons, then the average chemical difference is defined by the following equation:
+In the previous sections, we showed that purifying selection on the sense ORF can affect the emergence and loss of antisense ORFs. We next asked if this purifying selection can also constrain the diversification of the proteins encoded by antisense ORF sequences. To this end, we first calculated the chemical distance ($\delta$) between any two amino acids. For this calculation we used a distance matrix that we derived from an experimentally estimated amino acid similarity matrix reported in a previous study \citep{PMBEC}. Next, we calculated the average chemical difference ($\bar{\delta}$) introduced by a random mutation, weighted by the probability of different mutations. Using $\bar{\delta}$ as a measure of divergence, we estimated the extent to which antisense ORFs in the three frames, can diverge as a result of mutations, and due to purifying selection on the sense ORFs. Likewise, we also calculated the divergence of intergenic ORFs as a consequence of random mutations. 
 
-\begin{equation}
-\bar{\delta} = \frac{\displaystyle\sum_i P_i \sum_j \mu_{ij}\delta_{ij}}{\displaystyle\sum_i P_i \sum_j \mu_{ij}}
-\end{equation}
+We found that frame 2 allows maximum divergence of antisense ORFs, under both weak and strong purifying selection on the sense ORF. Antisense ORFs in frame 0 diverge the least. Interestingly, strong selection on sense ORF increases the divergence of antisense ORFs in frame 2. The reason could be that the few mutations that do occur under strong purifying selection, cause a relatively higher increase in divergence than the more numerous mutations that are allowed to occur under weak purifying selection. We also found that the divergence of frame 2 antisense ORFs was higher than than that of intergenic ORFs under both selection regimes. We note this result does not mean that intergenic ORFs can diverge less than antisense ORFs. Evolution of intergenic ORFs is not constrained by another DNA sequence. However, as long as the mutants do not affect the organismal fitness, evolution would not be biased towards divergence increasing mutations. Thus random mutations in intergenic ORFs could also consist of many synonymous and chemistry preserving mutations, that are probably disallowed in frame 2 antisense ORFs due to purifying selection on sense ORFs.
 
+In contrast to frame 2, the divergence of antisense ORFs in the other two frames decreased with increasing strength of purifying selection on the sense ORF. For example, frame 0 antisense ORFs did not diverge at all when the sense ORF was under strong purifying selection. Antisense ORFs in frames 0 and 1 also diverged less than intergenic ORFs under both selection regimes. 
+
+
+\begin{figure}[!t]
+\centering
+\includegraphics[scale=0.5]{\figdir/Divergence_scer.pdf}
+\caption{Antisense ORFs can diversify when sense ORFs are under purifying selection. Vertical axis denotes the divergence ($\bar{\delta}$) of antisense ORFs due to a random mutation when the sense ORF is under weak (left) or strong (right) purifying selection. Horizontal axes denote the three antisense frames. Colored bars denote divergence values of antisense ORFs with different GC-content, and black bars denote the diversity values calculated using frequencies of short DNA sequences from the yeast genome. Filled circles that are similarly color coded, denote the divergence of intergenic ORFs due to mutations.}
+\label{divergence}
+\end{figure}
 \section*{Discussion} 
 
 
@@ -280,6 +286,13 @@ We assumed that an ORF of a certain length remains intact if none of the necessa
 \begin{equation}
 P_\textit{ORF-stay}(k) = P_\textit{ATG-stay} \times P_\textit{stop-stay} \times (1 - P_\textit{stop} - P_\textit{stop-gain})^{k-2}
 \label{eqorfstay}
+\end{equation}
+
+\subsection{Divergence of protein sequence}
+Specifically, if $i$ denotes the original codon, $j$ denotes the substituted codon, $P_i$ denotes the probability of finding codon-$i$, $\mu_{ij}$ denotes the probability of codon-$i$ mutating to codon-$j$, and $\delta_{ij}$ denotes the chemical difference between the amino acids encoded by these codons, then the average chemical difference is defined by the following equation:
+
+\begin{equation}
+\bar{\delta} = \frac{\displaystyle\sum_i P_i \sum_j \mu_{ij}\delta_{ij}}{\displaystyle\sum_i P_i \sum_j \mu_{ij}}
 \end{equation}
 
 
