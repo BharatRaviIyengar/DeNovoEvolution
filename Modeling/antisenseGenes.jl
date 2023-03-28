@@ -331,29 +331,44 @@ for f = 1:3
         rat[:,1:4,2,p] = log2.(orfvalsORS[gx,:,f,p+1]./orfvalsITG[gx,:,p+1])'
         rat[:,1:4,3,p] = log2.(orfvalsOSS[gx,:,f,p+1]./orfvalsITG[gx,:,p+1])'
     end
+    ubg = maximum(rat[:,:,:,1]);
+    mng = maximum(abs.(rat[:,:,:,1]));
+    lbg = minimum(rat[:,:,:,1]);
+    mng>10 ? dg = 2 : dg = 3
+    yrngg = round.(range(lbg,stop=ubg,length = 4),digits=2);
+    ylg = [lbg - 0.1*(ubg - lbg), ubg + 0.1*(ubg -lbg)]
+
+    ubl = maximum(rat[:,:,:,2]);
+    mnl = maximum(abs.(rat[:,:,:,2]));
+    lbl = minimum(rat[:,:,:,2]);
+    mnl>10 ? dl = 2 : dl = 3
+    yrngl = round.(range(lbl,stop=ubl,length = 4),digits=2);
+    yll = [lbl - 0.05*(ubl -lbl), ubl + 0.05*(ubl -lbl)]
     for s in 1:3
         ydatag = rat[:,:,s,1]
-        lbg = minimum(ydatag); ubg = maximum(ydatag)
-        mng = maximum(abs.(ydatag));
-        mng>10 ? d = 2 : d = 3
-        plots_gain[f,s] = plot(ncodons, ydatag[:,1],
+        # lbg = minimum(ydatag); ubg = maximum(ydatag)
+        # mng = maximum(abs.(ydatag));
+        # mng>10 ? d = 2 : d = 3
+        plots_gain[s,f] = plot(ncodons, ydatag[:,1],
             linecolor = colors[1],
-            yticks = round.(range(lbg,stop=ubg,length = 4),digits=2),
+            ylims = ylg,
+            yticks = yrngg,
             xticks = [80, 160, 240]
         );
 
         ydatal = rat[:,:,s,2]
-        lbl = minimum(ydatal); ubl = maximum(ydatal)
-        mnl = maximum(abs.(ydatal));
-        mnl>10 ? d = 2 : d = 3
-        plots_loss[f,s] = plot(ncodons, ydatal[:,1],
+        # lbl = minimum(ydatal); ubl = maximum(ydatal)
+        # mnl = maximum(abs.(ydatal));
+        # mnl>10 ? d = 2 : d = 3
+        plots_loss[s,f] = plot(ncodons, ydatal[:,1],
             linecolor = colors[1],
-            yticks = round.(range(lbl,stop=ubl,length = 4),digits=2),
+            ylims = yll,
+            yticks = yrngl,
             xticks = [80, 160, 240]
         );
         for q = 2:4
-            plot!(plots_gain[f,s],ncodons,ydatag[:,q], linecolor = colors[q]);
-            plot!(plots_loss[f,s],ncodons,ydatal[:,q], linecolor = colors[q]);
+            plot!(plots_gain[s,f],ncodons,ydatag[:,q], linecolor = colors[q]);
+            plot!(plots_loss[s,f],ncodons,ydatal[:,q], linecolor = colors[q]);
         end
 
     end
