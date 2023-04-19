@@ -10,8 +10,8 @@ figdir = joinpath(Base.source_dir(),"../Manuscripts/Figures/M2_main/pdf/");
 colors = ["#FFCC00","#5599FF","#D40000","#754473","#000000"];
 lstyles = [:solid,:dash,:dot]
 
-default(linecolor = :black, linewidth = 2, tickfont = font(10,"Helvetica"), 
-guidefont = font(13,"Helvetica"),framestyle = :box, legend = false);
+default(linecolor = :black, linewidth = 2, tickfont = font(10,"DejaVu Sans"), 
+guidefont = font(13,"DejaVu Sans"),framestyle = :box, legend = false);
 
 stopcodons = ["TAA","TAG","TGA"]
 function nostop(codonset)
@@ -545,7 +545,7 @@ alldivMax_avg = vcat(divergence_PurSel_Max[:,:,1],divergence_PurSel_Max_X[:,1]')
 alldivRel_std = vcat(divergence_PurSel_Rel[:,:,2],divergence_PurSel_Rel_X[:,2]')
 alldivMax_std = vcat(divergence_PurSel_Max[:,:,2],divergence_PurSel_Max_X[:,2]')
 
-alldivNoS = hcat([divall(x) for x in gcrange]...)
+alldivNoS = hcat([divall(x) for x in gcrange]...,divallX(trimerfreq))
 
 bwf = 1/7;
 
