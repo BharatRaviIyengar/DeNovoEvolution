@@ -455,23 +455,23 @@ onlyorfloss = crnastay[dGC,:].*corfloss[dGC,:]./crnaprob[dGC,:];
 promprob = 5331240/43164203; # CRMs in open chromatin / Total intergenic region
 
 polyavalsX = [
-    sum(nprob6.(polyavars,f6)),
+    sum([nprob6(x,f6) for x in polyavars]),
     featuregain6(nopolyas,polyavars,f6),
-    featuregain6(polyavars,nopolyas,f6)/sum(nprob6.(polyavars,f6)),
+    featuregain6(polyavars,nopolyas,f6)/sum([nprob6(x,f6) for x in polyavars]),
     featurestay6(polyavars,f6)
 ];
 
 ATGvalsX = [
-    nprob3("ATG"),
+    nprob3("ATG",f3),
     featuregain3(noATG,["ATG"],f3),
-    featuregain3(["ATG"],noATG,f3)/nprob3("ATG"),
+    featuregain3(["ATG"],noATG,f3)/nprob3("ATG",f3),
     featurestay3(["ATG"],f3)
 ];
 
 stopvalsX = [
-    sum(nprob3.(stopvars,f3)),
+    sum([nprob3(x,f3) for x in stopvars]),
     featuregain3(nostop,stopvars,f3),
-    featuregain3(stopvars,nostop,f3)/sum(nprob3.(stopvars,f3)),
+    featuregain3(stopvars,nostop,f3)/sum([nprob3(x,f3) for x in stopvars]),
     featurestay3(stopvars,f3)
 ];
 

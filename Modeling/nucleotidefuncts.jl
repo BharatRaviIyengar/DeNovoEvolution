@@ -105,7 +105,7 @@ end
 
 
 
-nsub, nucsmbt = readdlm("dmel_mutbias.txt",'\t',header = true);
+nsub, nucsmbt = readdlm(joinpath(Base.source_dir(),"dmel_mutbias.txt"),'\t',header = true);
 
 mutrate = 7.8e-9
 
