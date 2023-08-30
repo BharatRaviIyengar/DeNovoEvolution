@@ -5,10 +5,10 @@ BEGIN{
 }
 
 NR==FNR{
-	if($3 == "mRNA"){
+	if($3 == "CDS"){
 		parent = $9
-		sub(/.*=rna-/,"",parent)
 		sub(/;.*/,"",parent)
+		sub(/.*=/,"",parent)
 		b[$1][parent] = $4
 		e[$1][parent] = $5
 		o[$1][parent] = $7
@@ -47,23 +47,9 @@ function mod(x,y, k){
 		return k
 }
 
-$3=="exon" && $1 in b{
-	parent = $9
-	sub(/.*transcript_id /,"",parent)
-	sub(/;.*/,"",parent) 
-	allexons[parent][FNR] = $0
-#	print parent
-#	as = 0
+$3=="transcript"{
 	for(i in b[$1]){
-		if( (($4>=b[$1][i] && $4<=e[$1][i]) || ($5>=b[$1][i] && $5<=e[$1][i])) && $7 != o[$1][i]){
-			antisense[parent][FNR] = antisense[parent][FNR] " as-"i
-			next
-		}
-	}
-}
-END{
-	for(i in antisense){
-		for(j in allexons[i])
-			print allexons[i][j] antisense[i][j]
+		if($7!=o[$1][i] && (($4>=b[$1][i] && $4<=e[$1][i]) || ($5>=b[$1][i] && $5<=e[$1][i])))
+			print $1, $2, $3, max($4,b[$1][i]), min($5,e[$1][i]), $6, $7, $8, $9
 	}
 }

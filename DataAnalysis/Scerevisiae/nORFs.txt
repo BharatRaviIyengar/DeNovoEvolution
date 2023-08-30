@@ -1,4 +1,0 @@
-Frame	predicted(≥30nt)	predicted(≥90nt)	Observed	Observed+internalATG
-2	2680	869	548	750
-1	2799	1079	646	1006
-0	2500	642	447	561

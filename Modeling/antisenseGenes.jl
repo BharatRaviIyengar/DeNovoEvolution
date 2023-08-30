@@ -3,7 +3,7 @@ using Measures
 cd(Base.source_dir())
 include("nucleotidefuncts.jl")
 
-organism = "scer"
+organism = "dmel"
 
 cm2pt = (cm) -> 28.3465*cm
 figdir = joinpath(Base.source_dir(),"../Manuscripts/Figures/M2_main/pdf/");
