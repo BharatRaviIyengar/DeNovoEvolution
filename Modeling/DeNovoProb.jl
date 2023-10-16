@@ -9,6 +9,13 @@ include("nucleotidefuncts.jl")
 cm2pt = (cm) -> 28.3465*cm
 figdir = joinpath(Base.source_dir(),"../Manuscripts/Figures/");
 
+organism = "scer"
+
+nsub, nucsmbt = readdlm(joinpath(Base.source_dir(),organism*"_mutbias.txt"),'\t',header = true);
+if organism == "scer"
+    mutrate = 1.7e-10
+end
+
 default(linecolor = :black, linewidth = 2, tickfont = font(10,"Helvetica"), 
 guidefont = font(13,"Helvetica"),framestyle = :box, legend = false);
 
@@ -22,8 +29,8 @@ mers6 = kmers(6);
 
 # Data based calculations #
 
-f6= readdlm(joinpath(Base.source_dir(),"dmel_intergenic_hexamers.txt"), '\t');
-f3 = readdlm(joinpath(Base.source_dir(),"dmel_intergenic_trimers.txt"), '\t');
+f6 = readdlm(joinpath(Base.source_dir(),organism*"_intergenic_hexamers.txt"), '\t');
+f3 = readdlm(joinpath(Base.source_dir(),organism*"_intergenic_trimers.txt"), '\t');
 
 ## TATA box
 # Consensus sequence = TATAWAWR
@@ -264,7 +271,9 @@ for g in eachindex(gcrange)
 end
 
 promprob = 5331240/43164203; # CRMs in open chromatin / Total intergenic region
-
+if(organism=="scer")
+    promprob = 0.458234
+end
 rnaprob = rnaprob*promprob;
 rnagain = rnagain*promprob;
 crnaprob = crnaprob*promprob;
@@ -452,7 +461,7 @@ onlyorfloss = crnastay[dGC,:].*corfloss[dGC,:]./crnaprob[dGC,:];
 
 # Estimate from D.mel data #
 
-promprob = 5331240/43164203; # CRMs in open chromatin / Total intergenic region
+# promprob = 5331240/43164203; # CRMs in open chromatin / Total intergenic region
 
 polyavalsX = [
     sum([nprob6(x,f6) for x in polyavars]),
