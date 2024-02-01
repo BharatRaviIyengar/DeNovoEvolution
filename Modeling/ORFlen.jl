@@ -1,15 +1,19 @@
-using Plots
-using Measures
 using LinearAlgebra
+using Measures
+using Plots
 using Printf
-# using LaTeXStrings
+
 cd(Base.source_dir())
 include("nucleotidefuncts.jl")
 
 organism = "dmel"
+# organism = "scer"
+
+poisson = (l,k,n) -> l^n * exp(-l*k)/factorial(n)
+
 
 cm2pt = (cm) -> 28.3465*cm
-figdir = joinpath(Base.source_dir(),"../Manuscripts/Other_Figures/GeneLength/");
+figdir = joinpath(Base.source_dir(),"../Manuscripts/M3/Figures/");
 colors = ["#FFCC00","#5599FF","#D40000","#754473","#000000"];
 lstyles = [:solid,:dash,:dot]
 
@@ -31,7 +35,7 @@ if organism == "scer"
     mutrate = 1.7e-10
 end
 
-using DelimitedFiles
+pnomut = (l,m) -> exp(-l*m)
 
 normalize = x -> x/sum(x)
 
@@ -99,91 +103,321 @@ end
 function tprobs(i,j,ATG,stop)
     nostopstay = 1 - stop[xGain] - stop[xProb]
     noATGstay = 1 - ATG[xGain] - ATG[xProb]
-    ORFv = orfprobs(ATG,stop,i)
     if i==j    
         return (1-ATG[xLoss])*(1-stop[xLoss])*(1-stop[xGain]/stop[xProb])^i
     elseif i<j
-        return (stop[xLoss] + ATG[xGain])*nostopstay^(j-i)
+        return (stop[xLoss]*stop[xProb] + ATG[xGain])*nostopstay^(j-i) +(j-i)*stop[xLoss]*stop[xProb]*ATG[xProb]*nostopstay^(j-i-1)
     else
-        return stop[xGain]/stop[xProb] + ATG[xLoss]*noATGstay^(i-j)*ATG[xProb]
+        return stop[xGain]/(1-stop[xProb]) + ATG[xLoss]*noATGstay^(i-j)*ATG[xProb] + ATG[xProb]*(i-j)*stop[xGain]
     end
 end
 
+function T5(i,j,ATG,stop)
+    nostopstay = 1 - stop[xGain] - stop[xProb]
+    noATGstay = 1 - ATG[xGain] - ATG[xProb]
+    if i<j
+        return ATG[xGain]*nostopstay^(j-i) +(j-i)*stop[xLoss]*stop[xProb]*ATG[xProb]*nostopstay^(j-i-1)
+    elseif i>j
+        return ATG[xLoss]*noATGstay^(i-j)*ATG[xProb] + ATG[xProb]*(i-j)*stop[xGain]
+    else return 1
+    end
+end
 
- ncodons = [20:500;];
-# gcrange = [0.3:0.05:0.6;]
-# crossover = zeros(Int64,length(ncodons),length(gcrange),2);
-# crossoverX = zeros(Int64,length(ncodons),2);
+function T3(i,j,ATG,stop)
+    nostopstay = 1 - stop[xGain] - stop[xProb]
+    noATGstay = 1 - ATG[xGain] - ATG[xProb]
+    if i<j
+        return stop[xLoss]*stop[xProb]*nostopstay^(j-i)
+    elseif i>j
+        return stop[xGain]/(1-stop[xProb])
+    else return 1
+    end
+end
+
+function markovcalc(gens,transmat,orfvalues,traj="s")
+    xmt = transmat^gens;
+    if traj=="e"
+        xinit = orfvalues[xProb,:]'.*LowerTriangular(ones(size(transmat)));
+        setindex!.(Ref(xinit), 0.0, eachindex(ncodons), eachindex(ncodons));
+    elseif traj=="t"
+        xinit = UpperTriangular(ones(size(transmat))).*orfvalues[xProb,:]';
+        setindex!.(Ref(xinit), 0.0, eachindex(ncodons), eachindex(ncodons));
+    else
+        xinit = orfvalues[xProb,:].*Matrix(1.0*I,size(transmat));
+    end
+    return xinit*xmt
+end
+
+gcrange = [0.3:0.1:0.6;];
+#ncodons = [20:500;];
+
+ncodons =[3:900;];
+
+similarity90 = [pnomut(mutrate,x) for x in Int.(ceil.(ncodons.*0.9))];
+
+atgvals = hcat([ATGprobs(g) for g in gcrange]...);
+stopvals = hcat([stopprobs(g) for g in gcrange]...);
+
+orfvals = zeros(4,length(ncodons),length(gcrange));
+tmat = zeros(length(ncodons),length(ncodons),length(gcrange))
+
+m3 = zeros(length(ncodons),length(ncodons),length(gcrange))
+m5 = zeros(length(ncodons),length(ncodons),length(gcrange))
+
+for g in eachindex(gcrange)
+    orfvals[:,:,g] = hcat([orfprobs(atgvals[:,g],stopvals[:,g],k) for k in ncodons]...);
+    tmat[:,:,g] = similarity90.*[tprobs(i,j,atgvals[:,g],stopvals[:,g]) for i in ncodons, j in ncodons];
+    m5[:,:,g] = [T5(i,j,atgvals[:,g],stopvals[:,g]) for i in ncodons, j in ncodons]
+    m3[:,:,g] = [T3(i,j,atgvals[:,g],stopvals[:,g]) for i in ncodons, j in ncodons]
+end
 atgvalsX = ATGprobsX(trimerfreq);
 stopvalsX = stopprobsX(trimerfreq);
 orfvalsX = hcat([orfprobs(atgvalsX,stopvalsX,k) for k in ncodons]...);
-tmatX = [tprobs(i,j,atgvalsX,stopvalsX) for i in ncodons, j in ncodons];
-# tmatX2 = tmatX/sum(tmatX);
+
+tmatX = similarity90.*[tprobs(i,j,atgvalsX,stopvalsX) for i in ncodons, j in ncodons];
+
+m3x = [T3(i,j,atgvalsX,stopvalsX) for i in ncodons, j in ncodons];
+m5x = [T5(i,j,atgvalsX,stopvalsX) for i in ncodons, j in ncodons];
+
+m5g3x = log.(m5x./m3x);
+m5g3x[findall(m5g3x.<=0)] .= NaN;
+
+mostlikelystart = zeros(Int32,length(ncodons),length(gcrange)+1);
+for g in eachindex(gcrange)
+    egt = eigen(tmat[:,:,g]);
+    vecs = orfvals[xProb,:,g].*egt.vectors; 
+    vecs2 = abs.(vecs)
+    mostlikelystart[:,g] = [ncodons[findlast(vecs2[:,x] .== maximum(vecs2[:,x]))] for x in eachindex(ncodons)];
+end
 
 egt = eigen(tmatX);
-vecs = orfvalsX[xProb].*egt.vectors; 
+vecs = orfvalsX[xProb,:].*egt.vectors; 
 vecs2 = abs.(vecs)
-mostlikelystart = [ncodons[findlast(vecs2[:,x] .== maximum(vecs2[:,x]))] for x in eachindex(ncodons)];
+mostlikelystart[:,end] = [ncodons[findlast(vecs2[:,x] .== maximum(vecs2[:,x]))] for x in eachindex(ncodons)];
 
-px = plot(ncodons[1:end-1],mostlikelystart[1:end-1], 
+gens = 2 .^[0:Int(floor(log2(10/mutrate)));]
+(EgT, EgS, TgS) = [zeros(Int64,length(gens),length(gcrange)+1) for i=1:3];
+
+(ev, tv, sv, Eop, Top, Sop) = [zeros(length(ncodons),length(gens),length(gcrange)+1) for i=1:6];
+
+for r in eachindex(gens)
+    for g in eachindex(gcrange)
+        tmg = tmat[:,:,g]^gens[r]
+        sameQ = markovcalc(1,tmg, orfvals[:,:,g],"s");
+        extnQ = markovcalc(1,tmg, orfvals[:,:,g],"e");
+        trncQ = markovcalc(1,tmg, orfvals[:,:,g],"t");
+        (sv[:,r,g], ev[:,r,g], tv[:,r,g]) = [diag(x) for x in [sameQ, extnQ, trncQ]];
+        # println([gcrange[g],gens[r]])
+        if(any(ev[:,r,g] .> tv[:,r,g]))
+            EgT[r,g] = ncodons[findfirst(ev[:,r,g] .> tv[:,r,g])]
+        end    
+        if(any(ev[:,r,g] .> sv[:,r,g]))
+            EgS[r,g] = ncodons[findfirst(ev[:,r,g] .> sv[:,r,g])]
+        end 
+        if(any(tv[:,r,g] .> sv[:,r,g]))
+            TgS[r,g] = ncodons[findfirst(tv[:,r,g] .> sv[:,r,g])]
+        end 
+        Eop[:,r,g] = [sum(tmg[x,x+1:end]) for x in eachindex(ncodons)]
+        Top[:,r,g] = [sum(tmg[x,1:x-1]) for x in eachindex(ncodons)]
+        Sop[:,r,g] = diag(tmg)
+    end
+    tmg = tmatX^gens[r]
+    sameQ = markovcalc(1,tmg,orfvalsX,"s");
+    extnQ = markovcalc(1,tmg,orfvalsX,"e");
+    trncQ = markovcalc(1,tmg,orfvalsX,"t");
+    (sv[:,r,end], ev[:,r,end], tv[:,r,end]) = [diag(x) for x in [sameQ, extnQ, trncQ]];
+    if(any(ev[:,r,end] .> tv[:,r,end]))
+        EgT[r,end] = ncodons[findfirst(ev[:,r,end] .> tv[:,r,end])]
+    end    
+    if(any(ev[:,r,end] .> sv[:,r,end]))
+        EgS[r,end] = ncodons[findfirst(ev[:,r,end] .> sv[:,r,end])]
+    end
+    if(any(tv[:,r,end] .> sv[:,r,end]))
+        TgS[r,end] = ncodons[findfirst(tv[:,r,end] .> sv[:,r,end])]
+    end
+    Eop[:,r,end] = [sum(tmg[x,x+1:end]) for x in eachindex(ncodons)]
+    Top[:,r,end] = [sum(tmg[x,1:x-1]) for x in eachindex(ncodons)]
+    Sop[:,r,end] = diag(tmg)
+    println(r)
+end
+
+
+fac = Int(5*10^(Int(floor(-log10(mutrate))) -2))
+eggen = findfirst(gens .>= fac)
+
+# sameQ = markovcalc(fac,tmatX, orfvalsX,"s");
+# extnQ = markovcalc(fac,tmatX, orfvalsX,"e");
+# trncQ = markovcalc(fac,tmatX, orfvalsX,"t");
+# (sv, ev, tv) = [diag(x) for x in [sameQ, extnQ, trncQ]];
+
+
+# Plots #
+
+pEV = plot( 
     xlabel = "Final ORF length (codons)",
-    ylabel = "Initial ORF length (codons)"
+    ylabel = "Initial ORF length (codons)",
+    size = (width = cm2pt(11), height = cm2pt(10))
     );
 
-eq = ncodons[findfirst(mostlikelystart .<= ncodons)];
-scatter!(px, [eq],[eq])
+for q in 1:5
+    plot!(pEV,ncodons,mostlikelystart[:,q],
+        linecolor = colors[q]
+    );
+end
 
-# for x in eachindex(ncodons)
+plt5g3x = heatmap(m5g3x, 
+    c = :heat,
+    cb = :top,
+    xrotation = 90,
+    xticks = [100:100:900;],
+    yticks = [100:100:900;],
+    ylabel = "Initial ORF length",
+    xlabel = "Final ORF length",
+    size = (width = cm2pt(11.5), height = cm2pt(11)),
+);
 
-#     (xinit1,xinit2) = [orfvalsX[xProb,:] for i=1:2];
-#     xinit1[x:end] .= 0;
-#     xinit2[1:(x-1)] .= 0;
-#     x1 = [tmatX[x,x]^n *orfvalsX[xProb,x] for n=80:120];
-#     x2 = vcat([(xinit1' * tmatX^n)[x] for n=80:120]...);
-#     x3 = vcat([(xinit2' * tmatX^n)[x] for n=80:120]...);
+savefig(plt5g3x,figdir*"5g3_"*organism*".pdf")
 
-#     c1 = findfirst(x2./x1 .>= 1.1)
-#     c2 = findfirst(x3./x1 .>= 1.1)
 
-#     isnothing(c1) ? crossoverX[x,1] = 0 : crossoverX[x,1] = c1
-#     isnothing(c2) ? crossoverX[x,2] = 0 : crossoverX[x,2] = c2
-#     println("Done: ",ncodons[x])
+TgE_gORF = hcat([ncodons[[findfirst(Top[:,x,g] .> Eop[:,x,g]) for x in eachindex(gens)]] for g =1:5]...);
+
+pltTgE = plot( 
+    xlabel = "Generations",
+    ylabel = "Minimum ORF length\n(codons)",
+    title = "P(T) > P(E)",
+    xaxis = :log10,
+    xticks = 10 .^[0:2:10;],
+    size = (width = cm2pt(11.5), height = cm2pt(11))
+    );
+
+for q in 1:5
+    plot!(pltTgE,gens,TgE_gORF[:,q],
+        linecolor = colors[q]
+    );
+end
+
+savefig(pltTgE,figdir*"TgEvGen_fromORF_"*organism*".pdf")
+
+pltEgT = plot( 
+    xlabel = "Generations",
+    ylabel = "Minimum ORF length\n(codons)",
+    title = "P(E) > P(T)",
+    xaxis = :log10,
+    xticks = 10 .^[0:2:10;],
+    size = (width = cm2pt(11.5), height = cm2pt(11))
+    );
+
+for q in 1:5
+    plot!(pltEgT,gens,EgT[:,q],
+        linecolor = colors[q]
+    );
+end
+
+savefig(pltEgT,figdir*"EgTvGen_"*organism*".pdf")
+
+# SgE_gORF = hcat([ncodons[[findfirst(Sop[:,x,g] .> Eop[:,x,g]) for x in eachindex(gens)]] for g =1:5]...);
+
+# pltSgE = plot( 
+#     xlabel = "Generations",
+#     ylabel = "Minimum ORF length\n(codons)",
+#     title = "P(S) > P(E)",
+#     xaxis = :log10,
+#     xticks = 10 .^[0:2:10;],
+#     size = (width = cm2pt(11.5), height = cm2pt(11))
+#     );
+
+# for q in 1:5
+#     plot!(pltSgE,gens,SgE_gORF[:,q],
+#         linecolor = colors[q]
+#     );
 # end
 
-fac = 0.1/mutrate
-gens = 10^(-2 + Int(floor(log10(fac))))
-xmt = tmatX^gens;
-
-xinit1 = orfvalsX[xProb,:].*Matrix(1.0*I,size(tmatX));
-xinit1X = xinit1*xmt;
-
-xinit2 = orfvalsX[xProb,:]'.*LowerTriangular(ones(size(tmatX)));
-
-xinit3 = UpperTriangular(ones(size(tmatX))).*orfvalsX[xProb,:]';
-setindex!.(Ref(xinit2), 0.0, eachindex(ncodons), eachindex(ncodons));
-setindex!.(Ref(xinit3), 0.0, eachindex(ncodons), eachindex(ncodons));
-xinit2X = xinit2*xmt;
-xinit3X = xinit3*xmt;
+# savefig(pltTgE,figdir*"SgEvGen_fromORF_"*organism*".pdf")
 
 
-# xinit1Y = UpperTriangular(xinit1X)
-# setindex!.(Ref(xinit1Y),0.0,eachindex(ncodons),eachindex(ncodons));
-maxcontri = [ncodons[findfirst(x .==maximum(x))] for x in eachcol(xinit1Y)];
+mESGx = [findfirst(EgS[:,x] .>0) for x = 1:5];
+mTSGx = [findfirst(TgS[:,x] .>0) for x = 1:5];
 
-# ptitle = replace((@sprintf "%0.0e" gens),"e+0" => "\\times10^{") * "}"
-# ptitle = replace(ptitle,"1\\times" => "")
+pltEgS = plot( 
+    xlabel = "Generations",
+    ylabel = "Minimum ORF length\n(codons)",
+    title = "P(E) > P(C)",
+    xaxis = :log10,
+    xticks = 10 .^[floor(log10(gens[minimum(mESGx)])):10;],
+    size = (width = cm2pt(11.5), height = cm2pt(11))
+    );
 
-p1 = plot(ncodons[11:281],log10.(diag(xinit1X))[11:281],
-    xlabel = "ORF length (codons)",
-    ylabel = "log10(Probability)",
-    label = "Length constant",
-    title = latexstring(ptitle)* " Generations"
-);
-plot!(p1,ncodons[11:281],log10.(diag(xinit2X))[11:281], linecolor = :red, label = "Length extended");
-plot!(p1,ncodons[11:281],log10.(diag(xinit3X))[11:281], linecolor = :blue, label = "Length truncated");
+for q in 1:5
+    plot!(pltEgS,gens[mESGx[q]:end],EgS[mESGx[q]:end,q],
+        linecolor = colors[q]
+    );
+end
 
-plot!(p1, legend = :bottom, legendfont = font(11,"Helvetica"),
+savefig(pltEgS,figdir*"EgSvGen_"*organism*".pdf")
+
+
+pltTgS = plot( 
+    xlabel = "Generations",
+    ylabel = "Minimum ORF length\n(codons)",
+    title = "P(T) > P(C)",
+    xaxis = :log10,
+    xticks = 10 .^[floor(log10(gens[minimum(mTSGx)])):10;],
+    size = (width = cm2pt(11.5), height = cm2pt(11))
+    );
+
+for q in 1:5
+    plot!(pltTgS,gens[mTSGx[q]:end],TgS[mTSGx[q]:end,q],
+        linecolor = colors[q]
+    );
+end
+
+savefig(pltTgS,figdir*"TgSvGen_"*organism*".pdf")
+
+plt_eg = plot(ncodons[1:300],log10.(sv)[1:300], linecolor = :black, label = "Constant", xlabel = "ORF length (codons)", ylabel = "log10(Probability)")
+plot!(plt_eg, ncodons[1:300],log10.(ev)[1:300], linecolor = :red, label = "Extended");
+plot!(plt_eg,ncodons[1:300],log10.(tv)[1:300], linecolor = :blue, label = "Truncated");
+
+plot!(plt_eg, legend = :bottom, legendfont = font(11,"Helvetica"),
     size = (width = cm2pt(13), height = cm2pt(11))
     )
 
-savefig(p1,figdir*organism*"_Prob_"* (@sprintf "%0.0e" gens)*"gens.pdf")
+savefig(plt_eg,figdir*organism*"_Prob_"* (@sprintf "%0.0e" fac)*"gens.pdf")
+
+allplots = []
+
+for i in Int.(floor.([1:length(gens)/4:length(gens);]))
+    plt_egOP = plot(ncodons[2:300],log10.(Eop[2:300,i,5]), linecolor = :red, title = string(gens[i])*" generations", label ="Extended");
+
+    plot!(plt_egOP,ncodons[2:300],log10.(Top[2:300,i,5]), linecolor = :blue, label ="Truncated")
+
+    if i==27
+        plot!(plt_egOP, legend = :bottom, legendfont = font(11,"Helvetica"),
+        size = (width = cm2pt(13), height = cm2pt(11))
+        )
+    end
+    push!(allplots,plt_egOP)
+end
+
+apx = plot(allplots..., layout = (2,2),size = (width = cm2pt(25), height = cm2pt(20)));
+
+savefig(apx,figdir*"Supp/TvE_fromORF"*organism*".pdf")
+
+
+plots_5vs3 = Array{Plots.Plot{Plots.GRBackend}}(undef,1,4);
+
+m35 = log2.(m3./m5);
+
+m35[findall(m35.<=0)] .= NaN;
+
+for i in eachindex(gcrange)
+    plots_5vs3[i] = heatmap(m35[:,:,i], legend = :bottom, 
+    xrotation = 90,
+    ylabel = "Initial ORF length",
+    xlabel = "Final ORF length",
+    title = "GC% = "*string(Int(gcrange[i]*100))
+    );
+end
+
+P53 = plot(plots_5vs3..., layout = (2,2), size = (width = cm2pt(25), height = cm2pt(20)));
+
+savefig(P53,figdir*"Supp/ET_3v5_"*organism*".pdf")

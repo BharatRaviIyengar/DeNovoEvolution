@@ -94,6 +94,52 @@ function frameXcpairs(codon::String,frame::Int)
     return permutedims(hcat(collect.(product(up,down))...))
 end
 
+
+"""
+`overlapXnucs(nucleotide.string,offset,is.complementary=true/false)`
+
+For a given nucleotide sequence (length = x), find all overlapping nucleotide sequences of the same length (x), with an offset in the range (1-x,x-1)
+...
+
+# Examples
+```
+julia> frameXcodons("ATG",1)
+4-element Vector{String}:
+"TGA"
+"TGT"
+"TGG"
+"TGC"
+
+julia> overlapXnucs("ATG",-1)
+4-element Vector{String}:
+ "AAT"
+ "TAT"
+ "GAT"
+ "CAT"
+``` 
+"""
+function overlapXnucs(nstr::String,frame::Int, iscomp=false)
+    slen = length(nstr)
+    frabs = abs(frame)
+    if(frabs>slen)
+            error("offset ≥ nucleotide length")
+    end
+    if(frame == 0)
+        error("offset is zero")
+    end
+
+    if(iscomp)
+        nstr = reverse(comp(nstr))
+    end
+
+    if(frame>0)
+        return nstr[1+frabs:slen].*vec(join.(product(repeated(nucs,frabs)...)))
+    else
+        z = slen-frabs
+        return vec(join.(product(repeated(nucs,frabs)...))).*nstr[1:z]
+    end
+end
+
 """
 `comp(s)`
 ...
@@ -200,7 +246,13 @@ function featurestay(set1,gccontent)
 end
 
 nprob3 = (x,t3) -> t3[t3[:,1] .== x,2][1]
-nprob6 = (x,t6) -> t6[t6[:,1] .== x,2][1]
+function nprob6(x,t6)
+    if(isnothing(x))
+        return 0
+    else
+        return  t6[t6[:,1] .== x,2][1]
+    end
+end
 
 function featuregain3(set1,set2,t3)
     if(isempty(set1) || isempty(set2))

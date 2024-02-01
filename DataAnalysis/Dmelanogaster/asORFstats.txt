@@ -1,0 +1,49 @@
+ORFstats = do.call(rbind,lapply(pops, function(p){
+	x = read.table(paste0(p,"_asORF_stats.txt"))
+	y = x[x[,5] == 100,c(2,3,4,6)]
+	colnames(y) = c("ORFnum","Length","Frame","KCS")
+	y$Population = p
+	q = read.table(paste0(p,"_KCS.txt"))[,c(4,5,6,9)]
+	colnames(q) = c("Start","End","KCS","ORFnum")
+	q$Length = q[,2] - q[,1]
+	q$Frame = "IG"
+	q$Population = p
+	rbind(y,q[,c(4,5,6,3,7)])
+}))
+
+wcx = do.call(rbind,lapply(pops, function(p){
+	pdata = ORFstats[ORFstats$Population==p,]
+	do.call(rbind, lapply(c(1:6), function(x){
+		xframe = combs2[1,x]
+		yframe = combs2[2,x]
+		xdata = pdata[pdata$Frame == xframe,"KCS"]
+		ydata = pdata[pdata$Frame == yframe,"KCS"]
+		if(median(xdata)>median(ydata)){
+			tail = "g"
+			test = paste0(xframe,">",yframe)
+		} else{
+			tail = "l"
+			test = paste0(xframe,"<",yframe)
+		}
+		pval = wilcox.test(xdata,ydata,alternative = tail)$p.value
+		data.frame(Population = p, test = test, pval = pval)
+	}))
+}))
+
+no consistent statistically significant difference between KCS, ORF positions of asORFs, or length  in different frames.
+do.call(rbind,lapply(pops, function(p){
+	pdata = asORFstats[asORFstats$Population==p,]
+	do.call(rbind, lapply(c(0:2), function(x){
+		medlen = median(pdata[pdata$Frame == x,"Length"])
+		totlen = sum(pdata[pdata$Frame == x,"Length"])/1000
+		norfs = sum(pdata$Frame == x)
+		data.frame(Population = p, Frame = x, norfs,totlen,medlen)
+	}))
+}))
+
+
+sapply(pops, function(p){
+	pdata = asorfsum[asorfsum$Population==p,]
+	sum(pdata$Length)
+})
+		

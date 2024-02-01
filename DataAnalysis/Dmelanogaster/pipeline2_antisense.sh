@@ -28,7 +28,7 @@ echo -e "\n Calculating frame statistics"
 ./framecounts.awk "$i"_realasORFs.gtf > "$i"_framecounts.txt
 ###
 echo -e "\n Extracting true antisense ORF sequences"
-bedtools getfasta -fi "$i"_Genome.fa -bed "$i"_realasORFs.gtf -s -name > "$i"_realasORFs.fa ; done
+bedtools getfasta -fi "$i"_Genome.fa -bed "$i"_realasORFs.gtf -s -name > "$i"_realasORFs.fa
 ###
 echo -e "\n Extracting overlapping regions"
 bedtools intersect -a "$i"_GA.gtf -b "$i"_realasORFs.gtf > "$i"_overlappingRNAregion.gff

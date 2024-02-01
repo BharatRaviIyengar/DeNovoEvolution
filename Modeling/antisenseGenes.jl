@@ -3,15 +3,15 @@ using Measures
 cd(Base.source_dir())
 include("nucleotidefuncts.jl")
 
-organism = "dmel"
+organism = "scer"
 
 cm2pt = (cm) -> 28.3465*cm
-figdir = joinpath(Base.source_dir(),"../Manuscripts/Figures/M2_main/pdf/");
+figdir = joinpath(Base.source_dir(),"../Manuscripts/M2/Figures/");
 colors = ["#FFCC00","#5599FF","#D40000","#754473","#000000"];
-lstyles = [:solid,:dash,:dot]
+lstyles = [:dot,:solid,:dash]
 
-default(linecolor = :black, linewidth = 2, tickfont = font(10,"DejaVu Sans"), 
-guidefont = font(13,"DejaVu Sans"),framestyle = :box, legend = false);
+default(linecolor = :black, linewidth = 2, tickfont = font(10,"Helvetica"), 
+guidefont = font(13,"Helvetica"),framestyle = :box, legend = false);
 
 stopcodons = ["TAA","TAG","TGA"]
 function nostop(codonset)
@@ -237,7 +237,7 @@ function orfprobs(ATG,stop,k)
     return [orfprob; orfgain; orfloss; orfstay]
 end
 
-ncodons = [30:300;];
+ncodons = [10:300;];
 gcrange = [0.3:0.1:0.6;];
 
 orfvalsITG = zeros(length(gcrange),length(ncodons),4);
@@ -299,10 +299,13 @@ end
 
 pORF = plot(xlabel = "ORF length (codons)", ylabel = "Relative ORF Probability\n (Frame 1)", size = (width = cm2pt(11), height = cm2pt(10)));
 
-for q in 1:4
-    plot!(pORF,ncodons,log2.(orfvalsONS[q,:,1,1]./orfvalsITG[q,:,1]),
-        linecolor = colors[q]
-    );
+for g in 1:4
+    f = 2
+    # for f in 1:3
+        plot!(pORF,ncodons,log2.(orfvalsONS[g,:,f,1]./orfvalsITG[g,:,1]),
+            linecolor = colors[g], linestyle = lstyles[f]
+        );
+    # end
 end
 
 savefig(pORF, figdir*"pORF_antisense_"*organism*"GC.pdf")
@@ -353,8 +356,14 @@ for f = 1:3
             linecolor = colors[1],
             ylims = ylg,
             yticks = yrngg,
-            xticks = [80, 160, 240]
+            xticks = [40:80:300;]
         );
+        if(f==2)
+            plot!(plots_gain[s,f], ncodons,zeros(length(ncodons)),
+            linecolor = "#999999",
+            linewidth = 1
+            )
+        end
 
         ydatal = rat[:,:,s,2]
         # lbl = minimum(ydatal); ubl = maximum(ydatal)
@@ -364,7 +373,7 @@ for f = 1:3
             linecolor = colors[1],
             ylims = yll,
             yticks = yrngl,
-            xticks = [80, 160, 240]
+            xticks = [40:80:300;]
         );
         for q = 2:4
             plot!(plots_gain[s,f],ncodons,ydatag[:,q], linecolor = colors[q]);
@@ -380,49 +389,54 @@ savefig(pG, figdir*"pORFgain_antisense_"*organism*"GC.pdf")
 pL = plot(plots_loss..., size = (width = cm2pt(21), height = cm2pt(18)));
 savefig(pL, figdir*"pORFloss_antisense_"*organism*"GC.pdf")
 
-plots_gain_dmel, plots_loss_dmel = [Array{Plots.Plot{Plots.GRBackend}}(undef,1,3) for i = 1:2];
+plots_gain_org, plots_loss_org = [Array{Plots.Plot{Plots.GRBackend}}(undef,1,3) for i = 1:2];
 
 
-rat_dmel = zeros(length(ncodons),3,2);
+rat_org = zeros(length(ncodons),3,2);
 
 for f = 1:3
     for p = 1:2
-        rat_dmel[:,1,p] = log2.(orfvalsONS_X[:,f,p+1]./orfvalsITG_X[:,p+1])'
-        rat_dmel[:,2,p] = log2.(orfvalsORS_X[:,f,p+1]./orfvalsITG_X[:,p+1])'
-        rat_dmel[:,3,p] = log2.(orfvalsOSS_X[:,f,p+1]./orfvalsITG_X[:,p+1])'
+        rat_org[:,1,p] = log2.(orfvalsONS_X[:,f,p+1]./orfvalsITG_X[:,p+1])'
+        rat_org[:,2,p] = log2.(orfvalsORS_X[:,f,p+1]./orfvalsITG_X[:,p+1])'
+        rat_org[:,3,p] = log2.(orfvalsOSS_X[:,f,p+1]./orfvalsITG_X[:,p+1])'
     end
 
-    ydatag = rat_dmel[:,:,1]
+    ydatag = rat_org[:,:,1]
     lbg = minimum(ydatag); ubg = maximum(ydatag)
     mng = maximum(abs.(ydatag));
     mng>10 ? d = 2 : d = 3
-    plots_gain_dmel[f] = plot(ncodons, ydatag[:,1],
+    plots_gain_org[f] = plot(ncodons, ydatag[:,1],
         linestyle = lstyles[1],
         yticks = round.(range(lbg,stop=ubg,length = 4),digits=1),
-        xticks = [80, 160, 240]
+        xticks = [40:80:300;]
     );
 
-    ydatal = rat_dmel[:,:,2]
+    ydatal = rat_org[:,:,2]
     lbl = minimum(ydatal); ubl = maximum(ydatal)
     mnl = maximum(abs.(ydatal));
     mnl>10 ? d = 2 : d = 3
-    plots_loss_dmel[f] = plot(ncodons, ydatal[:,1],
+    plots_loss_org[f] = plot(ncodons, ydatal[:,1],
         linestyle = lstyles[1],
          yticks = round.(range(lbl,stop=ubl,length = 4),digits=1),
-         xticks = [80, 160, 240]
+         xticks = [40:80:300;]
     );
 
     for q = 2:3
-        plot!(plots_gain_dmel[f],ncodons,ydatag[:,q], linestyle = lstyles[q]);
-        plot!(plots_loss_dmel[f],ncodons,ydatal[:,q], linestyle = lstyles[q]);
+        plot!(plots_gain_org[f],ncodons,ydatag[:,q], linestyle = lstyles[q]);
+        plot!(plots_loss_org[f],ncodons,ydatal[:,q], linestyle = lstyles[q]);
     end
-
 end
 
-pGD = plot(plots_gain_dmel..., layout = (1,3), size = (width = cm2pt(21), height = cm2pt(6.75)));
+plot!(plots_gain_org[2], ncodons,zeros(length(ncodons)),
+    linecolor = "#999999",
+    linewidth = 1
+);
+
+
+pGD = plot(plots_gain_org..., layout = (1,3), size = (width = cm2pt(21), height = cm2pt(6.75)));
 savefig(pGD, figdir*"pORFgain_antisense_"*organism*"WC.pdf")
 
-pLD = plot(plots_loss_dmel..., layout = (1,3), size = (width = cm2pt(21), height = cm2pt(6.75)));
+pLD = plot(plots_loss_org..., layout = (1,3), size = (width = cm2pt(21), height = cm2pt(6.75)));
 savefig(pLD, figdir*"pORFloss_antisense_"*organism*"WC.pdf")
 
 # De novo sequence divergence #
