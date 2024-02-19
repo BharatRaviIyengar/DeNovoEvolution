@@ -180,7 +180,8 @@ m3x = [T3(i,j,atgvalsX,stopvalsX) for i in ncodons, j in ncodons];
 m5x = [T5(i,j,atgvalsX,stopvalsX) for i in ncodons, j in ncodons];
 
 m5g3x = log.(m5x./m3x);
-m5g3x[findall(m5g3x.<=0)] .= NaN;
+
+# m5g3x[findall(m5g3x.<=0)] .= NaN;
 
 mostlikelystart = zeros(Int32,length(ncodons),length(gcrange)+1);
 for g in eachindex(gcrange)
@@ -265,8 +266,15 @@ for q in 1:5
     );
 end
 
+mx = round(maximum(m5g3x),digits=2);
+mn = round(minimum(m5g3x),digits=2);
+rrx = mx - mn;
+cr = cgrad(["#d40000",:black,"#5599ff"], [-mn/rrx, 1])
+setindex!.(Ref(m5g3x), NaN, eachindex(ncodons), eachindex(ncodons));
+
 plt5g3x = heatmap(m5g3x, 
-    c = :heat,
+    c = cr,
+    clim = (mn, mx),
     cb = :top,
     xrotation = 90,
     xticks = [100:100:900;],

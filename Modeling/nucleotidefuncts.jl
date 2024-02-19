@@ -157,10 +157,29 @@ mutrate = 7.8e-9
 
 mutratebac = 2e-8;
 
+"""
+`µA(<mutation rate>, <substitution matrix>)`
+
+Find mutation rate of only AT nucleotides
+
+µA = 2*(µ(A→T) + µ(A→C) + µ(A→G))
+
+such that (µA + µG)/2 = µ
+"""
 function µA(mutrate,nsub)
     return 2*mutrate*sum(nsub[1,:])
 end
 
+"""
+`µG(<mutation rate>, <substitution matrix>)`
+
+Find mutation rate of only GC nucleotides
+
+µG = 2*(µ(G→T) + µ(G→C) + µ(G→A))
+
+such that (µA + µG)/2 = µ
+
+"""
 function µG(mutrate,nsub)
     return 2*mutrate*sum(nsub[3,:])
 end
@@ -206,6 +225,28 @@ function mprob(s1,s2)
         p = 0
     end
     return p*(2*mutrate)^sum(z)
+end
+
+function mprob2(s1,s2)
+    if(isempty(s1) || isempty(s2))
+        @warn "non-nucleotide string input, returning 0"
+        return 0
+    end
+    l = length(s1)
+    if l != length(s2)
+        error("length mismatch")
+    end
+    z = collect(s1) .!= collect(s2)
+    p = 1
+    if any(z)
+        for i = (1:l)[z]
+            p = p*nsub[nucnames[s1[i]], nucnames[s2[i]]]
+        end
+    end
+    nmut = sum(z)
+    unmut = join([s1[x] for x in findall(.!z)]);
+    return (1-µA(mutrate,nsub))^numAT(unmut)*
+    (1-µG(mutrate,nsub))^(length(unmut)-numAT(unmut))* p*(2*mutrate)^nmut
 end
 
 function nucprob(x,gccontent)

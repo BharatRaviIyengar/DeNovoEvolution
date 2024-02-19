@@ -3,7 +3,7 @@ using Measures
 cd(Base.source_dir())
 include("nucleotidefuncts.jl")
 
-organism = "scer"
+organism = "dmel"
 
 cm2pt = (cm) -> 28.3465*cm
 figdir = joinpath(Base.source_dir(),"../Manuscripts/M2/Figures/");
@@ -313,7 +313,7 @@ savefig(pORF, figdir*"pORF_antisense_"*organism*"GC.pdf")
 pORFX = plot(xlabel = "ORF length (codons)", ylabel = "Relative ORF Probability\n log2(antisense/intergenic)", size = (width = cm2pt(11), height = cm2pt(10)));
 
 for q = 1:3
-    plot!(pORFX,ncodons,log2.(orfvalsONS_X[:,q,1]./orfvalsITG_X[:,1]),
+    plot!(pORFX,ncodons[1:21],log2.(orfvalsONS_X[1:21,q,1]./orfvalsITG_X[1:21,1]),
             linestyle = lstyles[q]
     );
 end
