@@ -1,13 +1,13 @@
 options(stringsAsFactors = F)
-setwd("../Dmelanogaster/")
-obs = read.table("ORFcountdata.csv", header = T)
+setwd("DataAnalysis/Dmelanogaster/")
+obs = read.table("ORFstats.txt", header = T)
 
-results = do.call(rbind, lapply(unique(obs$pop), function(x){
-    xx = obs[obs$pop==x,]
+results = do.call(rbind, lapply(unique(obs$Pop), function(x){
+    xx = obs[obs$Pop==x,]
 	print(x)
     d1 = do.call(rbind,lapply(c(1:4), function(f){
-	mat = rbind(c(xx[f,"ows"],xx[f,"loci"]-xx[f,"ows"]),c(xx[f,"expG"],xx[f,"loci"]-xx[f,"expG"]))
-	if(xx[f,"ows"]>xx[f,"expG"]){
+	mat = rbind(c(xx[f,"Ows"],xx[f,"nloci"]-xx[f,"Ows"]),c(xx[f,"ExpK"],xx[f,"nloci"]-xx[f,"ExpK"]))
+	if(xx[f,"Ows"]>xx[f,"ExpK"]){
 		tail = "g" 
 		test = "Obs>Exp"
 	} else{
@@ -15,12 +15,12 @@ results = do.call(rbind, lapply(unique(obs$pop), function(x){
 		test = "Obs<Exp"
 	}
 	p = fisher.test(mat,alternative = tail)$p.value
-	data.frame(Line = x, frame = xx[f,"frame"], test = test, pval = p)
+	data.frame(Line = x, Frame = xx[f,"Frame"], test = test, pval = p)
 	}))
     
 	d2 = do.call(rbind,lapply(c(1:3), function(f){
-	mat = rbind(c(xx[f,"ows"],xx[f,"loci"]-xx[f,"ows"]),c(xx[4,"ows"],xx[4,"loci"]-xx[4,"ows"]))
-	if(xx[f,"ows"]/xx[f,"loci"] > xx[4,"ows"]/xx[4,"loci"]){
+	mat = rbind(c(xx[f,"Ows"],xx[f,"nloci"]-xx[f,"Ows"]),c(xx[4,"Ows"],xx[4,"nloci"]-xx[4,"Ows"]))
+	if(xx[f,"Ows"]/xx[f,"nloci"] > xx[4,"Ows"]/xx[4,"nloci"]){
 		tail = "g" 
 		test = "as>ig"
 	} else{
@@ -28,10 +28,11 @@ results = do.call(rbind, lapply(unique(obs$pop), function(x){
 		test = "as<ig"
 	}
 	p = fisher.test(mat,alternative = tail)$p.value
-	data.frame(Line = x, frame = xx[f,"frame"], test = test, pval = p)
+	data.frame(Line = x, Frame = xx[f,"Frame"], test = test, pval = p)
 	}))
 	rbind(d1,d2)
 }))
+
 rownames(results) <- NULL
 results$pval = p.adjust(results$pval, method = 'fdr')
    Line frame    test          pval
