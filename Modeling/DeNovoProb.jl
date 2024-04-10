@@ -32,6 +32,9 @@ mers6 = kmers(6);
 f6 = readdlm(joinpath(Base.source_dir(),organism*"_intergenic_hexamers.txt"), '\t');
 f3 = readdlm(joinpath(Base.source_dir(),organism*"_intergenic_trimers.txt"), '\t');
 
+f6[:,2] = normalize(f6[:,2]);
+f3[:,2] = normalize(f3[:,2]);
+
 ## TATA box
 # Consensus sequence = TATAWAWR
 # is TSS - 25 - 8nt (transcript must be +33nt longer)
@@ -241,7 +244,7 @@ function orfprobs(ATG,stop,k,ptype::Bool,polya)
     return [orfprob; orfgain; orfloss; orfstay]
 end
 
-ncodons = [30:300;];
+ncodons = [10:300;];
 
 gcrange = [0.3:0.01:0.6;];
 
@@ -298,6 +301,18 @@ geneloss = orfloss.+ rnaloss;
 rnafirst = rnastay .* corfgain;
 orffirst = orfstay .* crnagain;
 
+rnafirst_new = zeros(size(rnafirst));
+
+for i in eachindex(ncodons)
+    norf = 3 .*(ncodons[i:end] .-ncodons[i]) .+ 1
+    for j in eachindex(gcrange)
+        z = sum(rnastay[j,i:end] .* (1 .- exp.(-corfgain[j,i].*norf)))/sum(rnastay[j,i:end])
+        if z == 0
+            z = sum(rnastay[j,i:end].*(corfgain[j,i]*norf))/sum(rnastay[j,i:end])
+        end
+        rnafirst_new[j,i] = z
+    end
+end
 # Two step trajectory probability
 
 onlyrnagain = (1 .- orfprob .- orfgain).*rnagain;
@@ -372,6 +387,17 @@ genelossX = orflossX.+ rnalossX;
 
 rnafirstX = rnastayX .* corfgainX;
 orffirstX = orfstayX .* crnagainX;
+
+rnafirstX_new = zeros(size(rnafirstX));
+
+for i in eachindex(ncodons)
+    norf = 3 .*(ncodons[i:end] .-ncodons[i]) .+ 1
+    z = sum(rnastayX[i:end] .* (1 .- exp.(-corfgainX[i].*norf)))/sum(rnastayX[i:end])
+    if z == 0
+        z = sum(rnastayX[i:end].*(corfgainX[i]*norf))/sum(rnastayX[i:end])
+    end
+    rnafirstX_new[i] = z
+end
 
 onlyrnagainX = (1 .- orfprobX .- orfgainX).*rnagainX;
 onlyorfgainX = (1 .- rnaprobX .- rnagainX).*orfgainX;

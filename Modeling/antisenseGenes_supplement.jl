@@ -1,7 +1,5 @@
 using DelimitedFiles
 
-normalize = x -> x/sum(x)
-
 codonfreq = readdlm(joinpath(Base.source_dir(),organism*"_orf_codonfreq.txt"), '\t');
 dicodonfreq = readdlm(joinpath(Base.source_dir(),organism*"_orf_dicodonfreq.txt"), '\t');
 # codonfreq[codonfreq[:,1] .∈ Ref(stopcodons),2] .= 0;

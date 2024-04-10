@@ -24,6 +24,28 @@ function kmers(k)
     return vec(join.(product(repeated(nucs,k)...)))
 end
 
+normalize = x -> x/sum(x)
+
+function randomize_nsub(nsm,sigma)
+    nx = vcat(nsm[1,:],nsm[3,:]);
+    nx = nx .+ randn(Float64,size(nx)).*sigma.*nx;
+    nx = nx ./ sum(nx);
+    nx[[1,7]] .= 0;
+    smout = zeros(size(nsm))
+    smout[1,:] = nx[1:4]
+    smout[3,:] = nx[5:8]
+    for i = [2,4]
+        for j = 1:4
+            if(j!=i)
+                x = nucnames[ncomp[nucv[i]]];
+                y = nucnames[ncomp[nucv[j]]];
+                smout[i,j] = smout[x,y];
+            end
+        end
+    end
+    return smout
+end
+
 
 """
 `frameXcodons(codon,n)`
@@ -157,29 +179,10 @@ mutrate = 7.8e-9
 
 mutratebac = 2e-8;
 
-"""
-`µA(<mutation rate>, <substitution matrix>)`
-
-Find mutation rate of only AT nucleotides
-
-µA = 2*(µ(A→T) + µ(A→C) + µ(A→G))
-
-such that (µA + µG)/2 = µ
-"""
 function µA(mutrate,nsub)
     return 2*mutrate*sum(nsub[1,:])
 end
 
-"""
-`µG(<mutation rate>, <substitution matrix>)`
-
-Find mutation rate of only GC nucleotides
-
-µG = 2*(µ(G→T) + µ(G→C) + µ(G→A))
-
-such that (µA + µG)/2 = µ
-
-"""
 function µG(mutrate,nsub)
     return 2*mutrate*sum(nsub[3,:])
 end

@@ -7,7 +7,7 @@ cd(Base.source_dir())
 include("nucleotidefuncts.jl")
 
 organism = "dmel"
-# organism = "scer"
+organism = "scer"
 
 poisson = (l,k,n) -> l^n * exp(-l*k)/factorial(n)
 
@@ -36,8 +36,6 @@ if organism == "scer"
 end
 
 pnomut = (l,m) -> exp(-l*m)
-
-normalize = x -> x/sum(x)
 
 codonfreq = readdlm(joinpath(Base.source_dir(),organism*"_orf_codonfreq.txt"), '\t');
 
@@ -166,7 +164,7 @@ m5 = zeros(length(ncodons),length(ncodons),length(gcrange))
 
 for g in eachindex(gcrange)
     orfvals[:,:,g] = hcat([orfprobs(atgvals[:,g],stopvals[:,g],k) for k in ncodons]...);
-    tmat[:,:,g] = similarity90.*[tprobs(i,j,atgvals[:,g],stopvals[:,g]) for i in ncodons, j in ncodons];
+    tmat[:,:,g] = [tprobs(i,j,atgvals[:,g],stopvals[:,g]) for i in ncodons, j in ncodons];
     m5[:,:,g] = [T5(i,j,atgvals[:,g],stopvals[:,g]) for i in ncodons, j in ncodons]
     m3[:,:,g] = [T3(i,j,atgvals[:,g],stopvals[:,g]) for i in ncodons, j in ncodons]
 end
@@ -174,7 +172,7 @@ atgvalsX = ATGprobsX(trimerfreq);
 stopvalsX = stopprobsX(trimerfreq);
 orfvalsX = hcat([orfprobs(atgvalsX,stopvalsX,k) for k in ncodons]...);
 
-tmatX = similarity90.*[tprobs(i,j,atgvalsX,stopvalsX) for i in ncodons, j in ncodons];
+tmatX = [tprobs(i,j,atgvalsX,stopvalsX) for i in ncodons, j in ncodons];
 
 m3x = [T3(i,j,atgvalsX,stopvalsX) for i in ncodons, j in ncodons];
 m5x = [T5(i,j,atgvalsX,stopvalsX) for i in ncodons, j in ncodons];

@@ -1,5 +1,48 @@
 using AbstractTrees
 using StatsBase
+using DelimitedFiles
+
+trimerfreq = readdlm(joinpath(Base.source_dir(),"dmel_intergenic_trimers.txt"), '\t');
+nsub, nucsmbt = readdlm("dmel_mutbias.txt",'\t',header = true);
+trimerfreq[:,2] = normalize(trimerfreq[:,2]);
+stopcodons = ["TAA","TAG","TGA"]
+allcodons = kmers(3)
+nostopcodons = allcodons[allcodons .∉ Ref(stopcodons)];
+noATG = allcodons[allcodons .!="ATG"];
+
+
+function ATGprobsX(t3)
+    ATGprob = nprob3("ATG",t3)
+    ATGgain = featuregain3(noATG,["ATG"],t3)
+    ATGloss = featuregain3(["ATG"],noATG,t3)/ATGprob
+    ATGstay = featurestay3(["ATG"],t3)
+    return [ATGprob, ATGgain, ATGloss, ATGstay]
+end
+
+function stopprobsX(t3)
+    stopprob = sum([nprob3(x,t3) for x in stopcodons])
+    stopgain = featuregain3(nostopcodons,stopcodons,t3)
+    stoploss = featuregain3(stopcodons,nostopcodons,t3)/stopprob
+    stopstay = featurestay3(stopcodons,t3)
+    return [stopprob, stopgain, stoploss, stopstay]
+end
+
+function tprobs(i,j,ATG,stop)
+    nostopstay = 1 - stop[xGain] - stop[xProb]
+    noATGstay = 1 - ATG[xGain] - ATG[xProb]
+    if i==j    
+        return (1-ATG[xLoss])*(1-stop[xLoss])*(1-stop[xGain]/stop[xProb])^i
+    elseif i<j
+        return (stop[xLoss]*stop[xProb] + ATG[xGain])*nostopstay^(j-i) +(j-i)*stop[xLoss]*stop[xProb]*ATG[xProb]*nostopstay^(j-i-1)
+    else
+        return stop[xGain]/(1-stop[xProb]) + ATG[xLoss]*noATGstay^(i-j)*ATG[xProb] + ATG[xProb]*(i-j)*stop[xGain]
+    end
+end
+
+ncodons =[3:900;];
+atgvalsX = ATGprobsX(trimerfreq);
+stopvalsX = stopprobsX(trimerfreq);
+tmatX = [tprobs(i,j,atgvalsX,stopvalsX) for i in ncodons, j in ncodons];
 
 mutable struct datedNode
     name::String
@@ -77,23 +120,26 @@ addchild(dmeltree,EU);
 
 popnodes = collect(Leaves(dmeltree));
 
-function phyloprob(plist::Dict,anclen::Int,transmat::Matrix{Float64})
-    nlist = popnodes[[x.name in keys(plist) for x in popnodes]]
+function phyloprob(plist::Dict,anclen::Vector{Int},transmat::Matrix{Float64})
+    ancidx = anclen .- ncodons[1]
+    nlist = popnodes[[x.name in keys(plist) for x in popnodes]];
     mrca = LCA(nlist);
     anclist = [vcat(x,lastancestors(x,mrca)...) for x in nlist]
-    tpvals = 1
     countedans = []
+    tblen, flidx = [zeros(Int,size(nlist)) for i = 1:2]
+    tpvals = ones(size(transmat,1))
     for i in eachindex(nlist)
-        tblen = sum([x.age for x in anclist[i]])*26
-        flen = plist[nlist[i].name]
+        tblen[i] = sum([x.age for x in anclist[i]])
+        flidx[i] = plist[nlist[i].name] - ncodons[1]
         if !(isempty(countedans))
             repnodes = (anclist[i])[anclist[i] .∈ Ref(countedans)]
-            tblen -= sum([x.age for x in repnodes])*26
+            tblen[i] -= sum([x.age for x in repnodes])
         end
         countedans=union(countedans,anclist[i]);
-        tpvals*=(transmat^tblen)[anclen-3,flen-3];
+        # tpvals=tpvals.*(transmat^tblen[i]*26)[:,flidx[i]];
     end
-    return tpvals
+    tpvals = .*([(tmatX^(tblen[i]*26))[:,flidx[i]] for i in eachindex(tblen)]...);
+    return ancidx[argmax(tpvals[ancidx])]+ncodons[1]
 end
 
 file = homedir()*"/Documents/ORF-length-evol/Merged_File_HOM_ORF_wSynteny.txt"
@@ -109,8 +155,7 @@ open(outfile,"w") do fout
         luniq = unique(lens)
         local plist = Dict(names[i] => lens[i] for i in eachindex(names))
         if x[6] == "Change"
-            tpvals = [phyloprob(plist,anclen,tmatX) for anclen in luniq]
-            mplen = luniq[tpvals .== maximum(tpvals)]
+            mplen = phyloprob(plist,luniq,tmatX)
         else
             mplen = luniq
         end
@@ -127,6 +172,8 @@ open(outfile,"w") do fout
     end
 end
 
+## Maximum Parsimony Inference ##
+
 datax =  readdlm(outfile)[:,[6,8]];
 tmdict = Dict(x => tmatX^x for x in unique(datax[:,2]));
 
@@ -135,3 +182,43 @@ estprobs = [tmdict[x[2]][x[1],x[1]]/sum(tmdict[x[2]][x[1],:]) for x in eachrow(d
 uprobrng = rand(size(datax)[1],100000);
 
 estnum =[sum(x.>=estprobs) for x in eachcol(uprobrng)]
+
+datay = readdlm(outfile)[:,[1,2,3,6]];
+x = findall(datay[:,1] .== "Change");
+
+lengths = [parse.(Int,split(datay[w,3],",")) for w in x];
+names = [split(datay[w,2],",") for w in x];
+popnames = [k.name for k in popnodes];
+
+lgt2 = [length(x)>2 for x in lengths]
+
+lengths = lengths[lgt2]
+names = names[lgt2]
+ML_alen = datay[x,4][lgt2];
+
+MP_alen = zeros(Int, size(lengths))
+q = 0 
+for j in eachindex(lengths)
+    cts = countmap(lengths[j]);
+    mrep = maximum(values(cts));
+    if sum(values(cts) .== mrep) == 1
+        MP_alen[j] = maximum(cts).first
+    else
+        if all(values(cts) .==1)
+            MP_alen[j] = 0
+            
+        else
+            q +=1
+            mreplens = collect(keys(cts))[values(cts) .== mrep];
+            mrepnames = names[j][lengths[j] .∈  Ref(mreplens)]
+            aa = LCA(popnodes[[k.name in mrepnames for k in popnodes]]);
+            outgrp = aa.children[aa.children .∈  Ref(popnodes)]
+                # if isempty(outgrp)
+                #     outgrp
+                # end
+            outlen = names[j] .== outgrp[1].name;
+            MP_alen[j] = lengths[j][outlen][1]
+        end
+    end
+end
+
