@@ -2,47 +2,12 @@ using AbstractTrees
 using StatsBase
 using DelimitedFiles
 
-trimerfreq = readdlm(joinpath(Base.source_dir(),"dmel_intergenic_trimers.txt"), '\t');
-nsub, nucsmbt = readdlm("dmel_mutbias.txt",'\t',header = true);
-trimerfreq[:,2] = normalize(trimerfreq[:,2]);
-stopcodons = ["TAA","TAG","TGA"]
-allcodons = kmers(3)
-nostopcodons = allcodons[allcodons .∉ Ref(stopcodons)];
-noATG = allcodons[allcodons .!="ATG"];
-
-
-function ATGprobsX(t3)
-    ATGprob = nprob3("ATG",t3)
-    ATGgain = featuregain3(noATG,["ATG"],t3)
-    ATGloss = featuregain3(["ATG"],noATG,t3)/ATGprob
-    ATGstay = featurestay3(["ATG"],t3)
-    return [ATGprob, ATGgain, ATGloss, ATGstay]
-end
-
-function stopprobsX(t3)
-    stopprob = sum([nprob3(x,t3) for x in stopcodons])
-    stopgain = featuregain3(nostopcodons,stopcodons,t3)
-    stoploss = featuregain3(stopcodons,nostopcodons,t3)/stopprob
-    stopstay = featurestay3(stopcodons,t3)
-    return [stopprob, stopgain, stoploss, stopstay]
-end
-
-function tprobs(i,j,ATG,stop)
-    nostopstay = 1 - stop[xGain] - stop[xProb]
-    noATGstay = 1 - ATG[xGain] - ATG[xProb]
-    if i==j    
-        return (1-ATG[xLoss])*(1-stop[xLoss])*(1-stop[xGain]/stop[xProb])^i
-    elseif i<j
-        return (stop[xLoss]*stop[xProb] + ATG[xGain])*nostopstay^(j-i) +(j-i)*stop[xLoss]*stop[xProb]*ATG[xProb]*nostopstay^(j-i-1)
-    else
-        return stop[xGain]/(1-stop[xProb]) + ATG[xLoss]*noATGstay^(i-j)*ATG[xProb] + ATG[xProb]*(i-j)*stop[xGain]
-    end
-end
-
+organism = "dmel"
+include("ORFlen_defs.jl")
 ncodons =[3:900;];
 atgvalsX = ATGprobsX(trimerfreq);
 stopvalsX = stopprobsX(trimerfreq);
-tmatX = [tprobs(i,j,atgvalsX,stopvalsX) for i in ncodons, j in ncodons];
+tmatX = [tprobs(i,j,atgvalsX,stopvalsX,false) for i in ncodons, j in ncodons];
 
 mutable struct datedNode
     name::String
@@ -222,3 +187,25 @@ for j in eachindex(lengths)
     end
 end
 
+outfile2 = homedir()*"/Documents/ORF-length-evol/Changed_summary_wSynteny_MPML.txt"
+
+outdata = hcat(join.(names,","),join.(lengths,","),ML_alen,MP_alen);
+
+writedlm(outfile2,outdata,'\t')
+
+y = MP_alen .!= 0
+
+lx2 = lengths[y];
+nx2 = names[y];
+mpx2 = MP_alen[y];
+mlx2 = ML_alen[y];
+
+total = length(vcat(lx2...))
+
+MLF = [sum([sum(lx2[x] .== mlx2[x]) for x in eachindex(mpx2)]),
+sum([sum(lx2[x] .< mlx2[x]) for x in eachindex(mpx2)]),
+sum([sum(lx2[x] .> mlx2[x]) for x in eachindex(mpx2)])]./total
+
+MPF = [sum([sum(lx2[x] .== mpx2[x]) for x in eachindex(mpx2)]),
+sum([sum(lx2[x] .< mpx2[x]) for x in eachindex(mpx2)]),
+sum([sum(lx2[x] .> mpx2[x]) for x in eachindex(mpx2)])]./total
